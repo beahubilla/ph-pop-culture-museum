@@ -38,15 +38,14 @@
     /* Animated Equalizer Bars */
     @keyframes bounce {
       0%, 100% { height: 4px; }
-      50% { height: 18px; }
+      50% { height: 16px; }
     }
     .eq-bar-1 { animation: bounce 0.8s ease-in-out infinite; }
     .eq-bar-2 { animation: bounce 0.5s ease-in-out infinite 0.2s; }
     .eq-bar-3 { animation: bounce 0.7s ease-in-out infinite 0.4s; }
-    .eq-bar-4 { animation: bounce 0.6s ease-in-out infinite 0.1s; }
   </style>
 </head>
-<body class="bg-museum-950 text-slate-100 font-sans min-h-screen selection:bg-museum-accent selection:text-black pb-36">
+<body class="bg-museum-950 text-slate-100 font-sans min-h-screen selection:bg-museum-accent selection:text-black pb-28">
 
   <!-- Museum Top Navigation Bar -->
   <header class="border-b border-slate-800 bg-museum-900/95 backdrop-blur sticky top-0 z-40">
@@ -384,58 +383,82 @@
     </div>
   </div>
 
-  <!-- FLOATING IN-PAGE Y2K WINAMP EMBEDDED PLAYER -->
-  <aside class="fixed bottom-4 right-4 z-40 bg-slate-900/95 border-2 border-slate-700 rounded-2xl p-4 shadow-2xl backdrop-blur max-w-sm w-[92vw] sm:w-88 text-xs font-sans">
+  <!-- COMPACT FLOATING MUSIC LAUNCHER & MINI POPUP WIDGET -->
+  <div class="fixed bottom-4 right-4 z-40 font-sans">
     
-    <!-- Winamp Header & Equalizer -->
-    <div class="flex items-center justify-between mb-2.5 border-b border-slate-800 pb-2">
-      <div class="flex items-center space-x-2">
-        <span class="text-[10px] bg-rose-500/20 text-rose-400 font-pixel px-2 py-0.5 rounded border border-rose-500/30">WINAMP v2.91</span>
-        <!-- Animated Equalizer Bars -->
-        <div class="flex items-end gap-0.5 h-4 w-6 px-1">
-          <div class="w-1 bg-rose-400 rounded-full eq-bar-1"></div>
-          <div class="w-1 bg-amber-400 rounded-full eq-bar-2"></div>
-          <div class="w-1 bg-sky-400 rounded-full eq-bar-3"></div>
-          <div class="w-1 bg-emerald-400 rounded-full eq-bar-4"></div>
+    <!-- 1. Collapsed Pill Launcher (Always Visible by Default) -->
+    <button 
+      id="player-pill" 
+      onclick="togglePlayerPopup()" 
+      class="flex items-center gap-2.5 px-4 py-2.5 bg-slate-900/95 hover:bg-slate-800 border border-slate-700 rounded-full shadow-2xl backdrop-blur text-xs font-semibold text-white hover:border-museum-accent transition-all duration-200">
+      
+      <!-- Mini Animated Equalizer -->
+      <div class="flex items-end gap-0.5 h-3.5 w-3.5">
+        <div class="w-1 bg-rose-400 rounded-full eq-bar-1"></div>
+        <div class="w-1 bg-amber-400 rounded-full eq-bar-2"></div>
+        <div class="w-1 bg-sky-400 rounded-full eq-bar-3"></div>
+      </div>
+      
+      <span class="tracking-wide text-xs">📻 2000s Soundtrack</span>
+      <span class="text-[10px] bg-rose-500/20 text-rose-400 border border-rose-500/30 px-1.5 py-0.5 rounded font-pixel">WINAMP</span>
+    </button>
+
+    <!-- 2. The Mini Popup Window (Hidden by Default) -->
+    <aside 
+      id="player-popup" 
+      class="hidden w-[90vw] sm:w-80 bg-slate-950/95 border-2 border-slate-700 rounded-2xl p-3.5 shadow-2xl backdrop-blur text-xs">
+      
+      <!-- Window Title Bar with Minimize Button -->
+      <div class="flex items-center justify-between pb-2 mb-2 border-b border-slate-800">
+        <div class="flex items-center space-x-1.5">
+          <span class="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block"></span>
+          <span class="text-[11px] font-pixel text-rose-400">WINAMP v2.91</span>
         </div>
+        
+        <button 
+          onclick="togglePlayerPopup()" 
+          class="text-slate-400 hover:text-white hover:bg-slate-800 rounded px-1.5 py-0.5 transition font-bold text-xs" 
+          title="Minimize to Pill">
+          ✕
+        </button>
       </div>
-      <span class="text-[10px] text-slate-400 font-mono">LIVE IN-SITE AUDIO</span>
-    </div>
 
-    <!-- Station Info Display -->
-    <div class="bg-black/90 p-2 rounded-lg border border-slate-800 text-xs mb-2.5 font-mono">
-      <div class="flex justify-between text-[10px] text-slate-400 mb-0.5">
-        <span>CURRENT CHANNEL</span>
-        <span id="station-badge" class="text-rose-400 font-bold">STATION 1</span>
+      <!-- Station Info Display -->
+      <div class="bg-black/90 p-2 rounded-lg border border-slate-800 text-xs mb-2 font-mono">
+        <div class="flex justify-between text-[10px] text-slate-400 mb-0.5">
+          <span>CHANNEL</span>
+          <span id="station-badge" class="text-rose-400 font-bold">STATION 1</span>
+        </div>
+        <p id="playlist-title" class="font-bold text-sky-400 truncate text-[11px]">
+          🎸 2000s Pinoy Rock & Band Mania
+        </p>
       </div>
-      <p id="playlist-title" class="font-bold text-sky-400 truncate text-[12px]">
-        🎸 2000s Pinoy Rock & Band Mania
-      </p>
-    </div>
 
-    <!-- Embedded YouTube Audio/Video Player -->
-    <div class="rounded-xl overflow-hidden border border-slate-800 bg-black shadow-inner mb-3 aspect-video">
-      <iframe 
-        id="yt-inpage-player"
-        class="w-full h-full"
-        src="https://www.youtube.com/embed/videoseries?list=RDCLAK5uy_k6FEgr-_4EVPoITSfmGGCMt1M6WtLBLbU" 
-        title="Philippine Pop Culture 2000s Soundtrack" 
-        frameborder="0" 
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-        allowfullscreen>
-      </iframe>
-    </div>
+      <!-- Embedded In-Page YouTube Video/Audio Player -->
+      <div class="rounded-xl overflow-hidden border border-slate-800 bg-black shadow-inner mb-2.5 aspect-video">
+        <iframe 
+          id="yt-inpage-player"
+          class="w-full h-full"
+          src="https://www.youtube.com/embed/videoseries?list=RDCLAK5uy_k6FEgr-_4EVPoITSfmGGCMt1M6WtLBLbU" 
+          title="Philippine Pop Culture 2000s Soundtrack" 
+          frameborder="0" 
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+          allowfullscreen>
+        </iframe>
+      </div>
 
-    <!-- Station Switcher Buttons -->
-    <div class="grid grid-cols-2 gap-2 text-[11px]">
-      <button onclick="switchStation(1)" id="btn-station-1" class="py-1.5 px-2 rounded-lg bg-slate-800 text-white font-semibold border border-slate-600 transition text-center truncate">
-        🎸 Station 1: Rock
-      </button>
-      <button onclick="switchStation(2)" id="btn-station-2" class="py-1.5 px-2 rounded-lg bg-slate-900 text-slate-400 font-semibold border border-slate-800 hover:bg-slate-800 transition text-center truncate">
-        📼 Station 2: Pop/Y2K
-      </button>
-    </div>
-  </aside>
+      <!-- Station Toggles -->
+      <div class="grid grid-cols-2 gap-1.5 text-[10px]">
+        <button onclick="switchStation(1)" id="btn-station-1" class="py-1 px-1.5 rounded-lg bg-slate-800 text-white font-semibold border border-slate-600 transition text-center truncate">
+          🎸 Station 1: Rock
+        </button>
+        <button onclick="switchStation(2)" id="btn-station-2" class="py-1 px-1.5 rounded-lg bg-slate-900 text-slate-400 font-semibold border border-slate-800 hover:bg-slate-800 transition text-center truncate">
+          📼 Station 2: Pop/Y2K
+        </button>
+      </div>
+    </aside>
+
+  </div>
 
   <!-- Museum Footer -->
   <footer class="border-t border-slate-800 py-8 px-6 text-center text-xs text-slate-500 mt-12">
@@ -516,7 +539,21 @@
       document.getElementById('friendster-modal').classList.add('hidden');
     }
 
-    // Embedded YouTube Playlist Switcher
+    // Floating Player Popup Toggle
+    function togglePlayerPopup() {
+      const pill = document.getElementById('player-pill');
+      const popup = document.getElementById('player-popup');
+      
+      if (popup.classList.contains('hidden')) {
+        popup.classList.remove('hidden');
+        pill.classList.add('hidden');
+      } else {
+        popup.classList.add('hidden');
+        pill.classList.remove('hidden');
+      }
+    }
+
+    // YouTube Playlist Switcher
     const museumStations = {
       1: {
         title: "🎸 2000s Pinoy Rock & Band Mania",
@@ -541,11 +578,11 @@
       title.innerText = station.title;
 
       if (stationNum === 1) {
-        btn1.className = 'py-1.5 px-2 rounded-lg bg-slate-800 text-white font-semibold border border-slate-600 transition text-center truncate';
-        btn2.className = 'py-1.5 px-2 rounded-lg bg-slate-900 text-slate-400 font-semibold border border-slate-800 hover:bg-slate-800 transition text-center truncate';
+        btn1.className = 'py-1 px-1.5 rounded-lg bg-slate-800 text-white font-semibold border border-slate-600 transition text-center truncate';
+        btn2.className = 'py-1 px-1.5 rounded-lg bg-slate-900 text-slate-400 font-semibold border border-slate-800 hover:bg-slate-800 transition text-center truncate';
       } else {
-        btn2.className = 'py-1.5 px-2 rounded-lg bg-slate-800 text-white font-semibold border border-slate-600 transition text-center truncate';
-        btn1.className = 'py-1.5 px-2 rounded-lg bg-slate-900 text-slate-400 font-semibold border border-slate-800 hover:bg-slate-800 transition text-center truncate';
+        btn2.className = 'py-1 px-1.5 rounded-lg bg-slate-800 text-white font-semibold border border-slate-600 transition text-center truncate';
+        btn1.className = 'py-1 px-1.5 rounded-lg bg-slate-900 text-slate-400 font-semibold border border-slate-800 hover:bg-slate-800 transition text-center truncate';
       }
     }
   </script>
