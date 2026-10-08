@@ -42,7 +42,7 @@ const friendsterProfiles = [
   {
     name: "Benz Buluran",
     handle: " BEnzzzz ",
-    avatar: "./images/profiles/benz.jpg",
+    avatar: "",
     quote: "gg ez.. 1 more game",
     status: "In a Relationship (with DotA 1)",
     memberSince: "June 2005",
@@ -82,20 +82,20 @@ const beforeAfterPairs = [
     title: "Nokia 3310 → 5G Smartphone",
     caption: "From 160-character texts and Snake to video calls, feeds, and live streams in one pocket-sized screen.",
     before: { img: "./images/phones.jpg", emoji: "📟", label: "Nokia 3310, 2002" },
-    after:  { img: "./images/then-now/phone-now.jpg",  emoji: "📱", label: "5G Smartphone, Today" }
+    after:  { img: "",  emoji: "📱", label: "5G Smartphone, Today" }
   },
   {
     tab: "🎵 Music",
     title: "Burned MP3 CDs → Streaming",
     caption: "Quiapo burned CDs and bulky CD players gave way to Spotify, YouTube Music, and global P-Pop fandoms.",
     before: { img: "./images/opm.jpg", emoji: "💿", label: "Burned MP3 CD, 2005" },
-    after:  { img: "./images/then-now/music-now.jpg",  emoji: "🎧", label: "Spotify & P-Pop, Today" }
+    after:  { img: "",  emoji: "🎧", label: "Spotify & P-Pop, Today" }
   },
   {
     tab: "🎮 Gaming",
     title: "LAN Shops → Mobile Esports",
     caption: "Rows of bulky CRT monitors running DotA 1 became pro Mobile Legends tournaments watched by millions.",
-    before: { img: "./images/then-now/gaming-then.jpg", emoji: "🖥️", label: "LAN Shop, 2006" },
-    after:  { img: "./images/then-now/gaming-now.jpg",  emoji: "🏆", label: "Mobile Esports, Today" }
+    before: { img: "", emoji: "🖥️", label: "LAN Shop, 2006" },
+    after:  { img: "",  emoji: "🏆", label: "Mobile Esports, Today" }
   }
 ];
