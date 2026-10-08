@@ -383,55 +383,55 @@
     </div>
   </div>
 
-  <!-- FLOATING Y2K WINAMP MUSIC PLAYER WIDGET (YOUTUBE MUSIC POWERED) -->
-  <aside class="fixed bottom-4 right-4 z-40 bg-slate-900/95 border-2 border-slate-700 rounded-2xl p-4 shadow-2xl backdrop-blur max-w-sm w-[92vw] sm:w-88 text-xs font-sans">
+ ```
+
+  <aside>
     
-    <div class="flex items-center justify-between mb-3 border-b border-slate-800 pb-2">
-      <div class="flex items-center space-x-2">
-        <span class="text-[10px] bg-rose-500/20 text-rose-400 font-pixel px-2 py-0.5 rounded border border-rose-500/30">WINAMP v2.91</span>
-        <div class="flex items-end gap-0.5 h-4 w-6 px-1" id="eq-container">
-          <div class="w-1 bg-rose-400 rounded-full eq-bar-1"></div>
-          <div class="w-1 bg-amber-400 rounded-full eq-bar-2"></div>
-          <div class="w-1 bg-sky-400 rounded-full eq-bar-3"></div>
-          <div class="w-1 bg-emerald-400 rounded-full eq-bar-4"></div>
+    
+    <div>
+      <div>
+        <span>WINAMP v2.91</span>
+        
+        <div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
         </div>
       </div>
-      <span class="text-[10px] text-slate-400 font-mono">128 kbps • STEREO</span>
+      <span>128 kbps • STEREO</span>
     </div>
 
-    <div class="bg-black/90 p-2.5 rounded-lg border border-slate-800 text-xs mb-3 font-mono">
-      <div class="flex justify-between text-[10px] text-slate-400 mb-1">
+    
+    <div>
+      <div>
         <span>CURATED SOUNDTRACK</span>
-        <span id="station-badge" class="text-rose-400 font-bold">STATION 1</span>
+        <span>STATION 1</span>
       </div>
-      <p id="playlist-title" class="font-bold text-sky-400 truncate text-[13px]">
-        🇵🇭 2000s Pinoy Rock & Band Mania
+      <p>
+        🇵🇭 2000s Pinoy Rock &amp; Band Mania
       </p>
-      <p id="playlist-desc" class="text-[10px] text-slate-400 truncate mt-0.5">
+      <p>
         Parokya, Kamikazee, Sponge Cola, Rivermaya
       </p>
     </div>
 
-    <div class="space-y-2">
-      <div class="grid grid-cols-2 gap-1.5 text-[11px]">
-        <button onclick="selectStation(1)" id="station-1-btn" class="p-1.5 rounded-lg bg-slate-800 text-white font-semibold border border-slate-700 transition text-center">
-          🎸 Station 1: Rock
-        </button>
-        <button onclick="selectStation(2)" id="station-2-btn" class="p-1.5 rounded-lg bg-slate-900 text-slate-400 font-semibold border border-slate-800 transition text-center">
-          ✨ Station 2: Pop/Y2K
-        </button>
+    
+    <div>
+      <div>
+        
+        
       </div>
 
-      <a id="yt-music-link" 
-         href="https://music.youtube.com/playlist?list=RDCLAK5uy_k6FEgr-_4EVPoITSfmGGCMt1M6WtLBLbU&playnext=1&si=lhLSn0tAm3vgOua5" 
-         target="_blank" 
-         rel="noopener noreferrer" 
-         class="w-full py-2 px-3 rounded-lg bg-rose-600 hover:bg-rose-500 text-white font-bold flex items-center justify-center gap-2 shadow-lg shadow-rose-900/30 transition text-center">
+      
+      <a href="https://music.youtube.com/playlist?list=RDCLAK5uy_k6FEgr-_4EVPoITSfmGGCMt1M6WtLBLbU&amp;playnext=1&amp;si=lhLSn0tAm3vgOua5" target="_blank" rel="noopener noreferrer">
         <span>▶ Open in YouTube Music</span>
-        <span class="text-[10px] opacity-80">↗</span>
+        <span>↗</span>
       </a>
     </div>
   </aside>
+
+```
 
   <!-- Museum Footer -->
   <footer class="border-t border-slate-800 py-8 px-6 text-center text-xs text-slate-500 mt-12">
@@ -508,35 +508,36 @@
       document.getElementById('friendster-modal').classList.add('hidden');
     }
 
-    // YouTube Music Playlist Switcher Logic
-    const ytPlaylists = {
-      1: {
-        title: "🇵🇭 2000s Pinoy Rock & Band Mania",
-        desc: "Parokya, Kamikazee, Sponge Cola, Rivermaya",
-        url: "https://music.youtube.com/playlist?list=RDCLAK5uy_k6FEgr-_4EVPoITSfmGGCMt1M6WtLBLbU&playnext=1&si=lhLSn0tAm3vgOua5"
-      },
-      2: {
-        title: "📼 2000s Pop, Dance & Nostalgia Hits",
-        desc: "SexBomb Girls, Teleserye OSTs, Y2K Classics",
-        url: "https://music.youtube.com/playlist?list=RDCLAK5uy_l70bSMa3aOX5oPp8j7Of_22VHbSDRGyYE&playnext=1&si=D31KQ26zD_uPdZZP"
-      }
-    };
-
-    function selectStation(num) {
-      const data = ytPlaylists[num];
-      document.getElementById('playlist-title').innerText = data.title;
-      document.getElementById('playlist-desc').innerText = data.desc;
-      document.getElementById('station-badge').innerText = `STATION ${num}`;
-      document.getElementById('yt-music-link').href = data.url;
-
-      if (num === 1) {
-        document.getElementById('station-1-btn').className = 'p-1.5 rounded-lg bg-slate-800 text-white font-semibold border border-slate-700 transition text-center';
-        document.getElementById('station-2-btn').className = 'p-1.5 rounded-lg bg-slate-900 text-slate-400 font-semibold border border-slate-800 transition text-center';
-      } else {
-        document.getElementById('station-2-btn').className = 'p-1.5 rounded-lg bg-slate-800 text-white font-semibold border border-slate-700 transition text-center';
-        document.getElementById('station-1-btn').className = 'p-1.5 rounded-lg bg-slate-900 text-slate-400 font-semibold border border-slate-800 transition text-center';
-      }
+    ```
+// YouTube Music Playlist Switcher
+  const ytPlaylists = {
+    1: {
+      title: "🇵🇭 2000s Pinoy Rock &amp; Band Mania",
+      desc: "Parokya, Kamikazee, Sponge Cola, Rivermaya",
+      url: "https://music.youtube.com/playlist?list=RDCLAK5uy_k6FEgr-_4EVPoITSfmGGCMt1M6WtLBLbU&amp;playnext=1&amp;si=lhLSn0tAm3vgOua5"
+    },
+    2: {
+      title: "📼 2000s Pop, Dance &amp; Nostalgia Hits",
+      desc: "SexBomb Girls, Teleserye OSTs, Y2K Classics",
+      url: "https://music.youtube.com/playlist?list=RDCLAK5uy_l70bSMa3aOX5oPp8j7Of_22VHbSDRGyYE&amp;playnext=1&amp;si=D31KQ26zD_uPdZZP"
     }
+  };
+
+  function selectStation(num) {
+    const data = ytPlaylists[num];
+    document.getElementById('playlist-title').innerText = data.title;
+    document.getElementById('playlist-desc').innerText = data.desc;
+    document.getElementById('station-badge').innerText = `STATION ${num}`;
+    document.getElementById('yt-music-link').href = data.url;
+
+    if (num === 1) {
+      document.getElementById('station-1-btn').className = 'p-1.5 rounded-lg bg-slate-800 text-white font-semibold border border-slate-700 transition text-center';
+      document.getElementById('station-2-btn').className = 'p-1.5 rounded-lg bg-slate-900 text-slate-400 font-semibold border border-slate-800 transition text-center';
+    } else {
+      document.getElementById('station-2-btn').className = 'p-1.5 rounded-lg bg-slate-800 text-white font-semibold border border-slate-700 transition text-center';
+      document.getElementById('station-1-btn').className = 'p-1.5 rounded-lg bg-slate-900 text-slate-400 font-semibold border border-slate-800 transition text-center';
+    }
+  }
   </script>
 </body>
 </html>
