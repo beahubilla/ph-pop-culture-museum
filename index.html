@@ -41,7 +41,10 @@
     }
   </script>
 </head>
-<body class="bg-museum-950 text-slate-100 font-sans min-h-screen selection:bg-museum-accent selection:text-black pb-28">
+<body class="museum-bg text-slate-100 font-sans min-h-screen selection:bg-museum-accent selection:text-black pb-28">
+
+  <!-- Animated aesthetic background -->
+  <div class="bg-aurora" aria-hidden="true"></div>
 
   <!-- Museum Top Navigation Bar -->
   <header class="border-b border-slate-800 bg-museum-900/95 backdrop-blur sticky top-0 z-40">
@@ -50,18 +53,29 @@
         <span class="px-2.5 py-0.5 bg-museum-accent/10 border border-museum-accent/30 text-museum-accent font-retro text-xl rounded">ROOM 2000-2010</span>
         <h1 class="font-bold text-lg tracking-tight">Tatak 2000s <span class="text-slate-400 font-normal text-xs sm:text-sm hidden sm:inline">| Philippine Pop Culture Virtual Museum</span></h1>
       </div>
-      <div class="flex items-center space-x-3 text-xs text-slate-400">
-        <button onclick="openFriendsterModal()" class="px-3 py-1.5 rounded-lg bg-orange-500/10 border border-orange-500/30 text-orange-400 hover:bg-orange-500/20 transition flex items-center gap-1.5 font-semibold">
-          <span>✨</span> Friendster Profile
+      <div class="flex items-center gap-3 text-xs text-slate-400">
+        <nav class="hidden lg:flex items-center gap-1" aria-label="Museum sections">
+          <a href="#exhibits" class="nav-link">Exhibits</a>
+          <a href="#then-now" class="nav-link">Then vs. Now</a>
+          <a href="#sms" class="nav-link">SMS Lab</a>
+          <a href="#curators" class="nav-link">Curators</a>
+        </nav>
+        <button onclick="openFriendsterModal(0)" class="px-3 py-1.5 rounded-lg bg-orange-500/10 border border-orange-500/30 text-orange-400 hover:bg-orange-500/20 transition flex items-center gap-1.5 font-semibold">
+          <span>✨</span> Friendster
         </button>
-        <span class="hidden md:inline text-slate-600">|</span>
-        <span class="hidden md:inline">Group 3: Ysha, Benz, Ingrid</span>
       </div>
     </div>
+    <!-- Mobile section nav -->
+    <nav class="lg:hidden flex gap-1 overflow-x-auto px-4 pb-2 text-xs" aria-label="Museum sections">
+      <a href="#exhibits" class="nav-link whitespace-nowrap">Exhibits</a>
+      <a href="#then-now" class="nav-link whitespace-nowrap">Then vs. Now</a>
+      <a href="#sms" class="nav-link whitespace-nowrap">SMS Lab</a>
+      <a href="#curators" class="nav-link whitespace-nowrap">Curators</a>
+    </nav>
   </header>
 
   <!-- Hero Grand Lobby -->
-  <section class="relative py-14 px-6 border-b border-slate-800 bg-gradient-to-b from-museum-900 to-museum-950">
+  <section class="relative py-14 px-6 border-b border-slate-800 bg-gradient-to-b from-museum-900/60 to-transparent">
     <div class="max-w-5xl mx-auto text-center relative z-10">
       <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs font-semibold mb-5">
         <span>📼 Retrospective Exhibition</span> • 2000–2010 vs. Present Day
@@ -89,6 +103,8 @@
   <!-- Interactive Exhibition Hall -->
   <main class="max-w-7xl mx-auto px-6 py-10">
 
+    <div id="exhibits" class="scroll-mt-24"></div>
+
     <!-- View Mode Selector -->
     <div class="mb-10 p-5 rounded-2xl bg-museum-900 border border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4">
       <div>
@@ -112,7 +128,7 @@
       <article class="exhibit-card group bg-museum-900 rounded-2xl border border-slate-800 hover:border-museum-accent/50 transition overflow-hidden p-6 flex flex-col justify-between" data-category="social">
         <div>
           <div class="relative h-44 rounded-xl overflow-hidden mb-5 border border-slate-800 bg-slate-950">
-             <img src="./images/nokia.png" alt="Nokia Mobile Phones" class="w-full h-full object-cover group-hover:scale-105 transition duration-500 opacity-80">
+            <img src="https://images.unsplash.com/photo-1596558450255-7c0b7be9d56a?auto=format&fit=crop&w=700&q=80" alt="Nokia Mobile Phones" class="w-full h-full object-cover group-hover:scale-105 transition duration-500 opacity-80">
             <div class="absolute inset-0 bg-gradient-to-t from-museum-900 via-transparent to-transparent"></div>
             <span class="absolute bottom-3 left-3 text-[10px] uppercase font-bold tracking-wider px-2 py-1 rounded bg-black/70 backdrop-blur text-sky-400 border border-sky-400/30">Nokia 3310 & Friendster</span>
           </div>
@@ -144,7 +160,7 @@
       <article class="exhibit-card group bg-museum-900 rounded-2xl border border-slate-800 hover:border-museum-accent/50 transition overflow-hidden p-6 flex flex-col justify-between" data-category="cultural">
         <div>
           <div class="relative h-44 rounded-xl overflow-hidden mb-5 border border-slate-800 bg-slate-950">
-            <img src="./images/opm albums.png" alt="Audio & Stage Music" class="w-full h-full object-cover group-hover:scale-105 transition duration-500 opacity-80">
+            <img src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=700&q=80" alt="Audio & Stage Music" class="w-full h-full object-cover group-hover:scale-105 transition duration-500 opacity-80">
             <div class="absolute inset-0 bg-gradient-to-t from-museum-900 via-transparent to-transparent"></div>
             <span class="absolute bottom-3 left-3 text-[10px] uppercase font-bold tracking-wider px-2 py-1 rounded bg-black/70 backdrop-blur text-purple-400 border border-purple-400/30">OPM Rock & P-Pop</span>
           </div>
@@ -176,7 +192,7 @@
       <article class="exhibit-card group bg-museum-900 rounded-2xl border border-slate-800 hover:border-museum-accent/50 transition overflow-hidden p-6 flex flex-col justify-between" data-category="sports">
         <div>
           <div class="relative h-44 rounded-xl overflow-hidden mb-5 border border-slate-800 bg-slate-950">
-            <img src="./images/computer shop.png" alt="Esports Gaming Room" class="w-full h-full object-cover group-hover:scale-105 transition duration-500 opacity-80">
+            <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=700&q=80" alt="Esports Gaming Room" class="w-full h-full object-cover group-hover:scale-105 transition duration-500 opacity-80">
             <div class="absolute inset-0 bg-gradient-to-t from-museum-900 via-transparent to-transparent"></div>
             <span class="absolute bottom-3 left-3 text-[10px] uppercase font-bold tracking-wider px-2 py-1 rounded bg-black/70 backdrop-blur text-amber-400 border border-amber-400/30">Pacquiao & LAN Shops</span>
           </div>
@@ -208,7 +224,7 @@
       <article class="exhibit-card group bg-museum-900 rounded-2xl border border-slate-800 hover:border-museum-accent/50 transition overflow-hidden p-6 flex flex-col justify-between" data-category="political">
         <div>
           <div class="relative h-44 rounded-xl overflow-hidden mb-5 border border-slate-800 bg-slate-950">
-            <img src="./images/people power.png" alt="Civic Protests" class="w-full h-full object-cover group-hover:scale-105 transition duration-500 opacity-80">
+            <img src="https://images.unsplash.com/photo-1541872703-74c5e44368f9?auto=format&fit=crop&w=700&q=80" alt="Civic Protests" class="w-full h-full object-cover group-hover:scale-105 transition duration-500 opacity-80">
             <div class="absolute inset-0 bg-gradient-to-t from-museum-900 via-transparent to-transparent"></div>
             <span class="absolute bottom-3 left-3 text-[10px] uppercase font-bold tracking-wider px-2 py-1 rounded bg-black/70 backdrop-blur text-red-400 border border-red-400/30">EDSA II & Text Brigades</span>
           </div>
@@ -240,7 +256,7 @@
       <article class="exhibit-card group bg-museum-900 rounded-2xl border border-slate-800 hover:border-museum-accent/50 transition overflow-hidden p-6 flex flex-col justify-between" data-category="economic">
         <div>
           <div class="relative h-44 rounded-xl overflow-hidden mb-5 border border-slate-800 bg-slate-950">
-            <img src="./images/bpo.png" alt="Urban Business District" class="w-full h-full object-cover group-hover:scale-105 transition duration-500 opacity-80">
+            <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=700&q=80" alt="Urban Business District" class="w-full h-full object-cover group-hover:scale-105 transition duration-500 opacity-80">
             <div class="absolute inset-0 bg-gradient-to-t from-museum-900 via-transparent to-transparent"></div>
             <span class="absolute bottom-3 left-3 text-[10px] uppercase font-bold tracking-wider px-2 py-1 rounded bg-black/70 backdrop-blur text-emerald-400 border border-emerald-400/30">BPO Nightshifts & Piracy</span>
           </div>
@@ -272,7 +288,7 @@
       <article class="exhibit-card group bg-museum-900 rounded-2xl border border-slate-800 hover:border-museum-accent/50 transition overflow-hidden p-6 flex flex-col justify-between" data-category="environmental">
         <div>
           <div class="relative h-44 rounded-xl overflow-hidden mb-5 border border-slate-800 bg-slate-950">
-            <img src="./images/ondoy.png" alt="Storm & Heavy Rain" class="w-full h-full object-cover group-hover:scale-105 transition duration-500 opacity-80">
+            <img src="https://images.unsplash.com/photo-1547683905-f686c993aae5?auto=format&fit=crop&w=700&q=80" alt="Storm & Heavy Rain" class="w-full h-full object-cover group-hover:scale-105 transition duration-500 opacity-80">
             <div class="absolute inset-0 bg-gradient-to-t from-museum-900 via-transparent to-transparent"></div>
             <span class="absolute bottom-3 left-3 text-[10px] uppercase font-bold tracking-wider px-2 py-1 rounded bg-black/70 backdrop-blur text-teal-400 border border-teal-400/30">Typhoon Ondoy (2009)</span>
           </div>
@@ -302,8 +318,33 @@
 
     </div>
 
+    <!-- THEN vs NOW: Before / After Slider -->
+    <section id="then-now" class="scroll-mt-24 mt-14 max-w-4xl mx-auto">
+      <div class="text-center max-w-lg mx-auto mb-6">
+        <span class="font-retro text-museum-accent text-xl">INTERACTIVE COMPARISON</span>
+        <h3 class="text-2xl font-bold text-white mt-1">Then vs. Now</h3>
+        <p class="text-xs text-slate-400 mt-2">Drag the handle (or use the arrow keys) to compare 2000–2010 with today.</p>
+      </div>
+
+      <div id="ba-tabs" class="flex flex-wrap justify-center gap-2 mb-4"></div>
+
+      <div id="ba-slider" class="ba-slider" role="slider" tabindex="0"
+           aria-label="Before and after comparison" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
+        <div class="ba-layer ba-after" id="ba-after"></div>
+        <div class="ba-layer ba-before" id="ba-before"></div>
+        <span class="ba-label ba-label-before">2000–2010</span>
+        <span class="ba-label ba-label-after">Present</span>
+        <div class="ba-handle" aria-hidden="true"><span>⇆</span></div>
+      </div>
+
+      <div class="mt-4 text-center max-w-xl mx-auto">
+        <h4 id="ba-title" class="font-bold text-white"></h4>
+        <p id="ba-caption" class="text-xs text-slate-400 mt-1 leading-relaxed"></p>
+      </div>
+    </section>
+
     <!-- Nokia Keypad Simulator -->
-    <section class="mt-14 bg-gradient-to-br from-museum-900 to-slate-950 border border-slate-800 rounded-3xl p-6 sm:p-10 max-w-4xl mx-auto shadow-2xl">
+    <section id="sms" class="scroll-mt-24 mt-14 bg-gradient-to-br from-museum-900 to-slate-950 border border-slate-800 rounded-3xl p-6 sm:p-10 max-w-4xl mx-auto shadow-2xl">
       <div class="text-center max-w-lg mx-auto mb-6">
         <span class="font-retro text-museum-accent text-xl">INTERACTIVE VIRTUAL RELIC</span>
         <h3 class="text-2xl font-bold text-white mt-1">2000s SMS Keypad Simulator</h3>
@@ -323,46 +364,37 @@
       </div>
     </section>
 
+  <!-- MEET THE CURATORS -->
+    <section id="curators" class="scroll-mt-24 mt-16 max-w-5xl mx-auto">
+      <div class="text-center max-w-lg mx-auto mb-6">
+        <span class="font-retro text-museum-accent text-xl">GROUP 3</span>
+        <h3 class="text-2xl font-bold text-white mt-1">Meet the Curators</h3>
+        <p class="text-xs text-slate-400 mt-2">Open each curator's circa-2005 Friendster profile.</p>
+      </div>
+      <div id="curator-grid" class="grid grid-cols-1 sm:grid-cols-3 gap-4"></div>
+    </section>
+
   </main>
 
-  <!-- POPUP: Friendster Modal -->
-  <div id="friendster-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-[#245b91] border-4 border-[#12365c] rounded-lg max-w-xl w-full p-4 text-slate-900 shadow-2xl font-sans text-xs">
+  <!-- POPUP: Friendster Modal (content rendered from js/data.js) -->
+  <div id="friendster-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden"
+       onclick="if (event.target === this) closeFriendsterModal()" role="dialog" aria-modal="true" aria-label="Friendster profiles">
+    <div class="fs-window">
       <div class="flex items-center justify-between pb-3 mb-3 border-b border-blue-400/50 text-white">
         <div class="flex items-center space-x-2">
           <span class="text-xl font-black tracking-tighter text-amber-300">friendster.</span>
           <span class="text-[10px] bg-blue-800 px-2 py-0.5 rounded">Circa 2005</span>
         </div>
-        <button onclick="closeFriendsterModal()" class="text-white hover:text-amber-300 text-lg font-bold">✕</button>
+        <button onclick="closeFriendsterModal()" class="text-white hover:text-amber-300 text-lg font-bold" aria-label="Close">✕</button>
       </div>
 
-      <div class="bg-white rounded p-4 text-slate-800 space-y-4 max-h-[70vh] overflow-y-auto">
-        <div class="flex flex-col sm:flex-row gap-4 items-center sm:items-start">
-          <div class="w-28 h-28 bg-slate-200 border-2 border-slate-400 rounded flex items-center justify-center overflow-hidden">
-            <img src="./images/Keep Calm.jpg" alt="Avatar" class="w-full h-full object-cover">
-          </div>
-          <div>
-            <h4 class="font-bold text-base text-blue-900">★彡 [BeA_Coups_2002] 彡★</h4>
-            <p class="text-[11px] text-slate-500 italic mb-2">"KEEP CALM AND PLAY HARD"</p>
-            <div class="text-[11px] space-y-0.5 text-slate-600">
-              <p><strong>Status:</strong> Single (Not looking for anything)</p>
-              <p><strong>Member Since:</strong> November 2002</p>
-              <p><strong>Hometown:</strong> Quezon City, Philippines</p>
-            </div>
-          </div>
-        </div>
+      <div id="fs-tabs" class="flex gap-1 mb-2 overflow-x-auto"></div>
+      <div id="fs-body" class="bg-white rounded p-4 text-slate-800 space-y-4 max-h-[60vh] overflow-y-auto"></div>
 
-        <div class="border border-blue-200 rounded p-3 bg-blue-50/50">
-          <h5 class="font-bold text-blue-900 mb-2 border-b border-blue-200 pb-1">Testimonials (2)</h5>
-          <div class="space-y-2">
-            <div class="bg-white p-2 rounded border border-blue-100 text-[11px]">
-              <span class="font-semibold text-blue-800">ingridientZz1230__:</span> "Hey bestie!! Tnx sa pag-accept! Ganda ng profile song mo ah, Sponge Cola ba yan? Kita tau sa mall later, text mko! <3"
-            </div>
-            <div class="bg-white p-2 rounded border border-blue-100 text-[11px]">
-              <span class="font-semibold text-blue-800">BEnzzzz:</span> "Pre tara mamaya sa cybercafe, pustahan tayo sa DotA 1! Ganda ng CSS glitter background mo ha haha!"
-            </div>
-          </div>
-        </div>
+      <div class="flex items-center justify-between mt-3 text-white text-[11px]">
+        <button onclick="prevProfile()" class="fs-nav-btn">◀ Prev</button>
+        <span id="fs-counter" class="font-semibold"></span>
+        <button onclick="nextProfile()" class="fs-nav-btn">Next ▶</button>
       </div>
     </div>
   </div>
@@ -404,10 +436,10 @@
       <div class="bg-black/90 p-2 rounded-lg border border-slate-800 text-xs mb-2 font-mono">
         <div class="flex justify-between text-[10px] text-slate-400 mb-0.5">
           <span>CHANNEL</span>
-          <span id="station-badge" class="text-rose-400 font-bold">YOUTUBE PLAYLIST</span>
+          <span id="station-badge" class="text-rose-400 font-bold">STATION 1</span>
         </div>
         <p id="playlist-title" class="font-bold text-sky-400 truncate text-[11px]">
-          🎸 2000s OPM HIT SONGS
+          🎸 2000s Pinoy Rock & Band Mania
         </p>
       </div>
 
@@ -426,10 +458,10 @@
 
       <div class="grid grid-cols-2 gap-1.5 text-[10px]">
         <button onclick="switchStation(1)" id="btn-station-1" class="py-1 px-1.5 rounded-lg bg-slate-800 text-white font-semibold border border-slate-600 transition text-center truncate">
-          🎸 Station 1: INTERNATIONAL
+          🎸 Station 1: Rock
         </button>
         <button onclick="switchStation(2)" id="btn-station-2" class="py-1 px-1.5 rounded-lg bg-slate-900 text-slate-400 font-semibold border border-slate-800 hover:bg-slate-800 transition text-center truncate">
-          📼 Station 2: OPM
+          📼 Station 2: Pop/Y2K
         </button>
       </div>
     </aside>
