@@ -9,11 +9,11 @@ const smsData = {
 // YouTube Music Stations for Winamp Player
 const museumStations = {
   1: {
-    title: "🎸 2000s Pinoy Rock & Band Mania",
+    title: "📼 2000s Pop, Dance & Nostalgia Hits",
     embedUrl: "https://www.youtube.com/embed/videoseries?list=RDCLAK5uy_k6FEgr-_4EVPoITSfmGGCMt1M6WtLBLbU"
   },
   2: {
-    title: "📼 2000s Pop, Dance & Nostalgia Hits",
+    title: "🎸 2000s Pinoy Rock & Band Mania",
     embedUrl: "https://www.youtube.com/embed/videoseries?list=RDCLAK5uy_l70bSMa3aOX5oPp8j7Of_22VHbSDRGyYE"
   }
 };
