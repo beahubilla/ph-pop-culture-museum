@@ -1,10 +1,9 @@
-```
 // Exhibition Wing Filtering
 function switchWing(category) {
   const cards = document.querySelectorAll('.exhibit-card');
   const tabs = document.querySelectorAll('.tab-btn');
-  
-  tabs.forEach(tab =>; {
+
+  tabs.forEach(tab => {
     if (tab.getAttribute('data-wing') === category) {
       tab.classList.add('bg-museum-accent', 'text-black');
       tab.classList.remove('bg-slate-800', 'text-slate-300');
@@ -14,7 +13,7 @@ function switchWing(category) {
     }
   });
 
-  cards.forEach(card =>; {
+  cards.forEach(card => {
     if (category === 'all' || card.getAttribute('data-category') === category) {
       card.classList.remove('hidden');
     } else {
@@ -33,26 +32,26 @@ function toggleEraView(mode) {
     now: document.getElementById('view-now-btn')
   };
 
-  Object.keys(btns).forEach(key =>; {
+  Object.keys(btns).forEach(key => {
     btns[key].className = 'px-3 py-1 rounded-lg text-slate-400 hover:text-white';
   });
   btns[mode].className = 'px-3 py-1 rounded-lg bg-slate-800 text-white font-semibold';
 
   if (mode === 'split') {
-    pastBlocks.forEach(el =>; el.classList.remove('hidden'));
-    presentBlocks.forEach(el =>; el.classList.remove('hidden'));
+    pastBlocks.forEach(el => el.classList.remove('hidden'));
+    presentBlocks.forEach(el => el.classList.remove('hidden'));
   } else if (mode === '2000') {
-    pastBlocks.forEach(el =>; el.classList.remove('hidden'));
-    presentBlocks.forEach(el =>; el.classList.add('hidden'));
+    pastBlocks.forEach(el => el.classList.remove('hidden'));
+    presentBlocks.forEach(el => el.classList.add('hidden'));
   } else if (mode === 'now') {
-    pastBlocks.forEach(el =>; el.classList.add('hidden'));
-    presentBlocks.forEach(el =>; el.classList.remove('hidden'));
+    pastBlocks.forEach(el => el.classList.add('hidden'));
+    presentBlocks.forEach(el => el.classList.remove('hidden'));
   }
 }
 
 // Nokia SMS Screen Display
 function changeSms(key) {
-  if (typeof smsData !== 'undefined' &;&; smsData[key]) {
+  if (typeof smsData !== 'undefined' && smsData[key]) {
     document.getElementById('nokia-screen').innerText = smsData[key];
   }
 }
@@ -70,7 +69,7 @@ function closeFriendsterModal() {
 function togglePlayerPopup() {
   const pill = document.getElementById('player-pill');
   const popup = document.getElementById('player-popup');
-  
+
   if (popup.classList.contains('hidden')) {
     popup.classList.remove('hidden');
     pill.classList.add('hidden');
@@ -103,5 +102,3 @@ function switchStation(stationNum) {
     btn1.className = 'py-1 px-1.5 rounded-lg bg-slate-900 text-slate-400 font-semibold border border-slate-800 hover:bg-slate-800 transition text-center truncate';
   }
 }
-
-```
