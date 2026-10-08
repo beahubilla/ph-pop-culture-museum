@@ -35,7 +35,6 @@
     }
   </script>
   <style>
-    /* Animated Equalizer Bar */
     @keyframes bounce {
       0%, 100% { height: 4px; }
       50% { height: 18px; }
@@ -46,7 +45,7 @@
     .eq-bar-4 { animation: bounce 0.6s ease-in-out infinite 0.1s; }
   </style>
 </head>
-<body class="bg-museum-950 text-slate-100 font-sans min-h-screen selection:bg-museum-accent selection:text-black pb-28">
+<body class="bg-museum-950 text-slate-100 font-sans min-h-screen selection:bg-museum-accent selection:text-black pb-32">
 
   <!-- Museum Top Navigation Bar -->
   <header class="border-b border-slate-800 bg-museum-900/95 backdrop-blur sticky top-0 z-40">
@@ -158,7 +157,7 @@
 
           <div class="flex items-center justify-between mb-2">
             <span class="text-xs font-semibold text-purple-400">Cultural Domain</span>
-            <span class="text-xs font-retro text-slate-500 text-base">MP3 CDS & FANTASEYES</span>
+            <span class="text-xs font-retro text-slate-500 text-base">MP3 CDS & FANTASERYES</span>
           </div>
           <h4 class="text-lg font-bold text-white mb-2">OPM Band Craze to Global P-Pop</h4>
           <p class="text-xs text-slate-400 mb-5 leading-relaxed">From burned MP3 CDs and SexBomb dance crazes to global streaming and fandoms.</p>
@@ -345,7 +344,6 @@
   <!-- POPUP MODAL: Interactive Friendster Profile -->
   <div id="friendster-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-[#245b91] border-4 border-[#12365c] rounded-lg max-w-xl w-full p-4 text-slate-900 shadow-2xl font-sans text-xs">
-      <!-- Friendster Header -->
       <div class="flex items-center justify-between pb-3 mb-3 border-b border-blue-400/50 text-white">
         <div class="flex items-center space-x-2">
           <span class="text-xl font-black tracking-tighter text-amber-300">friendster.</span>
@@ -354,7 +352,6 @@
         <button onclick="closeFriendsterModal()" class="text-white hover:text-amber-300 text-lg font-bold">✕</button>
       </div>
 
-      <!-- Friendster Body -->
       <div class="bg-white rounded p-4 text-slate-800 space-y-4 max-h-[70vh] overflow-y-auto">
         <div class="flex flex-col sm:flex-row gap-4 items-center sm:items-start">
           <div class="w-28 h-28 bg-slate-200 border-2 border-slate-400 rounded flex items-center justify-center overflow-hidden">
@@ -371,9 +368,8 @@
           </div>
         </div>
 
-        <!-- Testimonials Box -->
         <div class="border border-blue-200 rounded p-3 bg-blue-50/50">
-          <h5 class="font-bold text-blue-900 mb-2 border-b border-blue-200 pb-1">Testimonials (3)</h5>
+          <h5 class="font-bold text-blue-900 mb-2 border-b border-blue-200 pb-1">Testimonials (2)</h5>
           <div class="space-y-2">
             <div class="bg-white p-2 rounded border border-blue-100 text-[11px]">
               <span class="font-semibold text-blue-800">Krissy:</span> "Hey bestie!! Tnx sa pag-accept! Ganda ng profile song mo ah, Sponge Cola ba yan? Kita tau sa mall later, text mko! &lt;3"
@@ -387,11 +383,12 @@
     </div>
   </div>
 
-  <!-- FIXED FLOATING AUDIO / MUSIC PLAYER WIDGET -->
-  <aside class="fixed bottom-4 right-4 z-40 bg-slate-900/95 border border-slate-700/80 rounded-2xl p-3.5 shadow-2xl backdrop-blur max-w-sm w-[90vw] sm:w-80">
-    <div class="flex items-center justify-between mb-2">
+  <!-- FLOATING Y2K WINAMP MUSIC PLAYER WIDGET (YOUTUBE MUSIC POWERED) -->
+  <aside class="fixed bottom-4 right-4 z-40 bg-slate-900/95 border-2 border-slate-700 rounded-2xl p-4 shadow-2xl backdrop-blur max-w-sm w-[92vw] sm:w-88 text-xs font-sans">
+    
+    <div class="flex items-center justify-between mb-3 border-b border-slate-800 pb-2">
       <div class="flex items-center space-x-2">
-        <span class="text-xs bg-rose-500/20 text-rose-400 font-pixel px-2 py-0.5 rounded text-[10px]">WINAMP 2000s</span>
+        <span class="text-[10px] bg-rose-500/20 text-rose-400 font-pixel px-2 py-0.5 rounded border border-rose-500/30">WINAMP v2.91</span>
         <div class="flex items-end gap-0.5 h-4 w-6 px-1" id="eq-container">
           <div class="w-1 bg-rose-400 rounded-full eq-bar-1"></div>
           <div class="w-1 bg-amber-400 rounded-full eq-bar-2"></div>
@@ -399,22 +396,40 @@
           <div class="w-1 bg-emerald-400 rounded-full eq-bar-4"></div>
         </div>
       </div>
-      <button onclick="toggleMusicPlayback()" id="play-pause-btn" class="px-2.5 py-1 rounded bg-museum-accent text-black text-xs font-bold hover:bg-sky-300 transition">
-        ▶ Play
-      </button>
+      <span class="text-[10px] text-slate-400 font-mono">128 kbps • STEREO</span>
     </div>
 
-    <!-- Currently Playing Info -->
-    <div class="bg-slate-950 p-2 rounded-lg border border-slate-800 text-xs mb-2">
-      <p class="text-slate-400 text-[10px]">NOW PLAYING:</p>
-      <p id="track-title" class="font-bold text-white truncate">Kamikazee - Narda (2006)</p>
+    <div class="bg-black/90 p-2.5 rounded-lg border border-slate-800 text-xs mb-3 font-mono">
+      <div class="flex justify-between text-[10px] text-slate-400 mb-1">
+        <span>CURATED SOUNDTRACK</span>
+        <span id="station-badge" class="text-rose-400 font-bold">STATION 1</span>
+      </div>
+      <p id="playlist-title" class="font-bold text-sky-400 truncate text-[13px]">
+        🇵🇭 2000s Pinoy Rock & Band Mania
+      </p>
+      <p id="playlist-desc" class="text-[10px] text-slate-400 truncate mt-0.5">
+        Parokya, Kamikazee, Sponge Cola, Rivermaya
+      </p>
     </div>
 
-    <!-- Track Selector -->
-    <div class="flex items-center justify-between text-[11px] text-slate-400">
-      <button onclick="prevTrack()" class="hover:text-white px-1">⏮ Prev</button>
-      <span id="track-index" class="text-slate-500 text-[10px]">Track 1 of 4</span>
-      <button onclick="nextTrack()" class="hover:text-white px-1">Next ⏭</button>
+    <div class="space-y-2">
+      <div class="grid grid-cols-2 gap-1.5 text-[11px]">
+        <button onclick="selectStation(1)" id="station-1-btn" class="p-1.5 rounded-lg bg-slate-800 text-white font-semibold border border-slate-700 transition text-center">
+          🎸 Station 1: Rock
+        </button>
+        <button onclick="selectStation(2)" id="station-2-btn" class="p-1.5 rounded-lg bg-slate-900 text-slate-400 font-semibold border border-slate-800 transition text-center">
+          ✨ Station 2: Pop/Y2K
+        </button>
+      </div>
+
+      <a id="yt-music-link" 
+         href="https://music.youtube.com/playlist?list=RDCLAK5uy_k6FEgr-_4EVPoITSfmGGCMt1M6WtLBLbU&playnext=1&si=lhLSn0tAm3vgOua5" 
+         target="_blank" 
+         rel="noopener noreferrer" 
+         class="w-full py-2 px-3 rounded-lg bg-rose-600 hover:bg-rose-500 text-white font-bold flex items-center justify-center gap-2 shadow-lg shadow-rose-900/30 transition text-center">
+        <span>▶ Open in YouTube Music</span>
+        <span class="text-[10px] opacity-80">↗</span>
+      </a>
     </div>
   </aside>
 
@@ -424,9 +439,8 @@
     <p>Group 3 Curators: Ysha Rose Beatrice Hubilla, Benz Buluran, Ingrid Mary Sacramento • MMDC Digital Museum</p>
   </footer>
 
-  <!-- Interactive Museum Logic -->
+  <!-- Scripts -->
   <script>
-    // Tab filtering
     function switchWing(category) {
       const cards = document.querySelectorAll('.exhibit-card');
       const tabs = document.querySelectorAll('.tab-btn');
@@ -450,7 +464,6 @@
       });
     }
 
-    // Era View toggling (Side by side / 2000s only / Present only)
     function toggleEraView(mode) {
       const pastBlocks = document.querySelectorAll('.era-2000');
       const presentBlocks = document.querySelectorAll('.era-now');
@@ -477,7 +490,6 @@
       }
     }
 
-    // Nokia SMS Messages
     const smsData = {
       txt_clan: '"Eow poh! Sali kau s clan nmin? Txt CLAN ON 2 2366! Gud am sa lhat!"',
       edsa2: '"Go 2 EDSA! Wear blk. Pls pass 2 all. Overthrow corruption now!"',
@@ -489,7 +501,6 @@
       document.getElementById('nokia-screen').innerText = smsData[key];
     }
 
-    // Friendster Modal
     function openFriendsterModal() {
       document.getElementById('friendster-modal').classList.remove('hidden');
     }
@@ -497,74 +508,33 @@
       document.getElementById('friendster-modal').classList.add('hidden');
     }
 
-    // Music Player / Playlist Logic
-    const playlist = [
-      "Kamikazee - Narda (2006)",
-      "SexBomb Girls - The Spageti Song (2003)",
-      "Parokya ni Edgar - Harana & Halaga",
-      "Sponge Cola - Jeepney (2004)"
-    ];
-    let currentTrackIdx = 0;
-    let isPlaying = false;
-    let audioCtx = null;
-    let osc = null;
+    // YouTube Music Playlist Switcher Logic
+    const ytPlaylists = {
+      1: {
+        title: "🇵🇭 2000s Pinoy Rock & Band Mania",
+        desc: "Parokya, Kamikazee, Sponge Cola, Rivermaya",
+        url: "https://music.youtube.com/playlist?list=RDCLAK5uy_k6FEgr-_4EVPoITSfmGGCMt1M6WtLBLbU&playnext=1&si=lhLSn0tAm3vgOua5"
+      },
+      2: {
+        title: "📼 2000s Pop, Dance & Nostalgia Hits",
+        desc: "SexBomb Girls, Teleserye OSTs, Y2K Classics",
+        url: "https://music.youtube.com/playlist?list=RDCLAK5uy_l70bSMa3aOX5oPp8j7Of_22VHbSDRGyYE&playnext=1&si=D31KQ26zD_uPdZZP"
+      }
+    };
 
-    function updateTrackDisplay() {
-      document.getElementById('track-title').innerText = playlist[currentTrackIdx];
-      document.getElementById('track-index').innerText = `Track ${currentTrackIdx + 1} of ${playlist.length}`;
-    }
+    function selectStation(num) {
+      const data = ytPlaylists[num];
+      document.getElementById('playlist-title').innerText = data.title;
+      document.getElementById('playlist-desc').innerText = data.desc;
+      document.getElementById('station-badge').innerText = `STATION ${num}`;
+      document.getElementById('yt-music-link').href = data.url;
 
-    function nextTrack() {
-      currentTrackIdx = (currentTrackIdx + 1) % playlist.length;
-      updateTrackDisplay();
-    }
-
-    function prevTrack() {
-      currentTrackIdx = (currentTrackIdx - 1 + playlist.length) % playlist.length;
-      updateTrackDisplay();
-    }
-
-    // Ambient Retro Audio Synthesizer (Works without external mp3 dependencies)
-    function toggleMusicPlayback() {
-      const btn = document.getElementById('play-pause-btn');
-      const eq = document.getElementById('eq-container');
-
-      if (!isPlaying) {
-        isPlaying = true;
-        btn.innerText = '❚❚ Pause';
-        eq.style.opacity = '1';
-        startRetroSynthesizer();
+      if (num === 1) {
+        document.getElementById('station-1-btn').className = 'p-1.5 rounded-lg bg-slate-800 text-white font-semibold border border-slate-700 transition text-center';
+        document.getElementById('station-2-btn').className = 'p-1.5 rounded-lg bg-slate-900 text-slate-400 font-semibold border border-slate-800 transition text-center';
       } else {
-        isPlaying = false;
-        btn.innerText = '▶ Play';
-        eq.style.opacity = '0.3';
-        stopRetroSynthesizer();
-      }
-    }
-
-    function startRetroSynthesizer() {
-      try {
-        const AudioContext = window.AudioContext || window.webkitAudioContext;
-        audioCtx = new AudioContext();
-        osc = audioCtx.createOscillator();
-        const gainNode = audioCtx.createGain();
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(220, audioCtx.currentTime); // Gentle A3 ambient tone
-        gainNode.gain.setValueAtTime(0.04, audioCtx.currentTime);
-        osc.connect(gainNode);
-        gainNode.connect(audioCtx.destination);
-        osc.start();
-      } catch (e) {
-        console.log("AudioContext initiated");
-      }
-    }
-
-    function stopRetroSynthesizer() {
-      if (osc) {
-        try { osc.stop(); } catch(e){}
-      }
-      if (audioCtx) {
-        audioCtx.close();
+        document.getElementById('station-2-btn').className = 'p-1.5 rounded-lg bg-slate-800 text-white font-semibold border border-slate-700 transition text-center';
+        document.getElementById('station-1-btn').className = 'p-1.5 rounded-lg bg-slate-900 text-slate-400 font-semibold border border-slate-800 transition text-center';
       }
     }
   </script>
