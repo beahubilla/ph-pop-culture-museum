@@ -53,7 +53,7 @@ const exhibits = [
     domain: "Social Domain", badge: "Nokia 3310 & Friendster", tag: "SMS CLANS & OFWS",
     title: "The Texting Capital to 5G Feeds",
     blurb: "Evolution from 160-character SMS clans and early OFW video calls to instant global feeds.",
-    image: "./images/phones.png",
+    image: "./images/nokia.png",
     alt: "Nokia Mobile Phones",
     then: "Nokia 3310 keypad texting, SMS clans, Friendster testimonials, and Yahoo Messenger video calls for OFW families.",
     now: "5G mobile smartphones, TikTok algorithms, Instagram Reels, Messenger, and live-streaming online communities.",
@@ -202,7 +202,7 @@ const exhibits = [
 const friendsterProfiles = [
   {
     name: "Ysha Rose Beatrice Hubilla",
-    short: "Bea", initials: "YH",
+    short: "Bea", initials: "BH",
     handle: "★彡 BeA_Coups_2002 彡★",
     avatar: "./images/Keep Calm.jpg",
     quote: "KEEP CALM AND PLAY HARD",
@@ -220,7 +220,7 @@ const friendsterProfiles = [
     name: "Benz Buluran",
     short: "Benz", initials: "BB",
     handle: " BEnzzzz ",
-    avatar: "",
+    avatar: "./images/deku.jpg",
     quote: "gg ez.. 1 more game",
     status: "In a Relationship (with DotA 1)",
     memberSince: "June 2005",
