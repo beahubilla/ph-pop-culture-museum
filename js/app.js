@@ -1,6 +1,9 @@
 // ------------------------------------------------------------
-// Small helper: escape text before putting it into HTML
+// Helpers
 // ------------------------------------------------------------
+const $ = id => document.getElementById(id);
+
+// Escape text before putting it into HTML
 function esc(value) {
   return String(value)
     .replace(/&/g, '&amp;')
@@ -9,71 +12,218 @@ function esc(value) {
     .replace(/"/g, '&quot;');
 }
 
+// ------------------------------------------------------------
+// GALLERY (cards are generated from `exhibits` in data.js)
+// ------------------------------------------------------------
+function renderWingTabs() {
+  const wrap = $('wing-tabs');
+  if (!wrap) return;
+  wrap.innerHTML =
+    `<button type="button" class="chip-btn tab-btn active" data-wing="all" onclick="switchWing('all')">All Wings</button>` +
+    exhibits.map(ex =>
+      `<button type="button" class="chip-btn tab-btn" data-wing="${esc(ex.id)}" onclick="switchWing('${esc(ex.id)}')">${esc(ex.icon)} ${esc(ex.wing)}</button>`
+    ).join('');
+}
+
+function renderGallery() {
+  const grid = $('gallery-grid');
+  if (!grid) return;
+  grid.innerHTML = exhibits.map((ex, i) => `
+    <article class="exhibit-card reveal" tabindex="0" role="button" data-category="${esc(ex.id)}" data-index="${i}"
+             style="--c:${esc(ex.color)}" aria-label="Enter the ${esc(ex.wing)} room: ${esc(ex.title)}">
+      <div>
+        <div class="card-media">
+          <span class="card-emoji" aria-hidden="true">${esc(ex.icon)}</span>
+          <img src="${esc(ex.image)}" alt="${esc(ex.badge)}" loading="lazy" onerror="this.remove()">
+          <span class="card-badge">${esc(ex.badge)}</span>
+        </div>
+        <div class="card-body">
+          <div class="flex items-center justify-between gap-2">
+            <span class="domain">${esc(ex.domain)}</span>
+            <span class="retro-tag">${esc(ex.tag)}</span>
+          </div>
+          <h4>${esc(ex.title)}</h4>
+          <p class="blurb">${esc(ex.blurb)}</p>
+          <div class="era-2000 era-block era-then"><span class="era-label">2000–2010 Decade</span>${esc(ex.then)}</div>
+          <div class="era-now era-block era-present"><span class="era-label">Present Time</span>${esc(ex.now)}</div>
+        </div>
+      </div>
+      <div class="card-foot">
+        <span>Impact: <em>${esc(ex.impact)}</em></span>
+        <span class="enter">Enter room →</span>
+      </div>
+    </article>`).join('');
+
+  // Click / keyboard on a card opens its room
+  grid.addEventListener('click', e => {
+    const card = e.target.closest('.exhibit-card');
+    if (card) openRoom(Number(card.dataset.index));
+  });
+  grid.addEventListener('keydown', e => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    const card = e.target.closest('.exhibit-card');
+    if (card) { e.preventDefault(); openRoom(Number(card.dataset.index)); }
+  });
+
+  // Fade cards in as they scroll into view
+  const cards = grid.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(en => { if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); } });
+    }, { threshold: 0.1 });
+    cards.forEach(c => io.observe(c));
+  } else {
+    cards.forEach(c => c.classList.add('in'));
+  }
+}
+
 // Exhibition Wing Filtering
 function switchWing(category) {
-  const cards = document.querySelectorAll('.exhibit-card');
-  const tabs = document.querySelectorAll('.tab-btn');
-
-  tabs.forEach(tab => {
-    if (tab.getAttribute('data-wing') === category) {
-      tab.classList.add('bg-museum-accent', 'text-black');
-      tab.classList.remove('bg-slate-800', 'text-slate-300');
-    } else {
-      tab.classList.remove('bg-museum-accent', 'text-black');
-      tab.classList.add('bg-slate-800', 'text-slate-300');
-    }
-  });
-
-  cards.forEach(card => {
-    if (category === 'all' || card.getAttribute('data-category') === category) {
-      card.classList.remove('hidden');
-    } else {
-      card.classList.add('hidden');
-    }
-  });
+  document.querySelectorAll('.tab-btn').forEach(tab =>
+    tab.classList.toggle('active', tab.getAttribute('data-wing') === category)
+  );
+  document.querySelectorAll('.exhibit-card').forEach(card =>
+    card.classList.toggle('hidden', !(category === 'all' || card.getAttribute('data-category') === category))
+  );
 }
 
 // Display Mode: Side-by-Side vs 2000s vs Present
 function toggleEraView(mode) {
-  const pastBlocks = document.querySelectorAll('.era-2000');
-  const presentBlocks = document.querySelectorAll('.era-now');
-  const btns = {
-    split: document.getElementById('view-split-btn'),
-    '2000': document.getElementById('view-2000-btn'),
-    now: document.getElementById('view-now-btn')
-  };
+  const past = document.querySelectorAll('.exhibit-card .era-2000');
+  const present = document.querySelectorAll('.exhibit-card .era-now');
+  const btns = { split: $('view-split-btn'), '2000': $('view-2000-btn'), now: $('view-now-btn') };
 
-  Object.keys(btns).forEach(key => {
-    btns[key].className = 'px-3 py-1 rounded-lg text-slate-400 hover:text-white';
-  });
-  btns[mode].className = 'px-3 py-1 rounded-lg bg-slate-800 text-white font-semibold';
-
-  if (mode === 'split') {
-    pastBlocks.forEach(el => el.classList.remove('hidden'));
-    presentBlocks.forEach(el => el.classList.remove('hidden'));
-  } else if (mode === '2000') {
-    pastBlocks.forEach(el => el.classList.remove('hidden'));
-    presentBlocks.forEach(el => el.classList.add('hidden'));
-  } else if (mode === 'now') {
-    pastBlocks.forEach(el => el.classList.add('hidden'));
-    presentBlocks.forEach(el => el.classList.remove('hidden'));
-  }
-}
-
-// Nokia SMS Screen Display
-function changeSms(key) {
-  if (typeof smsData !== 'undefined' && smsData[key]) {
-    document.getElementById('nokia-screen').innerText = smsData[key];
-  }
+  Object.keys(btns).forEach(key => btns[key].classList.toggle('active', key === mode));
+  past.forEach(el => el.classList.toggle('hidden', mode === 'now'));
+  present.forEach(el => el.classList.toggle('hidden', mode === '2000'));
 }
 
 // ------------------------------------------------------------
-// FRIENDSTER PROFILES (multi-profile modal with navigation)
+// DETAIL ROOMS
+// ------------------------------------------------------------
+let currentRoom = 0;
+
+function roomIsOpen() {
+  const m = $('room-modal');
+  return m && !m.classList.contains('hidden');
+}
+
+function renderRoom(index) {
+  const total = exhibits.length;
+  currentRoom = (index + total) % total;
+  const ex = exhibits[currentRoom];
+
+  $('room-panel').style.setProperty('--c', ex.color);
+
+  const curator = (typeof ex.curator === 'number' && friendsterProfiles[ex.curator]) ? friendsterProfiles[ex.curator] : null;
+
+  const content = $('room-content');
+  content.innerHTML = `
+    <div class="room-hero">
+      <span class="room-hero-emoji" aria-hidden="true">${esc(ex.icon)}</span>
+      <img src="${esc(ex.image)}" alt="${esc(ex.badge)}" onerror="this.remove()">
+      <div class="room-hero-shade"></div>
+      <div class="room-hero-text">
+        <span class="room-domain">${esc(ex.domain)}</span>
+        <h2>${esc(ex.title)}</h2>
+        <p>${esc(ex.blurb)}</p>
+      </div>
+    </div>
+    <div class="room-body">
+      <p class="room-intro">${esc(ex.intro)}</p>
+
+      <div class="grid sm:grid-cols-2 gap-3">
+        <div class="era-block era-then" style="margin:0"><span class="era-label">2000–2010 Decade</span>${esc(ex.then)}</div>
+        <div class="era-block era-present" style="margin:0"><span class="era-label">Present Time</span>${esc(ex.now)}</div>
+      </div>
+
+      <h3 class="room-h">💡 Did you know?</h3>
+      <ul class="fact-list">${ex.facts.map(f => `<li>${esc(f)}</li>`).join('')}</ul>
+
+      <h3 class="room-h">🗂️ Artifacts in this room</h3>
+      <div class="artifact-grid">
+        ${ex.artifacts.map(a => `
+          <div class="artifact">
+            <span class="artifact-emoji">${esc(a.emoji)}</span>
+            <div><b>${esc(a.name)}</b><p>${esc(a.note)}</p></div>
+          </div>`).join('')}
+      </div>
+
+      <div class="impact-box">⭐ Impact: ${esc(ex.impact)}</div>
+
+      ${curator ? `
+        <div class="mt-5 text-center">
+          <button type="button" class="btn btn-yellow" onclick="visitCurator(${ex.curator})">✨ Meet the curator: ${esc(curator.short)}</button>
+        </div>` : ''}
+    </div>`;
+  content.scrollTop = 0;
+  content.classList.remove('swap'); void content.offsetWidth; content.classList.add('swap');
+
+  $('room-dots').innerHTML = exhibits.map((e, i) =>
+    `<button type="button" class="room-dot ${i === currentRoom ? 'active' : ''}" onclick="renderRoom(${i})" title="${esc(e.wing)}" aria-label="Go to ${esc(e.wing)} room">${esc(e.icon)}</button>`
+  ).join('');
+  $('room-prev-label').textContent = exhibits[(currentRoom - 1 + total) % total].wing;
+  $('room-next-label').textContent = exhibits[(currentRoom + 1) % total].wing;
+  $('room-count').textContent = `Room ${currentRoom + 1} of ${total} • ${ex.wing}`;
+
+  // Shareable link, e.g. .../#room-sports
+  try { history.replaceState(null, '', '#room-' + ex.id); } catch (e) { /* ignore */ }
+}
+
+function openRoom(index) {
+  renderRoom(typeof index === 'number' ? index : 0);
+  $('room-modal').classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeRoom() {
+  $('room-modal').classList.add('hidden');
+  document.body.style.overflow = '';
+  try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { /* ignore */ }
+}
+
+function nextRoom() { renderRoom(currentRoom + 1); }
+function prevRoom() { renderRoom(currentRoom - 1); }
+
+function visitCurator(profileIndex) {
+  closeRoom();
+  openFriendsterModal(profileIndex);
+}
+
+function openRoomFromHash() {
+  const m = location.hash.match(/^#room-(.+)$/);
+  if (!m) return;
+  const i = exhibits.findIndex(e => e.id === m[1]);
+  if (i >= 0) openRoom(i);
+}
+
+// ------------------------------------------------------------
+// SMS SIMULATOR
+// ------------------------------------------------------------
+function setSmsText(text) {
+  $('nokia-screen').textContent = text;
+  $('sms-count').textContent = text.length;
+}
+
+function changeSms(key) {
+  if (typeof smsData === 'undefined' || !smsData[key]) return;
+  const text = smsData[key];
+  $('sms-input').value = text.slice(0, 160);
+  setSmsText(text);
+}
+
+function onSmsInput() {
+  const text = $('sms-input').value;
+  setSmsText(text || 'Type something…');
+  $('sms-count').textContent = text.length;
+}
+
+// ------------------------------------------------------------
+// FRIENDSTER PROFILES
 // ------------------------------------------------------------
 let currentProfile = 0;
 
 function avatarHtml(p) {
-  // Initials always render; the photo sits on top if the file exists.
   const img = p.avatar
     ? `<img src="${esc(p.avatar)}" alt="${esc(p.short)}'s profile photo" onerror="this.remove()">`
     : '';
@@ -83,15 +233,13 @@ function avatarHtml(p) {
 function showProfile(index) {
   if (typeof friendsterProfiles === 'undefined' || !friendsterProfiles.length) return;
   const total = friendsterProfiles.length;
-  currentProfile = (index + total) % total; // wraps around
+  currentProfile = (index + total) % total;
   const p = friendsterProfiles[currentProfile];
 
-  // Tabs
-  document.getElementById('fs-tabs').innerHTML = friendsterProfiles.map((f, i) =>
+  $('fs-tabs').innerHTML = friendsterProfiles.map((f, i) =>
     `<button type="button" class="fs-tab ${i === currentProfile ? 'active' : ''}" onclick="showProfile(${i})">${esc(f.short)}</button>`
   ).join('');
 
-  // Top friends = the other curators (click to jump to their profile)
   const friends = friendsterProfiles
     .map((f, i) => ({ f, i }))
     .filter(x => x.i !== currentProfile)
@@ -101,8 +249,7 @@ function showProfile(index) {
         <span>${esc(x.f.short)}</span>
       </button>`).join('');
 
-  // Profile body
-  document.getElementById('fs-body').innerHTML = `
+  $('fs-body').innerHTML = `
     <div class="flex flex-col sm:flex-row gap-4 items-center sm:items-start">
       <div class="fs-avatar">${avatarHtml(p)}</div>
       <div class="min-w-0 text-center sm:text-left">
@@ -116,13 +263,11 @@ function showProfile(index) {
         </div>
       </div>
     </div>
-
     <div class="border border-blue-200 rounded p-3 bg-blue-50/50">
       <h5 class="font-bold text-blue-900 mb-1 border-b border-blue-200 pb-1">About Me</h5>
       <p class="text-[11px] text-slate-700 leading-relaxed mb-2">${esc(p.about)}</p>
       <div>${p.interests.map(t => `<span class="fs-chip">${esc(t)}</span>`).join('')}</div>
     </div>
-
     <div class="border border-blue-200 rounded p-3 bg-blue-50/50">
       <h5 class="font-bold text-blue-900 mb-2 border-b border-blue-200 pb-1">Testimonials (${p.testimonials.length})</h5>
       <div class="space-y-2">
@@ -132,14 +277,12 @@ function showProfile(index) {
           </div>`).join('')}
       </div>
     </div>
-
     <div class="border border-blue-200 rounded p-3 bg-blue-50/50">
       <h5 class="font-bold text-blue-900 mb-2 border-b border-blue-200 pb-1">Top Friends</h5>
       <div class="flex gap-3 flex-wrap">${friends}</div>
-    </div>
-  `;
-  document.getElementById('fs-body').scrollTop = 0;
-  document.getElementById('fs-counter').textContent = `Profile ${currentProfile + 1} of ${total}`;
+    </div>`;
+  $('fs-body').scrollTop = 0;
+  $('fs-counter').textContent = `Profile ${currentProfile + 1} of ${total}`;
 }
 
 function nextProfile() { showProfile(currentProfile + 1); }
@@ -147,39 +290,42 @@ function prevProfile() { showProfile(currentProfile - 1); }
 
 function openFriendsterModal(index) {
   showProfile(typeof index === 'number' ? index : 0);
-  document.getElementById('friendster-modal').classList.remove('hidden');
+  $('friendster-modal').classList.remove('hidden');
   document.body.style.overflow = 'hidden';
 }
 
 function closeFriendsterModal() {
-  document.getElementById('friendster-modal').classList.add('hidden');
+  $('friendster-modal').classList.add('hidden');
   document.body.style.overflow = '';
 }
 
-// Keyboard: Esc closes, arrow keys move between profiles
-document.addEventListener('keydown', e => {
-  const modal = document.getElementById('friendster-modal');
-  if (!modal || modal.classList.contains('hidden')) return;
-  if (e.key === 'Escape') closeFriendsterModal();
-  if (e.key === 'ArrowRight') nextProfile();
-  if (e.key === 'ArrowLeft') prevProfile();
-});
-
-// "Meet the Curators" cards
 function renderCurators() {
-  const grid = document.getElementById('curator-grid');
-  if (!grid || typeof friendsterProfiles === 'undefined') return;
+  const grid = $('curator-grid');
+  if (!grid) return;
   grid.innerHTML = friendsterProfiles.map((p, i) => `
     <div class="curator-card">
       <div class="fs-avatar">${avatarHtml(p)}</div>
-      <h4 class="font-bold text-white text-sm">${esc(p.name)}</h4>
-      <p class="text-[11px] text-slate-400 mt-1 mb-3">${esc(p.role)}</p>
-      <button type="button" onclick="openFriendsterModal(${i})"
-        class="px-3 py-1.5 rounded-lg bg-orange-500/10 border border-orange-500/30 text-orange-400 hover:bg-orange-500/20 transition text-xs font-semibold">
-        ✨ View Friendster Profile
-      </button>
+      <h4 class="font-extrabold text-sm">${esc(p.name)}</h4>
+      <p class="text-[11px] text-[var(--muted)] mt-1 mb-3">${esc(p.role)}</p>
+      <button type="button" onclick="openFriendsterModal(${i})" class="btn btn-yellow btn-sm">✨ View Friendster Profile</button>
     </div>`).join('');
 }
+
+// Keyboard: Esc closes, arrow keys move between rooms / profiles
+document.addEventListener('keydown', e => {
+  const fsOpen = $('friendster-modal') && !$('friendster-modal').classList.contains('hidden');
+  if (fsOpen) {
+    if (e.key === 'Escape') closeFriendsterModal();
+    if (e.key === 'ArrowRight') nextProfile();
+    if (e.key === 'ArrowLeft') prevProfile();
+    return;
+  }
+  if (roomIsOpen()) {
+    if (e.key === 'Escape') closeRoom();
+    if (e.key === 'ArrowRight') nextRoom();
+    if (e.key === 'ArrowLeft') prevRoom();
+  }
+});
 
 // ------------------------------------------------------------
 // BEFORE / AFTER SLIDER
@@ -192,7 +338,7 @@ function baLayerHtml(side) {
 }
 
 function setBaPosition(percent) {
-  const slider = document.getElementById('ba-slider');
+  const slider = $('ba-slider');
   const p = Math.max(0, Math.min(100, percent));
   slider.style.setProperty('--pos', p + '%');
   slider.setAttribute('aria-valuenow', Math.round(p));
@@ -201,46 +347,31 @@ function setBaPosition(percent) {
 function showBeforeAfter(index) {
   const pair = beforeAfterPairs[index];
   if (!pair) return;
-
-  document.getElementById('ba-before').innerHTML = baLayerHtml(pair.before);
-  document.getElementById('ba-after').innerHTML = baLayerHtml(pair.after);
-  document.getElementById('ba-title').textContent = pair.title;
-  document.getElementById('ba-caption').textContent = pair.caption;
-
-  document.querySelectorAll('#ba-tabs button').forEach((btn, i) => {
-    btn.className = i === index
-      ? 'px-4 py-2 rounded-lg text-xs font-semibold bg-museum-accent text-black transition'
-      : 'px-4 py-2 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition';
-  });
+  $('ba-before').innerHTML = baLayerHtml(pair.before);
+  $('ba-after').innerHTML = baLayerHtml(pair.after);
+  $('ba-title').textContent = pair.title;
+  $('ba-caption').textContent = pair.caption;
+  document.querySelectorAll('#ba-tabs button').forEach((btn, i) => btn.classList.toggle('active', i === index));
   setBaPosition(50);
 }
 
 function initBeforeAfter() {
-  const slider = document.getElementById('ba-slider');
-  const tabs = document.getElementById('ba-tabs');
+  const slider = $('ba-slider');
   if (!slider || typeof beforeAfterPairs === 'undefined' || !beforeAfterPairs.length) return;
 
-  tabs.innerHTML = beforeAfterPairs.map((pair, i) =>
-    `<button type="button" onclick="showBeforeAfter(${i})">${esc(pair.tab)}</button>`
+  $('ba-tabs').innerHTML = beforeAfterPairs.map((pair, i) =>
+    `<button type="button" class="chip-btn" onclick="showBeforeAfter(${i})">${esc(pair.tab)}</button>`
   ).join('');
 
-  // Drag with mouse / finger
   let dragging = false;
   const moveTo = clientX => {
     const rect = slider.getBoundingClientRect();
     setBaPosition(((clientX - rect.left) / rect.width) * 100);
   };
-  slider.addEventListener('pointerdown', e => {
-    dragging = true;
-    slider.setPointerCapture(e.pointerId);
-    moveTo(e.clientX);
-  });
+  slider.addEventListener('pointerdown', e => { dragging = true; slider.setPointerCapture(e.pointerId); moveTo(e.clientX); });
   slider.addEventListener('pointermove', e => { if (dragging) moveTo(e.clientX); });
-  ['pointerup', 'pointercancel'].forEach(evt =>
-    slider.addEventListener(evt, () => { dragging = false; })
-  );
+  ['pointerup', 'pointercancel'].forEach(evt => slider.addEventListener(evt, () => { dragging = false; }));
 
-  // Keyboard accessibility
   slider.addEventListener('keydown', e => {
     const now = Number(slider.getAttribute('aria-valuenow')) || 50;
     if (e.key === 'ArrowLeft') { setBaPosition(now - 5); e.preventDefault(); }
@@ -253,49 +384,92 @@ function initBeforeAfter() {
 }
 
 // ------------------------------------------------------------
-// Winamp Mini Pill / Popup Toggle
+// MINI PLAYER (YouTube embed + YouTube Music link)
 // ------------------------------------------------------------
-function togglePlayerPopup() {
-  const pill = document.getElementById('player-pill');
-  const popup = document.getElementById('player-popup');
+let currentStation = 1;
 
-  if (popup.classList.contains('hidden')) {
-    popup.classList.remove('hidden');
-    pill.classList.add('hidden');
-  } else {
-    popup.classList.add('hidden');
-    pill.classList.remove('hidden');
-  }
+// Pull the playlist ID out of any YouTube / YouTube Music link
+function getPlaylistId(url) {
+  if (!url) return null;
+  try { return new URL(url).searchParams.get('list') || null; } catch (e) { return null; }
 }
 
-// YouTube Music Station Switcher
+function setPlayerMissing(message) {
+  const box = $('yt-video-box');
+  box.classList.add('missing');
+  box.innerHTML = `<div>${esc(message)}<br><br><a class="btn btn-pink btn-sm" href="${esc(playlistConfig.youtubeSearch)}" target="_blank" rel="noopener noreferrer">🔎 Search YouTube ↗</a></div>`;
+}
+
 function switchStation(stationNum) {
-  if (typeof museumStations === 'undefined' || !museumStations[stationNum]) return;
-  const station = museumStations[stationNum];
+  currentStation = stationNum;
+  const cfg = playlistConfig;
+  const embedWrap = $('yt-embed-wrap');
+  const musicWrap = $('yt-music-wrap');
 
-  const iframe = document.getElementById('yt-inpage-player');
-  const badge = document.getElementById('station-badge');
-  const title = document.getElementById('playlist-title');
-  const btn1 = document.getElementById('btn-station-1');
-  const btn2 = document.getElementById('btn-station-2');
-
-  iframe.src = station.embedUrl;
-  badge.innerText = `STATION ${stationNum}`;
-  title.innerText = station.title;
+  $('btn-station-1').classList.toggle('active', stationNum === 1);
+  $('btn-station-2').classList.toggle('active', stationNum === 2);
+  $('station-badge').textContent = `STATION ${stationNum}`;
 
   if (stationNum === 1) {
-    btn1.className = 'py-1 px-1.5 rounded-lg bg-slate-800 text-white font-semibold border border-slate-600 transition text-center truncate';
-    btn2.className = 'py-1 px-1.5 rounded-lg bg-slate-900 text-slate-400 font-semibold border border-slate-800 hover:bg-slate-800 transition text-center truncate';
+    $('playlist-title').textContent = cfg.youtubeTitle;
+    musicWrap.classList.add('hidden');
+    embedWrap.classList.remove('hidden');
+
+    const id = getPlaylistId(cfg.youtubeUrl);
+    const box = $('yt-video-box');
+    if (!id) {
+      setPlayerMissing('No playlist yet. Paste your YouTube playlist link into js/data.js (youtubeUrl).');
+      $('yt-open-link').href = cfg.youtubeSearch;
+      $('yt-open-link').textContent = 'Search YouTube for 2000s OPM ↗';
+      return;
+    }
+    // Rebuild the iframe if the "missing" message replaced it
+    if (!$('yt-inpage-player')) {
+      box.classList.remove('missing');
+      box.innerHTML = '<iframe id="yt-inpage-player" class="w-full h-full" title="2000s soundtrack playlist" frameborder="0" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>';
+    }
+    const iframe = $('yt-inpage-player');
+    const embedUrl = `https://www.youtube.com/embed/videoseries?list=${encodeURIComponent(id)}`;
+    if (iframe.getAttribute('src') !== embedUrl) iframe.src = embedUrl;
+    $('yt-open-link').href = cfg.youtubeUrl;
+    $('yt-open-link').textContent = 'Not playing? Open on YouTube ↗';
   } else {
-    btn2.className = 'py-1 px-1.5 rounded-lg bg-slate-800 text-white font-semibold border border-slate-600 transition text-center truncate';
-    btn1.className = 'py-1 px-1.5 rounded-lg bg-slate-900 text-slate-400 font-semibold border border-slate-800 hover:bg-slate-800 transition text-center truncate';
+    $('playlist-title').textContent = cfg.musicTitle;
+    embedWrap.classList.add('hidden');
+    musicWrap.classList.remove('hidden');
+
+    // Stop the embedded video while on the Music tab
+    const iframe = $('yt-inpage-player');
+    if (iframe) iframe.src = 'about:blank';
+
+    const hasMusic = !!getPlaylistId(cfg.musicUrl);
+    $('ytm-open-link').href = hasMusic ? cfg.musicUrl : cfg.musicSearch;
+    $('ytm-note').textContent = hasMusic
+      ? "YouTube Music can't be embedded, so it opens in a new tab."
+      : 'No YouTube Music playlist set yet. Paste yours into js/data.js (musicUrl).';
   }
 }
 
+function togglePlayerPopup() {
+  const pill = $('player-pill');
+  const popup = $('player-popup');
+  const opening = popup.classList.contains('hidden');
+
+  popup.classList.toggle('hidden', !opening);
+  pill.classList.toggle('hidden', opening);
+
+  // Load the player only when it's first opened (faster page load)
+  if (opening) switchStation(currentStation);
+}
+
 // ------------------------------------------------------------
-// Start everything once the page is ready
+// Start everything
 // ------------------------------------------------------------
 document.addEventListener('DOMContentLoaded', () => {
+  renderWingTabs();
+  renderGallery();
   renderCurators();
   initBeforeAfter();
+  changeSms('txt_clan');
+  openRoomFromHash();
 });
