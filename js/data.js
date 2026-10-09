@@ -1,24 +1,37 @@
 // ============================================================
-// 🎵 MINI PLAYER LINKS  (✏️ PASTE YOUR OWN LINKS HERE)
+// 🎵 MINI PLAYER STATIONS  (✏️ EDIT / ADD YOUR OWN)
 // ------------------------------------------------------------
-// youtubeUrl : any public YouTube playlist link. It plays inside the site.
-//              e.g. "https://www.youtube.com/playlist?list=PLxxxxxxxxxxxx"
-// musicUrl   : a YouTube Music playlist link. It opens in a new tab,
-//              because YouTube Music can't be embedded on other sites.
-//              e.g. "https://music.youtube.com/playlist?list=PLxxxxxxxxxxxx"
-// Leave youtubeUrl as "" and the player shows a "search YouTube" button instead.
-// Tip: set the playlist to Public or Unlisted so it can be embedded.
+// type: "embed"  -> plays inside the site (any public YouTube playlist link)
+// type: "link"   -> opens in a NEW TAB (use this for YouTube Music, which
+//                   can't be embedded on other websites)
+// Add or remove stations freely; the tabs update automatically.
+// Tip: playlists must be Public or Unlisted to play in the embed.
 // ============================================================
-const playlistConfig = {
-  youtubeTitle: "🎸 2000s Pinoy Playlist",
-  youtubeUrl: "",
+const playlistStations = [
+  {
+    tab: "🎸 International",
+    title: "📼 2000s Pop, Dance & Nostalgia Hits",
+    type: "embed",
+    url: "https://www.youtube.com/playlist?list=RDCLAK5uy_k6FEgr-_4EVPoITSfmGGCMt1M6WtLBLbU"
+  },
+  {
+    tab: "📼 Local",
+    title: "🎸 2000s Pinoy Rock & Band Mania",
+    type: "embed",
+    url: "https://www.youtube.com/playlist?list=RDCLAK5uy_l70bSMa3aOX5oPp8j7Of_22VHbSDRGyYE"
+  },
+  {
+    tab: "🎵 YT Music",
+    title: "🎵 Open in YouTube Music",
+    type: "link",
+    url: "https://music.youtube.com/playlist?list=RDCLAK5uy_l70bSMa3aOX5oPp8j7Of_22VHbSDRGyYE"
+  }
+];
 
-  musicTitle: "🎵 2000s OPM on YouTube Music",
-  musicUrl: "https://music.youtube.com/playlist?list=RDCLAK5uy_k6FEgr-_4EVPoITSfmGGCMt1M6WtLBLbU",
-
-  // Used automatically if a link above is empty
-  youtubeSearch: "https://www.youtube.com/results?search_query=2000s+OPM+hits+playlist",
-  musicSearch: "https://music.youtube.com/search?q=2000s+OPM+hits"
+// Shown automatically if a station has no valid playlist link yet
+const playlistSearch = {
+  youtube: "https://www.youtube.com/results?search_query=2000s+OPM+hits+playlist",
+  music: "https://music.youtube.com/search?q=2000s+OPM+hits"
 };
 
 // Nokia 3310 Preset SMS Messages
@@ -28,6 +41,9 @@ const smsData = {
   gm: '"gud am Pipz.. Kain tau bfast.. Tc alwayz.. Send to many."',
   jejemon: '"eOw pOwhz mHuZtAh nAh pOwh kAyOw dItOwh? jEjeJejE! >:)"'
 };
+
+// Message shown on the Nokia screen when the page first loads
+const smsDefault = '"D2 na me, wer na u? txt bck asap! <3"';
 
 // ============================================================
 // 🏛️ EXHIBITS  (cards AND detail rooms are built from this list)
@@ -43,7 +59,8 @@ const exhibits = [
     domain: "Social Domain", badge: "Nokia 3310 & Friendster", tag: "SMS CLANS & OFWS",
     title: "The Texting Capital to 5G Feeds",
     blurb: "Evolution from 160-character SMS clans and early OFW video calls to instant global feeds.",
-    image: "https://images.unsplash.com/photo-1596558450255-7c0b7be9d56a?auto=format&fit=crop&w=900&q=80",
+    image: "./images/nokia.png",
+    alt: "Nokia Mobile Phones",
     then: "Nokia 3310 keypad texting, SMS clans, Friendster testimonials, and Yahoo Messenger video calls for OFW families.",
     now: "5G mobile smartphones, TikTok algorithms, Instagram Reels, Messenger, and live-streaming online communities.",
     impact: "Birthed the hyper-connected Pinoy netizen",
@@ -66,7 +83,8 @@ const exhibits = [
     domain: "Cultural Domain", badge: "OPM Rock & P-Pop", tag: "MP3 CDS & FANTASERYES",
     title: "OPM Band Craze to Global P-Pop",
     blurb: "From burned MP3 CDs and SexBomb dance crazes to global streaming and fandoms.",
-    image: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=900&q=80",
+    image: "./images/opm albums.png",
+    alt: "Audio & Stage Music",
     then: "OPM rock explosion (Parokya ni Edgar, Kamikazee), Quiapo burned MP3 CDs, SexBomb dance hits, and primetime fantaseryes (Mulawin).",
     now: "P-Pop international wave (SB19, BINI), Spotify streaming royalties, TikTok dance challenges, and Netflix adaptations.",
     impact: "Decentralized creator economy & global fandom",
@@ -86,13 +104,14 @@ const exhibits = [
   },
   {
     id: "sports", wing: "Sports & Cyberculture", icon: "🥊", color: "#ff8a3d",
-    domain: "Sports & Cyberculture", badge: "Pacquiao & LAN Shops", tag: "DOTA 1 & FIGHT NIGHTS",
+    domain: "Sports & Cyberculture", badge: "Pacquiao & LAN Shops", tag: "DOTA 1 & CRIME DROPS",
     title: "LAN Cafes & Fight Days to Olympic Gold",
     blurb: "From empty streets during Manny Pacquiao fights and DotA 1 cafes to multi-sport triumphs and global Esports.",
-    image: "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=900&q=80",
-    then: "Streets said to empty (and crime to dip) during Pacquiao fights, PBA arena finals, and bulky CRT computer shops playing DotA 1 and Counter-Strike.",
+    image: "./images/computer shop.png",
+    alt: "Esports Gaming Room",
+    then: "Zero crime rate during Pacquiao boxing broadcasts, PBA arena finals, and bulky CRT computer shops playing DotA 1 and Counter-Strike.",
     now: "Olympic gold medals (Carlos Yulo, Hidilyn Diaz), professional Esports championships (MPL/MLBB), and mobile game streaming.",
-    impact: "LAN culture built the foundation for PH Esports",
+    impact: "LAN culture built the foundation for PH Esports dominance",
     intro: "Sports and games brought neighborhoods together. In the 2000s that meant crowding around one TV for a Pacquiao fight or packing a computer shop for an all-night DotA match. Today the same energy fills stadiums and streaming chats.",
     facts: [
       "Pacquiao fight nights became famous for quiet streets, because so many families watched together.",
@@ -113,8 +132,9 @@ const exhibits = [
     domain: "Political Domain", badge: "EDSA II & Text Brigades", tag: "GMS & HELLO GARCI",
     title: "Text Revolutions to Algorithmic Politics",
     blurb: "How SMS chain messages mobilized EDSA Dos, contrasted with modern digital video campaigning.",
-    image: "https://images.unsplash.com/photo-1541872703-74c5e44368f9?auto=format&fit=crop&w=900&q=80",
-    then: "\"Go 2 EDSA, wear black\" SMS chains that helped bring crowds out during EDSA II, the Hello Garci scandal, and political satire shows (Wazzup Wazzup).",
+    image: "./images/people power.png",
+    alt: "Civic Protests",
+    then: "\"Go 2 EDSA, wear black\" SMS chains that toppled Estrada, the Hello Garci scandal, and political satire shows (Wazzup Wazzup).",
     now: "TikTok viral campaigns, political podcasts, algorithmic influencer endorsements, and live-streamed hearings.",
     impact: "SMS chains birthed viral citizen mobilization",
     intro: "Politics moved at the speed of forwarded texts. In January 2001, messages spread calls to gather at EDSA, and the 'text brigade' became part of the story of how crowds were mobilized. Today the same job is done by videos, hashtags, and algorithms.",
@@ -136,7 +156,8 @@ const exhibits = [
     domain: "Economic Domain", badge: "BPO Nightshifts & Piracy", tag: "CALL CENTERS & DVDS",
     title: "The Call Center Boom to the Gig Economy",
     blurb: "Transition from 24/7 BPO nightshift economies and pirated DVDs to cashless e-wallets.",
-    image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=900&q=80",
+    image: "./images/bpo.png",
+    alt: "Urban Business District",
     then: "Explosion of call centers creating the 24/7 night economy, Quiapo pirated DVD stalls, and TV rating wars.",
     now: "Cashless e-wallets (GCash, Maya), platform e-commerce (Shopee, TikTok Shop), and digital content monetization.",
     impact: "BPO nightshifts established the 24/7 consumer society",
@@ -156,10 +177,11 @@ const exhibits = [
   },
   {
     id: "environmental", wing: "Environment (Ondoy)", icon: "🌧️", color: "#14b8c6",
-    domain: "Environmental Domain", badge: "Typhoon Ondoy (2009)", tag: "RESCUE TWEETS",
+    domain: "Environmental Domain", badge: "Typhoon Ondoy (2009)", tag: "DISASTER RESCUE TWEETS",
     title: "Disaster Alerts & Online Rescue Mobilization",
     blurb: "How Typhoon Ondoy in 2009 transformed emergency communication from television to online coordination.",
-    image: "https://images.unsplash.com/photo-1547683905-f686c993aae5?auto=format&fit=crop&w=900&q=80",
+    image: "./images/ondoy.png",
+    alt: "Storm & Heavy Rain",
     then: "Broadcast TV and radio storm signals; Typhoon Ondoy (2009) prompted the first viral online rescue calls and donation drives.",
     now: "Real-time mobile weather apps, crowd-sourced flood rescue maps, and social media youth climate advocacy.",
     impact: "Sparked community-driven real-time disaster response",
@@ -185,67 +207,87 @@ const exhibits = [
 // ============================================================
 const friendsterProfiles = [
   {
-    name: "Ysha Rose Beatrice Hubilla", short: "Ysha", initials: "YH",
-    role: "Curator • Social & Tech Wing",
-    handle: "★彡 [ysha_rose_xx] 彡★", avatar: "./images/profiles/ysha.jpg",
-    quote: "txt me 2 b my bestie.. luv luv luv! <3",
-    status: "Single (but txtmates 24/7)", memberSince: "March 2004", hometown: "Metro Manila, Philippines",
+    name: "Ysha Rose Beatrice Hubilla",
+    short: "Ysha", initials: "YH", role: "Curator • Social & Tech Wing",
+    handle: "★彡 BeA_Coups_2002 彡★",
+    avatar: "./images/Keep Calm.jpg",
+    quote: "KEEP CALM AND PLAY HARD",
+    status: "Single (but txtmates 24/7)",
+    memberSince: "November 2002",
+    hometown: "Marikina, Philippines",
     about: "Certified Friendster addict. Collects sticker pages, burned CDs, and unli-text promos. Will reply to your testimonial within 3-5 business days.",
     interests: ["Texting", "Friendster", "OPM Rock", "Sticker pages", "Yahoo Messenger"],
     testimonials: [
-      { from: "Benz", text: "Pre!! Ganda ng glitter background mo, nag-crash pc ko haha! Tara DotA later!" },
-      { from: "Ingrid", text: "Bestie tnx sa pag-accept! Txt mko pag nasa mall ka na, d2 na me sa Jollibee <3" }
+      { from: "BEnzzzz", text: "wer na u, d2 na me comshop" },
+      { from: "ingridientZz1230__", text: "accpt mu frend req q" }
     ]
   },
   {
-    name: "Benz Buluran", short: "Benz", initials: "BB",
-    role: "Curator • Sports & Cyberculture Wing",
-    handle: "≈[ b3nz_dota_king ]≈", avatar: "./images/profiles/benz.jpg",
-    quote: "gg ez.. 1 more game lang tlga pre",
-    status: "In a Relationship (with DotA 1)", memberSince: "June 2005", hometown: "Metro Manila, Philippines",
+    name: "Benz Buluran",
+    short: "Benz", initials: "BB", role: "Curator • Sports & Cyberculture Wing",
+    handle: " BEnzzzz ",
+    avatar: "",
+    quote: "gg ez.. 1 more game",
+    status: "In a Relationship (with DotA 1)",
+    memberSince: "June 2005",
+    hometown: "Metro Manila, Philippines",
     about: "Lives in the computer shop from after class until the 12 midnight closing. Owns 3 mouse pads. Knows every Pacquiao fight date by heart.",
     interests: ["DotA 1", "Counter-Strike", "Pacquiao fights", "PBA", "Burned game CDs"],
     testimonials: [
-      { from: "Ysha", text: "Pre uwi na! Hinahanap ka na ni Mama, 5 hrs ka na sa cafe! Txt mo naman ako." },
-      { from: "Ingrid", text: "Thanks sa pag-add! Penge naman ng tips sa game, noob pa me hehe. Ganda ng profile pic!" }
+      { from: "★彡 BeA_Coups_2002 彡★", text: "uwi na! Hinahanap ka na ni Mama, 5 hrs ka na sa cafe! Txt mo naman ako." },
+      { from: "♪♫ ingridientZz1230__ ♫♪", text: "Thanks sa pag-add! Penge naman ng tips sa game master, noob pa me hehe." }
     ]
   },
   {
-    name: "Ingrid Mary Sacramento", short: "Ingrid", initials: "IS",
-    role: "Curator • Culture & Politics Wing",
-    handle: "♪♫ [ingrid_musicluvr] ♫♪", avatar: "./images/profiles/ingrid.jpg",
-    quote: "mUSiC iZ mY LyF... rOcK oN! 🎸",
-    status: "In a Relationship (it's complicated)", memberSince: "January 2005", hometown: "Metro Manila, Philippines",
+    name: "Ingrid Mary Sacramento",
+    short: "Ingrid", initials: "IS", role: "Curator • Culture & Politics Wing",
+    handle: "♪♫ ingridientZz1230__ ♫♪",
+    avatar: "./images/domo.png",
+    quote: "gusto ko lang matulog‎꜀( ꜆-ࡇ-)꜆ ᶻ 𝗓 𐰁",
+    status: "single ayee",
+    memberSince: "December 2007",
+    hometown: "Pasig, Philippines",
     about: "Burns her own MP3 CDs, watches every primetime fantasery, and forwards every chain text she receives. Yes, even the ones that say 'pass to 10 people'.",
     interests: ["OPM bands", "MP3 CDs", "Fantaseryes", "Chain texts", "SexBomb dance steps"],
     testimonials: [
-      { from: "Ysha", text: "Bestie ano pla song sa profile mo? Sponge Cola ba yan? Pa-burn naman sa CD!" },
-      { from: "Benz", text: "Pre thanks sa mix CD! Ganda ng playlist, pang-LAN shop talaga. Ingat lagi!" }
+      { from: "★彡 BeA_Coups_2002 彡★", text: "friend request accepted, pahiram naman ng CD mo" },
+      { from: "BEnzzzz", text: "dati din akong noob, tara DOTA" }
     ]
   }
 ];
 
 // ============================================================
 // BEFORE / AFTER SLIDER PAIRS  (✏️ EDIT ME)
-// img: path to your photo. If missing, a colorful placeholder shows.
+// - img: path to your photo, e.g. "./images/then-now/nokia.jpg"
+//   If the photo is missing, a colorful placeholder is shown instead.
 // ============================================================
 const beforeAfterPairs = [
   {
-    tab: "📱 Phones", title: "Nokia 3310 → 5G Smartphone",
+    tab: " Phones",
+    title: "Nokia 3310 → 5G Smartphone",
     caption: "From 160-character texts and Snake to video calls, feeds, and live streams in one pocket-sized screen.",
-    before: { img: "./images/then-now/phone-then.jpg", emoji: "📟", label: "Nokia 3310, 2002" },
-    after:  { img: "./images/then-now/phone-now.jpg",  emoji: "📱", label: "5G Smartphone, Today" }
+    before: { img: "./images/phones 1.png", emoji: "📟", label: "Nokia 3310, 2002" },
+    after:  { img: "./images/modernphones.jpg",  emoji: "📱", label: "5G Smartphone, Today" }
   },
   {
-    tab: "🎵 Music", title: "Burned MP3 CDs → Streaming",
+    tab: " Music",
+    title: "Burned MP3 CDs → Streaming",
     caption: "Quiapo burned CDs and bulky CD players gave way to Spotify, YouTube Music, and global P-Pop fandoms.",
-    before: { img: "./images/then-now/music-then.jpg", emoji: "💿", label: "Burned MP3 CD, 2005" },
-    after:  { img: "./images/then-now/music-now.jpg",  emoji: "🎧", label: "Spotify & P-Pop, Today" }
+    before: { img: "./images/opm 1.png", emoji: "💿", label: "Burned MP3 CD, 2005" },
+    after:  { img: "./images/ppop.png",  emoji: "🎧", label: "Spotify & P-Pop, Today" }
   },
   {
-    tab: "🎮 Gaming", title: "LAN Shops → Mobile Esports",
+    tab: " Gaming",
+    title: "LAN Shops → Mobile Esports",
     caption: "Rows of bulky CRT monitors running DotA 1 became pro Mobile Legends tournaments watched by millions.",
-    before: { img: "./images/then-now/gaming-then.jpg", emoji: "🖥️", label: "LAN Shop, 2006" },
-    after:  { img: "./images/then-now/gaming-now.jpg",  emoji: "🏆", label: "Mobile Esports, Today" }
-  }
+    before: { img: "./images/internetcafe.jpg", emoji: "🖥️", label: "LAN Shop, 2006" },
+    after:  { img: "./images/esports.png",  emoji: "🏆", label: "Mobile Esports, Today" }
+  },
+  {
+    tab: " Sports",
+    title: "From One Boxing Icon to a Multi-Sport Golden Era",
+    caption: "From halting a nation during Pacquiao's fights to celebrating Olympic golds across gymnastics, weightlifting, and athletics.",
+    before: { img: "./images/manny.jpg", emoji: "🥊", label: "Boxing, 2008" },
+    after:  { img: "./images/recentsports.png",  emoji: "🥇", label: "Sports, Today" }
+  },
 ];
