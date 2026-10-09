@@ -9,20 +9,14 @@
 // ============================================================
 const playlistStations = [
   {
-    tab: "📼 Local",
-    title: "2000s OPM Hits",
+    tab: "▶ YouTube",
+    title: "🎸 OPM 2000–2009: Best Pinoy Songs",
     type: "embed",
     url: "https://www.youtube.com/playlist?list=PLiy0XOfUv4hGbDDI0gx6sFqsYdcQ6zMWx"
   },
   {
-    tab:  "🎸 International",
-    title: "📼 2000s Pop, Dance & Nostalgia Hits",  
-    type: "embed",
-    url: "https://www.youtube.com/playlist?list=RDCLAK5uy_l70bSMa3aOX5oPp8j7Of_22VHbSDRGyYE"
-  },
-  {
     tab: "🎵 YT Music",
-    title: "🎵 Open in YouTube Music",
+    title: "☀️ '00s Summer Hits",
     type: "link",
     url: "https://music.youtube.com/playlist?list=RDCLAK5uy_mZ0IsRBiplkwK-nuyY63tYi9TerQRQJc4"
   }
@@ -76,7 +70,7 @@ const exhibits = [
       { emoji: "👥", name: "Friendster testimonials", note: "Public messages on your profile were a social currency." },
       { emoji: "💬", name: "Yahoo! Messenger", note: "Buzz, nudges, and webcam calls kept families connected." }
     ],
-    curator: 0
+    
   },
   {
     id: "cultural", wing: "Culture & P-Pop", icon: "🎸", color: "#8b5cf6",
@@ -100,7 +94,7 @@ const exhibits = [
       { emoji: "🎤", name: "Videoke", note: "The family karaoke machine at every party." },
       { emoji: "📺", name: "Primetime fantasery", note: "Capes, creatures, and dramatic cliffhangers." }
     ],
-    curator: 2
+    
   },
   {
     id: "sports", wing: "Sports & Cyberculture", icon: "🥊", color: "#ff8a3d",
@@ -125,7 +119,7 @@ const exhibits = [
       { emoji: "🎧", name: "Headset & Mouse", note: "Essential gear for a late-night match." },
       { emoji: "🏅", name: "Olympic gold", note: "A new era of national sports pride." }
     ],
-    curator: 1
+    
   },
   {
     id: "political", wing: "Politics & EDSA II", icon: "📢", color: "#ff4f6d",
@@ -149,7 +143,7 @@ const exhibits = [
       { emoji: "🎙️", name: "Leaked recordings", note: "Audio clips that shook public trust." },
       { emoji: "📰", name: "Satire shows", note: "Comedy as a way to talk about power." }
     ],
-    curator: 2
+    
   },
   {
     id: "economic", wing: "BPO & Economy", icon: "💼", color: "#12b886",
@@ -173,7 +167,7 @@ const exhibits = [
       { emoji: "📀", name: "Pirated DVD", note: "Blockbusters before streaming existed." },
       { emoji: "📲", name: "E-wallets", note: "From SMS cash-in to QR payments." }
     ],
-    curator: null
+    
   },
   {
     id: "environmental", wing: "Environment (Ondoy)", icon: "🌧️", color: "#14b8c6",
@@ -197,7 +191,7 @@ const exhibits = [
       { emoji: "🛶", name: "Rescue boats", note: "Neighbors and volunteers helping neighbors." },
       { emoji: "🥫", name: "Relief packs", note: "Community-packed goods organized online." }
     ],
-    curator: null
+    
   }
 ];
 
@@ -208,7 +202,7 @@ const exhibits = [
 const friendsterProfiles = [
   {
     name: "Ysha Rose Beatrice Hubilla",
-    short: "Ysha", initials: "YH", role: "Curator • Social & Tech Wing",
+    short: "Bea", initials: "YH",
     handle: "★彡 BeA_Coups_2002 彡★",
     avatar: "./images/Keep Calm.jpg",
     quote: "KEEP CALM AND PLAY HARD",
@@ -224,7 +218,7 @@ const friendsterProfiles = [
   },
   {
     name: "Benz Buluran",
-    short: "Benz", initials: "BB", role: "Curator • Sports & Cyberculture Wing",
+    short: "Benz", initials: "BB",
     handle: " BEnzzzz ",
     avatar: "",
     quote: "gg ez.. 1 more game",
@@ -240,7 +234,7 @@ const friendsterProfiles = [
   },
   {
     name: "Ingrid Mary Sacramento",
-    short: "Ingrid", initials: "IS", role: "Curator • Culture & Politics Wing",
+    short: "Ingrid", initials: "IS",
     handle: "♪♫ ingridientZz1230__ ♫♪",
     avatar: "./images/domo.png",
     quote: "gusto ko lang matulog‎꜀( ꜆-ࡇ-)꜆ ᶻ 𝗓 𐰁",
