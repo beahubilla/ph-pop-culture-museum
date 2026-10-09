@@ -12,6 +12,14 @@ function esc(value) {
     .replace(/"/g, '&quot;');
 }
 
+// Profile helpers: fall back to the name if short/initials aren't set
+function profShort(p) { return p.short || String(p.name || '?').trim().split(/\s+/)[0]; }
+function profInitials(p) {
+  if (p.initials) return p.initials;
+  const w = String(p.name || '?').trim().split(/\s+/).filter(Boolean);
+  return (w[0][0] + (w.length > 1 ? w[w.length - 1][0] : '')).toUpperCase();
+}
+
 // ------------------------------------------------------------
 // GALLERY (cards are generated from `exhibits` in data.js)
 // ------------------------------------------------------------
@@ -34,7 +42,7 @@ function renderGallery() {
       <div>
         <div class="card-media">
           <span class="card-emoji" aria-hidden="true">${esc(ex.icon)}</span>
-          <img src="${esc(ex.image)}" alt="${esc(ex.badge)}" loading="lazy" onerror="this.remove()">
+          <img src="${esc(ex.image)}" alt="${esc(ex.alt || ex.badge)}" loading="lazy" onerror="this.remove()">
           <span class="card-badge">${esc(ex.badge)}</span>
         </div>
         <div class="card-body">
@@ -121,7 +129,7 @@ function renderRoom(index) {
   content.innerHTML = `
     <div class="room-hero">
       <span class="room-hero-emoji" aria-hidden="true">${esc(ex.icon)}</span>
-      <img src="${esc(ex.image)}" alt="${esc(ex.badge)}" onerror="this.remove()">
+      <img src="${esc(ex.image)}" alt="${esc(ex.alt || ex.badge)}" onerror="this.remove()">
       <div class="room-hero-shade"></div>
       <div class="room-hero-text">
         <span class="room-domain">${esc(ex.domain)}</span>
@@ -153,7 +161,7 @@ function renderRoom(index) {
 
       ${curator ? `
         <div class="mt-5 text-center">
-          <button type="button" class="btn btn-yellow" onclick="visitCurator(${ex.curator})">✨ Meet the curator: ${esc(curator.short)}</button>
+          <button type="button" class="btn btn-yellow" onclick="visitCurator(${ex.curator})">✨ Meet the curator: ${esc(profShort(curator))}</button>
         </div>` : ''}
     </div>`;
   content.scrollTop = 0;
@@ -225,9 +233,9 @@ let currentProfile = 0;
 
 function avatarHtml(p) {
   const img = p.avatar
-    ? `<img src="${esc(p.avatar)}" alt="${esc(p.short)}'s profile photo" onerror="this.remove()">`
+    ? `<img src="${esc(p.avatar)}" alt="${esc(profShort(p))}'s profile photo" onerror="this.remove()">`
     : '';
-  return `<span>${esc(p.initials)}</span>${img}`;
+  return `<span>${esc(profInitials(p))}</span>${img}`;
 }
 
 function showProfile(index) {
@@ -237,16 +245,16 @@ function showProfile(index) {
   const p = friendsterProfiles[currentProfile];
 
   $('fs-tabs').innerHTML = friendsterProfiles.map((f, i) =>
-    `<button type="button" class="fs-tab ${i === currentProfile ? 'active' : ''}" onclick="showProfile(${i})">${esc(f.short)}</button>`
+    `<button type="button" class="fs-tab ${i === currentProfile ? 'active' : ''}" onclick="showProfile(${i})">${esc(profShort(f))}</button>`
   ).join('');
 
   const friends = friendsterProfiles
     .map((f, i) => ({ f, i }))
     .filter(x => x.i !== currentProfile)
     .map(x => `
-      <button type="button" class="fs-friend" onclick="showProfile(${x.i})" title="View ${esc(x.f.short)}'s profile">
+      <button type="button" class="fs-friend" onclick="showProfile(${x.i})" title="View ${esc(profShort(x.f))}'s profile">
         <span class="fs-avatar">${avatarHtml(x.f)}</span>
-        <span>${esc(x.f.short)}</span>
+        <span>${esc(profShort(x.f))}</span>
       </button>`).join('');
 
   $('fs-body').innerHTML = `
@@ -306,8 +314,8 @@ function renderCurators() {
     <div class="curator-card">
       <div class="fs-avatar">${avatarHtml(p)}</div>
       <h4 class="font-extrabold text-sm">${esc(p.name)}</h4>
-      <p class="text-[11px] text-[var(--muted)] mt-1 mb-3">${esc(p.role)}</p>
-      <button type="button" onclick="openFriendsterModal(${i})" class="btn btn-yellow btn-sm">✨ View Friendster Profile</button>
+      ${p.role ? `<p class="text-[11px] text-[var(--muted)] mt-1">${esc(p.role)}</p>` : ''}
+      <button type="button" onclick="openFriendsterModal(${i})" class="btn btn-yellow btn-sm mt-3">✨ View Friendster Profile</button>
     </div>`).join('');
 }
 
@@ -360,7 +368,7 @@ function initBeforeAfter() {
   if (!slider || typeof beforeAfterPairs === 'undefined' || !beforeAfterPairs.length) return;
 
   $('ba-tabs').innerHTML = beforeAfterPairs.map((pair, i) =>
-    `<button type="button" class="chip-btn" onclick="showBeforeAfter(${i})">${esc(pair.tab)}</button>`
+    `<button type="button" class="chip-btn" onclick="showBeforeAfter(${i})">${esc(String(pair.tab).trim())}</button>`
   ).join('');
 
   let dragging = false;
@@ -384,9 +392,11 @@ function initBeforeAfter() {
 }
 
 // ------------------------------------------------------------
-// MINI PLAYER (YouTube embed + YouTube Music link)
+// MINI PLAYER (stations come from `playlistStations` in data.js)
+//   type "embed" -> plays inside the page
+//   type "link"  -> opens in a new tab (YouTube Music)
 // ------------------------------------------------------------
-let currentStation = 1;
+let currentStation = 1; // 1-based
 
 // Pull the playlist ID out of any YouTube / YouTube Music link
 function getPlaylistId(url) {
@@ -394,60 +404,70 @@ function getPlaylistId(url) {
   try { return new URL(url).searchParams.get('list') || null; } catch (e) { return null; }
 }
 
+function renderStationTabs() {
+  const wrap = $('station-tabs');
+  if (!wrap || typeof playlistStations === 'undefined') return;
+  wrap.style.gridTemplateColumns = `repeat(${playlistStations.length}, minmax(0, 1fr))`;
+  wrap.innerHTML = playlistStations.map((s, i) =>
+    `<button type="button" class="station-btn" onclick="switchStation(${i + 1})">${esc(s.tab)}</button>`
+  ).join('');
+}
+
 function setPlayerMissing(message) {
   const box = $('yt-video-box');
   box.classList.add('missing');
-  box.innerHTML = `<div>${esc(message)}<br><br><a class="btn btn-pink btn-sm" href="${esc(playlistConfig.youtubeSearch)}" target="_blank" rel="noopener noreferrer">🔎 Search YouTube ↗</a></div>`;
+  box.innerHTML = `<div>${esc(message)}<br><br><a class="btn btn-pink btn-sm" href="${esc(playlistSearch.youtube)}" target="_blank" rel="noopener noreferrer">🔎 Search YouTube ↗</a></div>`;
 }
 
 function switchStation(stationNum) {
+  const st = playlistStations[stationNum - 1];
+  if (!st) return;
   currentStation = stationNum;
-  const cfg = playlistConfig;
+
+  document.querySelectorAll('.station-btn').forEach((b, i) => b.classList.toggle('active', i === stationNum - 1));
+  $('station-badge').textContent = `STATION ${stationNum}`;
+  $('playlist-title').textContent = st.title;
+
   const embedWrap = $('yt-embed-wrap');
   const musicWrap = $('yt-music-wrap');
+  const hasId = !!getPlaylistId(st.url);
 
-  $('btn-station-1').classList.toggle('active', stationNum === 1);
-  $('btn-station-2').classList.toggle('active', stationNum === 2);
-  $('station-badge').textContent = `STATION ${stationNum}`;
-
-  if (stationNum === 1) {
-    $('playlist-title').textContent = cfg.youtubeTitle;
-    musicWrap.classList.add('hidden');
-    embedWrap.classList.remove('hidden');
-
-    const id = getPlaylistId(cfg.youtubeUrl);
-    const box = $('yt-video-box');
-    if (!id) {
-      setPlayerMissing('No playlist yet. Paste your YouTube playlist link into js/data.js (youtubeUrl).');
-      $('yt-open-link').href = cfg.youtubeSearch;
-      $('yt-open-link').textContent = 'Search YouTube for 2000s OPM ↗';
-      return;
-    }
-    // Rebuild the iframe if the "missing" message replaced it
-    if (!$('yt-inpage-player')) {
-      box.classList.remove('missing');
-      box.innerHTML = '<iframe id="yt-inpage-player" class="w-full h-full" title="2000s soundtrack playlist" frameborder="0" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>';
-    }
-    const iframe = $('yt-inpage-player');
-    const embedUrl = `https://www.youtube.com/embed/videoseries?list=${encodeURIComponent(id)}`;
-    if (iframe.getAttribute('src') !== embedUrl) iframe.src = embedUrl;
-    $('yt-open-link').href = cfg.youtubeUrl;
-    $('yt-open-link').textContent = 'Not playing? Open on YouTube ↗';
-  } else {
-    $('playlist-title').textContent = cfg.musicTitle;
+  if (st.type === 'link') {
     embedWrap.classList.add('hidden');
     musicWrap.classList.remove('hidden');
 
-    // Stop the embedded video while on the Music tab
+    // Stop the embedded video while on a link station
     const iframe = $('yt-inpage-player');
     if (iframe) iframe.src = 'about:blank';
 
-    const hasMusic = !!getPlaylistId(cfg.musicUrl);
-    $('ytm-open-link').href = hasMusic ? cfg.musicUrl : cfg.musicSearch;
-    $('ytm-note').textContent = hasMusic
+    $('ytm-open-link').href = hasId ? st.url : playlistSearch.music;
+    $('ytm-note').textContent = hasId
       ? "YouTube Music can't be embedded, so it opens in a new tab."
-      : 'No YouTube Music playlist set yet. Paste yours into js/data.js (musicUrl).';
+      : 'No playlist link set yet. Paste yours into js/data.js (playlistStations).';
+    return;
   }
+
+  // type "embed"
+  musicWrap.classList.add('hidden');
+  embedWrap.classList.remove('hidden');
+  const box = $('yt-video-box');
+
+  if (!hasId) {
+    setPlayerMissing('No playlist link yet. Paste a YouTube playlist link into js/data.js (playlistStations).');
+    $('yt-open-link').href = playlistSearch.youtube;
+    $('yt-open-link').textContent = 'Search YouTube for 2000s OPM ↗';
+    return;
+  }
+  // Rebuild the iframe if the "missing" message replaced it
+  if (!$('yt-inpage-player')) {
+    box.classList.remove('missing');
+    box.innerHTML = '<iframe id="yt-inpage-player" class="w-full h-full" title="2000s soundtrack playlist" frameborder="0" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>';
+  }
+  const embedUrl = `https://www.youtube.com/embed/videoseries?list=${encodeURIComponent(getPlaylistId(st.url))}`;
+  const iframe = $('yt-inpage-player');
+  if (iframe.getAttribute('src') !== embedUrl) iframe.src = embedUrl;
+  $('yt-open-link').href = st.url;
+  $('yt-open-link').textContent = 'Not playing? Open on YouTube ↗';
 }
 
 function togglePlayerPopup() {
@@ -470,6 +490,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderGallery();
   renderCurators();
   initBeforeAfter();
-  changeSms('txt_clan');
+  renderStationTabs();
+  if (typeof smsDefault !== 'undefined') { $('sms-input').value = ''; setSmsText(smsDefault); }
   openRoomFromHash();
 });
