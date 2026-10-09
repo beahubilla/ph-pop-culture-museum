@@ -81,21 +81,21 @@ const beforeAfterPairs = [
     tab: "📱 Phones",
     title: "Nokia 3310 → 5G Smartphone",
     caption: "From 160-character texts and Snake to video calls, feeds, and live streams in one pocket-sized screen.",
-    before: { img: "./images/phones.jpg", emoji: "📟", label: "Nokia 3310, 2002" },
-    after:  { img: "",  emoji: "📱", label: "5G Smartphone, Today" }
+    before: { img: "./images/phones 1.png", emoji: "📟", label: "Nokia 3310, 2002" },
+    after:  { img: "./images/modernphones.jpg",  emoji: "📱", label: "5G Smartphone, Today" }
   },
   {
     tab: "🎵 Music",
     title: "Burned MP3 CDs → Streaming",
     caption: "Quiapo burned CDs and bulky CD players gave way to Spotify, YouTube Music, and global P-Pop fandoms.",
-    before: { img: "./images/opm.jpg", emoji: "💿", label: "Burned MP3 CD, 2005" },
-    after:  { img: "",  emoji: "🎧", label: "Spotify & P-Pop, Today" }
+    before: { img: "./images/opm.png", emoji: "💿", label: "Burned MP3 CD, 2005" },
+    after:  { img: "./images/ppop.png",  emoji: "🎧", label: "Spotify & P-Pop, Today" }
   },
   {
     tab: "🎮 Gaming",
     title: "LAN Shops → Mobile Esports",
     caption: "Rows of bulky CRT monitors running DotA 1 became pro Mobile Legends tournaments watched by millions.",
-    before: { img: "", emoji: "🖥️", label: "LAN Shop, 2006" },
-    after:  { img: "",  emoji: "🏆", label: "Mobile Esports, Today" }
+    before: { img: "./images/internetcafe.jpg", emoji: "🖥️", label: "LAN Shop, 2006" },
+    after:  { img: "./images/esports.png",  emoji: "🏆", label: "Mobile Esports, Today" }
   }
 ];
