@@ -78,24 +78,31 @@ const friendsterProfiles = [
 // ============================================================
 const beforeAfterPairs = [
   {
-    tab: "📱 Phones",
+    tab: " Phones",
     title: "Nokia 3310 → 5G Smartphone",
     caption: "From 160-character texts and Snake to video calls, feeds, and live streams in one pocket-sized screen.",
     before: { img: "./images/phones 1.png", emoji: "📟", label: "Nokia 3310, 2002" },
     after:  { img: "./images/modernphones.jpg",  emoji: "📱", label: "5G Smartphone, Today" }
   },
   {
-    tab: "🎵 Music",
+    tab: " Music",
     title: "Burned MP3 CDs → Streaming",
     caption: "Quiapo burned CDs and bulky CD players gave way to Spotify, YouTube Music, and global P-Pop fandoms.",
-    before: { img: "./images/opm.png", emoji: "💿", label: "Burned MP3 CD, 2005" },
+    before: { img: "./images/opm 1.png", emoji: "💿", label: "Burned MP3 CD, 2005" },
     after:  { img: "./images/ppop.png",  emoji: "🎧", label: "Spotify & P-Pop, Today" }
   },
   {
-    tab: "🎮 Gaming",
+    tab: " Gaming",
     title: "LAN Shops → Mobile Esports",
     caption: "Rows of bulky CRT monitors running DotA 1 became pro Mobile Legends tournaments watched by millions.",
     before: { img: "./images/internetcafe.jpg", emoji: "🖥️", label: "LAN Shop, 2006" },
     after:  { img: "./images/esports.png",  emoji: "🏆", label: "Mobile Esports, Today" }
-  }
+  },
+  {
+    tab: " Sports",
+    title: "From One Boxing Icon to a Multi-Sport Golden Era",
+    caption: "From halting a nation during Pacquiao's fights to celebrating Olympic golds across gymnastics, weightlifting, and athletics.",
+    before: { img: "./images/manny.jpg", emoji: "🥊", label: "Boxing, 2008" },
+    after:  { img: "./images/recentsports.png",  emoji: "🥇", label: "Sports, Today" }
+  },
 ];
