@@ -4,69 +4,55 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tatak 2000s: Philippine Pop Culture Virtual Museum</title>
-  
-  <!-- Tailwind CSS CDN -->
+  <meta name="description" content="A virtual museum tracing Philippine pop culture from 2000–2010 to today: SMS clans, Friendster, OPM rock, LAN shops, EDSA II, BPO nights, and Typhoon Ondoy.">
+  <meta name="theme-color" content="#fff4fa">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8F%9B%EF%B8%8F%3C/text%3E%3C/svg%3E">
+
+  <!-- Marks the page as JS-enabled so reveal animations only run when scripts work -->
+  <script>document.documentElement.classList.add('js');</script>
+
+  <!-- Tailwind CSS CDN (layout utilities) -->
   <script src="https://cdn.tailwindcss.com"></script>
-  
+  <script>
+    tailwind.config = {
+      theme: { extend: { fontFamily: {
+        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+        retro: ['"VT323"', 'monospace'],
+        pixel: ['"Silkscreen"', 'monospace']
+      } } }
+    }
+  </script>
+
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=VT323&family=Silkscreen&display=swap" rel="stylesheet">
-  
-  <!-- Relative CSS Link -->
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=VT323&family=Silkscreen&display=swap" rel="stylesheet">
+
   <link rel="stylesheet" href="./css/style.css">
-
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
-            retro: ['"VT323"', 'monospace'],
-            pixel: ['"Silkscreen"', 'monospace']
-          },
-          colors: {
-            museum: {
-              950: '#070a10',
-              900: '#0c101d',
-              800: '#151d30',
-              700: '#1e293b',
-              accent: '#38bdf8',
-              retro: '#f43f5e',
-              gold: '#fbbf24'
-            }
-          }
-        }
-      }
-    }
-  </script>
 </head>
-<body class="museum-bg text-slate-100 font-sans min-h-screen selection:bg-museum-accent selection:text-black pb-28">
+<body class="font-sans">
 
-  <!-- Animated aesthetic background -->
-  <div class="bg-aurora" aria-hidden="true"></div>
+  <!-- Bright animated background -->
+  <div class="bg-sky" aria-hidden="true"></div>
 
-  <!-- Museum Top Navigation Bar -->
-  <header class="border-b border-slate-800 bg-museum-900/95 backdrop-blur sticky top-0 z-40">
-    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-      <div class="flex items-center space-x-3">
-        <span class="px-2.5 py-0.5 bg-museum-accent/10 border border-museum-accent/30 text-museum-accent font-retro text-xl rounded">ROOM 2000-2010</span>
-        <h1 class="font-bold text-lg tracking-tight">Tatak 2000s <span class="text-slate-400 font-normal text-xs sm:text-sm hidden sm:inline">| Philippine Pop Culture Virtual Museum</span></h1>
-      </div>
-      <div class="flex items-center gap-3 text-xs text-slate-400">
-        <nav class="hidden lg:flex items-center gap-1" aria-label="Museum sections">
+  <!-- Top navigation -->
+  <header class="site-header">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
+      <a href="#top" class="flex items-center gap-3 min-w-0">
+        <span class="brand-badge">ROOM 2000–2010</span>
+        <span class="font-extrabold tracking-tight truncate">Tatak 2000s <span class="hidden md:inline text-[var(--muted)] font-semibold text-sm">| Philippine Pop Culture Virtual Museum</span></span>
+      </a>
+      <div class="flex items-center gap-2">
+        <nav class="hidden lg:flex items-center" aria-label="Museum sections">
           <a href="#exhibits" class="nav-link">Exhibits</a>
           <a href="#then-now" class="nav-link">Then vs. Now</a>
           <a href="#sms" class="nav-link">SMS Lab</a>
           <a href="#curators" class="nav-link">Curators</a>
         </nav>
-        <button onclick="openFriendsterModal(0)" class="px-3 py-1.5 rounded-lg bg-orange-500/10 border border-orange-500/30 text-orange-400 hover:bg-orange-500/20 transition flex items-center gap-1.5 font-semibold">
-          <span>✨</span> Friendster
-        </button>
+        <button type="button" onclick="openFriendsterModal(0)" class="btn btn-yellow">✨ Friendster</button>
       </div>
     </div>
-    <!-- Mobile section nav -->
-    <nav class="lg:hidden flex gap-1 overflow-x-auto px-4 pb-2 text-xs" aria-label="Museum sections">
+    <nav class="lg:hidden flex gap-1 overflow-x-auto px-4 pb-2" aria-label="Museum sections">
       <a href="#exhibits" class="nav-link whitespace-nowrap">Exhibits</a>
       <a href="#then-now" class="nav-link whitespace-nowrap">Then vs. Now</a>
       <a href="#sms" class="nav-link whitespace-nowrap">SMS Lab</a>
@@ -74,260 +60,54 @@
     </nav>
   </header>
 
-  <!-- Hero Grand Lobby -->
-  <section class="relative py-14 px-6 border-b border-slate-800 bg-gradient-to-b from-museum-900/60 to-transparent">
-    <div class="max-w-5xl mx-auto text-center relative z-10">
-      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs font-semibold mb-5">
-        <span>📼 Retrospective Exhibition</span> • 2000–2010 vs. Present Day
-      </div>
-      <h2 class="text-4xl sm:text-6xl font-extrabold tracking-tight text-white mb-5 leading-tight">
-        From <span class="text-transparent bg-clip-text bg-gradient-to-r from-rose-400 via-sky-400 to-amber-300">Unli-Text & Friendster</span><br>to P-Pop & 5G Streams
+  <!-- Hero / Grand Lobby -->
+  <section id="top" class="px-5 pt-14 pb-10 text-center">
+    <div class="max-w-5xl mx-auto">
+      <span class="hero-pill">📼 Retrospective Exhibition • 2000–2010 vs. Present Day</span>
+      <h2 class="hero-title">
+        From <span class="grad-text">Unli-Text &amp; Friendster</span><br>to P-Pop &amp; 5G Streams
       </h2>
-      <p class="text-slate-400 max-w-2xl mx-auto text-sm sm:text-base mb-8 leading-relaxed">
+      <p class="max-w-2xl mx-auto text-sm sm:text-base leading-relaxed text-[var(--muted)] mb-7">
         Trace how the analog-digital hybrid era of 2000–2010 shaped modern Philippine communication, entertainment, sports, and socio-political identity.
       </p>
-
-      <!-- Exhibition Wing Navigation -->
-      <div class="flex flex-wrap justify-center gap-2 max-w-3xl mx-auto" id="wing-tabs">
-        <button onclick="switchWing('all')" class="tab-btn px-4 py-2 rounded-lg text-xs font-semibold bg-museum-accent text-black transition" data-wing="all">All Wings</button>
-        <button onclick="switchWing('social')" class="tab-btn px-4 py-2 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition" data-wing="social">📱 Social & Tech</button>
-        <button onclick="switchWing('cultural')" class="tab-btn px-4 py-2 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition" data-wing="cultural">🎸 Culture & P-Pop</button>
-        <button onclick="switchWing('sports')" class="tab-btn px-4 py-2 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition" data-wing="sports">🥊 Sports & Cyberculture</button>
-        <button onclick="switchWing('political')" class="tab-btn px-4 py-2 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition" data-wing="political">📢 Politics & EDSA II</button>
-        <button onclick="switchWing('economic')" class="tab-btn px-4 py-2 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition" data-wing="economic">💼 BPO & Economy</button>
-        <button onclick="switchWing('environmental')" class="tab-btn px-4 py-2 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition" data-wing="environmental">🌧️ Environment (Ondoy)</button>
+      <div class="flex flex-wrap justify-center gap-3 mb-8">
+        <button type="button" onclick="openRoom(0)" class="btn btn-pink">🚪 Start the tour</button>
+        <a href="#exhibits" class="btn">Browse the exhibits ↓</a>
       </div>
+      <div id="wing-tabs" class="flex flex-wrap justify-center gap-2 max-w-3xl mx-auto" role="tablist" aria-label="Exhibition wings"></div>
     </div>
   </section>
 
-  <!-- Interactive Exhibition Hall -->
-  <main class="max-w-7xl mx-auto px-6 py-10">
+  <main class="max-w-7xl mx-auto px-5 sm:px-6 pb-10">
 
-    <div id="exhibits" class="scroll-mt-24"></div>
+    <div id="exhibits" class="scroll-mt-28"></div>
 
-    <!-- View Mode Selector -->
-    <div class="mb-10 p-5 rounded-2xl bg-museum-900 border border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4">
+    <!-- View mode selector -->
+    <div class="panel mb-8 p-4 sm:p-5 flex flex-col md:flex-row items-center justify-between gap-4">
       <div>
-        <h3 class="font-bold text-white text-sm sm:text-base flex items-center gap-2">
-          <span>🏛️</span> Exhibition Gallery Displays
-        </h3>
-        <p class="text-xs text-slate-400">Toggle between the 2000s artifacts, modern-day counterparts, or side-by-side comparison.</p>
+        <h3 class="font-extrabold text-sm sm:text-base">🏛️ Exhibition Gallery Displays</h3>
+        <p class="text-xs text-[var(--muted)]">Click any exhibit to step inside its room. Switch the cards between 2000s artifacts, today, or both.</p>
       </div>
-      <div class="flex items-center gap-1.5 bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs">
-        <span class="px-2.5 py-1 text-slate-400 font-medium">Display Mode:</span>
-        <button id="view-split-btn" onclick="toggleEraView('split')" class="px-3 py-1 rounded-lg bg-slate-800 text-white font-semibold">Side by Side</button>
-        <button id="view-2000-btn" onclick="toggleEraView('2000')" class="px-3 py-1 rounded-lg text-slate-400 hover:text-white">2000–2010 Only</button>
-        <button id="view-now-btn" onclick="toggleEraView('now')" class="px-3 py-1 rounded-lg text-slate-400 hover:text-white">Present Only</button>
+      <div class="seg" role="group" aria-label="Display mode">
+        <span class="seg-label">Display:</span>
+        <button type="button" id="view-split-btn" onclick="toggleEraView('split')" class="seg-btn active">Side by Side</button>
+        <button type="button" id="view-2000-btn" onclick="toggleEraView('2000')" class="seg-btn">2000–2010</button>
+        <button type="button" id="view-now-btn" onclick="toggleEraView('now')" class="seg-btn">Present</button>
       </div>
     </div>
 
-    <!-- Gallery Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="gallery-grid">
+    <!-- Exhibit cards are generated from js/data.js -->
+    <div id="gallery-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+    <noscript><p class="panel p-4 mt-4 text-sm">This museum needs JavaScript turned on to show its exhibits.</p></noscript>
 
-      <!-- EXHIBIT 1: SOCIAL -->
-      <article class="exhibit-card group bg-museum-900 rounded-2xl border border-slate-800 hover:border-museum-accent/50 transition overflow-hidden p-6 flex flex-col justify-between" data-category="social">
-        <div>
-          <div class="relative h-44 rounded-xl overflow-hidden mb-5 border border-slate-800 bg-slate-950">
-             <img src="./images/nokia.png" alt="Nokia Mobile Phones" class="w-full h-full object-cover group-hover:scale-105 transition duration-500 opacity-80">
-            <div class="absolute inset-0 bg-gradient-to-t from-museum-900 via-transparent to-transparent"></div>
-            <span class="absolute bottom-3 left-3 text-[10px] uppercase font-bold tracking-wider px-2 py-1 rounded bg-black/70 backdrop-blur text-sky-400 border border-sky-400/30">Nokia 3310 & Friendster</span>
-          </div>
-          <div class="flex items-center justify-between mb-2">
-            <span class="text-xs font-semibold text-sky-400">Social Domain</span>
-            <span class="text-xs font-retro text-slate-500 text-base">SMS CLANS & OFWS</span>
-          </div>
-          <h4 class="text-lg font-bold text-white mb-2">The Texting Capital to 5G Feeds</h4>
-          <p class="text-xs text-slate-400 mb-5 leading-relaxed">Evolution from 160-character SMS clans and early OFW video calls to instant global feeds.</p>
-
-          <div class="space-y-3">
-            <div class="era-2000 p-3 bg-slate-950/80 rounded-xl border-l-4 border-rose-500 text-xs">
-              <span class="text-rose-400 font-bold block mb-1 uppercase text-[10px]">2000–2010 Decade</span>
-              <p class="text-slate-300">Nokia 3310 keypad texting, SMS clans, Friendster testimonials, and Yahoo Messenger video calls for OFW families.</p>
-            </div>
-            <div class="era-now p-3 bg-slate-950/80 rounded-xl border-l-4 border-sky-400 text-xs">
-              <span class="text-sky-400 font-bold block mb-1 uppercase text-[10px]">Present Time</span>
-              <p class="text-slate-300">5G mobile smartphones, TikTok algorithms, Instagram Reels, Messenger, and live-streaming online communities.</p>
-            </div>
-          </div>
-        </div>
-        <div class="mt-5 pt-4 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
-          <span class="text-slate-300 font-medium">Impact:</span>
-          <span class="text-[11px] italic">Birthed the hyper-connected Pinoy netizen</span>
-        </div>
-      </article>
-
-      <!-- EXHIBIT 2: CULTURAL -->
-      <article class="exhibit-card group bg-museum-900 rounded-2xl border border-slate-800 hover:border-museum-accent/50 transition overflow-hidden p-6 flex flex-col justify-between" data-category="cultural">
-        <div>
-          <div class="relative h-44 rounded-xl overflow-hidden mb-5 border border-slate-800 bg-slate-950">
-            <img src="./images/opm albums.png" alt="Audio & Stage Music" class="w-full h-full object-cover group-hover:scale-105 transition duration-500 opacity-80">
-            <div class="absolute inset-0 bg-gradient-to-t from-museum-900 via-transparent to-transparent"></div>
-            <span class="absolute bottom-3 left-3 text-[10px] uppercase font-bold tracking-wider px-2 py-1 rounded bg-black/70 backdrop-blur text-purple-400 border border-purple-400/30">OPM Rock & P-Pop</span>
-          </div>
-          <div class="flex items-center justify-between mb-2">
-            <span class="text-xs font-semibold text-purple-400">Cultural Domain</span>
-            <span class="text-xs font-retro text-slate-500 text-base">MP3 CDS & FANTASERYES</span>
-          </div>
-          <h4 class="text-lg font-bold text-white mb-2">OPM Band Craze to Global P-Pop</h4>
-          <p class="text-xs text-slate-400 mb-5 leading-relaxed">From burned MP3 CDs and SexBomb dance crazes to global streaming and fandoms.</p>
-
-          <div class="space-y-3">
-            <div class="era-2000 p-3 bg-slate-950/80 rounded-xl border-l-4 border-rose-500 text-xs">
-              <span class="text-rose-400 font-bold block mb-1 uppercase text-[10px]">2000–2010 Decade</span>
-              <p class="text-slate-300">OPM rock explosion (Parokya ni Edgar, Kamikazee), Quiapo burned MP3 CDs, SexBomb dance hits, and primetime fantaseryes (<em>Mulawin</em>).</p>
-            </div>
-            <div class="era-now p-3 bg-slate-950/80 rounded-xl border-l-4 border-sky-400 text-xs">
-              <span class="text-sky-400 font-bold block mb-1 uppercase text-[10px]">Present Time</span>
-              <p class="text-slate-300">P-Pop international wave (SB19, BINI), Spotify streaming royalties, TikTok dance challenges, and Netflix adaptations.</p>
-            </div>
-          </div>
-        </div>
-        <div class="mt-5 pt-4 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
-          <span class="text-slate-300 font-medium">Impact:</span>
-          <span class="text-[11px] italic">Decentralized creator economy & global fandom</span>
-        </div>
-      </article>
-
-      <!-- EXHIBIT 3: SPORTS & CYBERCULTURE -->
-      <article class="exhibit-card group bg-museum-900 rounded-2xl border border-slate-800 hover:border-museum-accent/50 transition overflow-hidden p-6 flex flex-col justify-between" data-category="sports">
-        <div>
-          <div class="relative h-44 rounded-xl overflow-hidden mb-5 border border-slate-800 bg-slate-950">
-            <img src="./images/computer shop.png" alt="Esports Gaming Room" class="w-full h-full object-cover group-hover:scale-105 transition duration-500 opacity-80">
-            <div class="absolute inset-0 bg-gradient-to-t from-museum-900 via-transparent to-transparent"></div>
-            <span class="absolute bottom-3 left-3 text-[10px] uppercase font-bold tracking-wider px-2 py-1 rounded bg-black/70 backdrop-blur text-amber-400 border border-amber-400/30">Pacquiao & LAN Shops</span>
-          </div>
-          <div class="flex items-center justify-between mb-2">
-            <span class="text-xs font-semibold text-amber-400">Sports & Cyberculture</span>
-            <span class="text-xs font-retro text-slate-500 text-base">DOTA 1 & CRIME DROPS</span>
-          </div>
-          <h4 class="text-lg font-bold text-white mb-2">LAN Cafes & Fight Days to Olympic Gold</h4>
-          <p class="text-xs text-slate-400 mb-5 leading-relaxed">From empty streets during Manny Pacquiao fights and DotA 1 cafes to multi-sport triumphs and global Esports.</p>
-
-          <div class="space-y-3">
-            <div class="era-2000 p-3 bg-slate-950/80 rounded-xl border-l-4 border-rose-500 text-xs">
-              <span class="text-rose-400 font-bold block mb-1 uppercase text-[10px]">2000–2010 Decade</span>
-              <p class="text-slate-300">Zero crime rate during Pacquiao boxing broadcasts, PBA arena finals, and bulky CRT computer shops playing DotA 1 and Counter-Strike.</p>
-            </div>
-            <div class="era-now p-3 bg-slate-950/80 rounded-xl border-l-4 border-sky-400 text-xs">
-              <span class="text-sky-400 font-bold block mb-1 uppercase text-[10px]">Present Time</span>
-              <p class="text-slate-300">Olympic gold medals (Carlos Yulo, Hidilyn Diaz), professional Esports championships (MPL/MLBB), and mobile game streaming.</p>
-            </div>
-          </div>
-        </div>
-        <div class="mt-5 pt-4 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
-          <span class="text-slate-300 font-medium">Impact:</span>
-          <span class="text-[11px] italic">LAN culture built the foundation for PH Esports dominance</span>
-        </div>
-      </article>
-
-      <!-- EXHIBIT 4: POLITICAL -->
-      <article class="exhibit-card group bg-museum-900 rounded-2xl border border-slate-800 hover:border-museum-accent/50 transition overflow-hidden p-6 flex flex-col justify-between" data-category="political">
-        <div>
-          <div class="relative h-44 rounded-xl overflow-hidden mb-5 border border-slate-800 bg-slate-950">
-            <img src="./images/people power.png" alt="Civic Protests" class="w-full h-full object-cover group-hover:scale-105 transition duration-500 opacity-80">
-            <div class="absolute inset-0 bg-gradient-to-t from-museum-900 via-transparent to-transparent"></div>
-            <span class="absolute bottom-3 left-3 text-[10px] uppercase font-bold tracking-wider px-2 py-1 rounded bg-black/70 backdrop-blur text-red-400 border border-red-400/30">EDSA II & Text Brigades</span>
-          </div>
-          <div class="flex items-center justify-between mb-2">
-            <span class="text-xs font-semibold text-red-400">Political Domain</span>
-            <span class="text-xs font-retro text-slate-500 text-base">GMS & HELLO GARCI</span>
-          </div>
-          <h4 class="text-lg font-bold text-white mb-2">Text Revolutions to Algorithmic Politics</h4>
-          <p class="text-xs text-slate-400 mb-5 leading-relaxed">How SMS chain messages mobilized EDSA Dos, contrasted with modern digital video campaigning.</p>
-
-          <div class="space-y-3">
-            <div class="era-2000 p-3 bg-slate-950/80 rounded-xl border-l-4 border-rose-500 text-xs">
-              <span class="text-rose-400 font-bold block mb-1 uppercase text-[10px]">2000–2010 Decade</span>
-              <p class="text-slate-300">"Go 2 EDSA, wear black" SMS chains that toppled Estrada, the Hello Garci scandal, and political satire shows (<em>Wazzup Wazzup</em>).</p>
-            </div>
-            <div class="era-now p-3 bg-slate-950/80 rounded-xl border-l-4 border-sky-400 text-xs">
-              <span class="text-sky-400 font-bold block mb-1 uppercase text-[10px]">Present Time</span>
-              <p class="text-slate-300">TikTok viral campaigns, political podcasts, algorithmic influencer endorsements, and live-streamed hearings.</p>
-            </div>
-          </div>
-        </div>
-        <div class="mt-5 pt-4 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
-          <span class="text-slate-300 font-medium">Impact:</span>
-          <span class="text-[11px] italic">SMS chains birthed viral citizen mobilization</span>
-        </div>
-      </article>
-
-      <!-- EXHIBIT 5: ECONOMIC -->
-      <article class="exhibit-card group bg-museum-900 rounded-2xl border border-slate-800 hover:border-museum-accent/50 transition overflow-hidden p-6 flex flex-col justify-between" data-category="economic">
-        <div>
-          <div class="relative h-44 rounded-xl overflow-hidden mb-5 border border-slate-800 bg-slate-950">
-            <img src="./images/bpo.png" alt="Urban Business District" class="w-full h-full object-cover group-hover:scale-105 transition duration-500 opacity-80">
-            <div class="absolute inset-0 bg-gradient-to-t from-museum-900 via-transparent to-transparent"></div>
-            <span class="absolute bottom-3 left-3 text-[10px] uppercase font-bold tracking-wider px-2 py-1 rounded bg-black/70 backdrop-blur text-emerald-400 border border-emerald-400/30">BPO Nightshifts & Piracy</span>
-          </div>
-          <div class="flex items-center justify-between mb-2">
-            <span class="text-xs font-semibold text-emerald-400">Economic Domain</span>
-            <span class="text-xs font-retro text-slate-500 text-base">CALL CENTERS & DVDS</span>
-          </div>
-          <h4 class="text-lg font-bold text-white mb-2">The Call Center Boom to the Gig Economy</h4>
-          <p class="text-xs text-slate-400 mb-5 leading-relaxed">Transition from 24/7 BPO nightshift economies and pirated DVDs to cashless e-wallets.</p>
-
-          <div class="space-y-3">
-            <div class="era-2000 p-3 bg-slate-950/80 rounded-xl border-l-4 border-rose-500 text-xs">
-              <span class="text-rose-400 font-bold block mb-1 uppercase text-[10px]">2000–2010 Decade</span>
-              <p class="text-slate-300">Explosion of call centers creating the 24/7 night economy, Quiapo pirated DVD stalls, and TV rating wars.</p>
-            </div>
-            <div class="era-now p-3 bg-slate-950/80 rounded-xl border-l-4 border-sky-400 text-xs">
-              <span class="text-sky-400 font-bold block mb-1 uppercase text-[10px]">Present Time</span>
-              <p class="text-slate-300">Cashless e-wallets (GCash, Maya), platform e-commerce (Shopee, TikTok Shop), and digital content monetization.</p>
-            </div>
-          </div>
-        </div>
-        <div class="mt-5 pt-4 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
-          <span class="text-slate-300 font-medium">Impact:</span>
-          <span class="text-[11px] italic">BPO nightshifts established the 24/7 consumer society</span>
-        </div>
-      </article>
-
-      <!-- EXHIBIT 6: ENVIRONMENTAL -->
-      <article class="exhibit-card group bg-museum-900 rounded-2xl border border-slate-800 hover:border-museum-accent/50 transition overflow-hidden p-6 flex flex-col justify-between" data-category="environmental">
-        <div>
-          <div class="relative h-44 rounded-xl overflow-hidden mb-5 border border-slate-800 bg-slate-950">
-            <img src="./images/ondoy.png" alt="Storm & Heavy Rain" class="w-full h-full object-cover group-hover:scale-105 transition duration-500 opacity-80">
-            <div class="absolute inset-0 bg-gradient-to-t from-museum-900 via-transparent to-transparent"></div>
-            <span class="absolute bottom-3 left-3 text-[10px] uppercase font-bold tracking-wider px-2 py-1 rounded bg-black/70 backdrop-blur text-teal-400 border border-teal-400/30">Typhoon Ondoy (2009)</span>
-          </div>
-          <div class="flex items-center justify-between mb-2">
-            <span class="text-xs font-semibold text-teal-400">Environmental Domain</span>
-            <span class="text-xs font-retro text-slate-500 text-base">DISASTER RESCUE TWEETS</span>
-          </div>
-          <h4 class="text-lg font-bold text-white mb-2">Disaster Alerts & Online Rescue Mobilization</h4>
-          <p class="text-xs text-slate-400 mb-5 leading-relaxed">How Typhoon Ondoy in 2009 transformed emergency communication from television to online coordination.</p>
-
-          <div class="space-y-3">
-            <div class="era-2000 p-3 bg-slate-950/80 rounded-xl border-l-4 border-rose-500 text-xs">
-              <span class="text-rose-400 font-bold block mb-1 uppercase text-[10px]">2000–2010 Decade</span>
-              <p class="text-slate-300">Broadcast TV and radio storm signals; Typhoon Ondoy (2009) prompted the first viral online rescue calls and donation drives.</p>
-            </div>
-            <div class="era-now p-3 bg-slate-950/80 rounded-xl border-l-4 border-sky-400 text-xs">
-              <span class="text-sky-400 font-bold block mb-1 uppercase text-[10px]">Present Time</span>
-              <p class="text-slate-300">Real-time mobile weather apps, crowd-sourced flood rescue maps, and social media youth climate advocacy.</p>
-            </div>
-          </div>
-        </div>
-        <div class="mt-5 pt-4 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
-          <span class="text-slate-300 font-medium">Impact:</span>
-          <span class="text-[11px] italic">Sparked community-driven real-time disaster response</span>
-        </div>
-      </article>
-
-    </div>
-
-    <!-- THEN vs NOW: Before / After Slider -->
-    <section id="then-now" class="scroll-mt-24 mt-14 max-w-4xl mx-auto">
-      <div class="text-center max-w-lg mx-auto mb-6">
-        <span class="font-retro text-museum-accent text-xl">INTERACTIVE COMPARISON</span>
-        <h3 class="text-2xl font-bold text-white mt-1">Then vs. Now</h3>
-        <p class="text-xs text-slate-400 mt-2">Drag the handle (or use the arrow keys) to compare 2000–2010 with today.</p>
+    <!-- THEN vs NOW slider -->
+    <section id="then-now" class="scroll-mt-28 mt-16 max-w-4xl mx-auto">
+      <div class="section-head">
+        <span class="retro">INTERACTIVE COMPARISON</span>
+        <h3>Then vs. Now</h3>
+        <p>Drag the handle (or use the arrow keys) to compare 2000–2010 with today.</p>
       </div>
-
       <div id="ba-tabs" class="flex flex-wrap justify-center gap-2 mb-4"></div>
-
       <div id="ba-slider" class="ba-slider" role="slider" tabindex="0"
            aria-label="Before and after comparison" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
         <div class="ba-layer ba-after" id="ba-after"></div>
@@ -336,145 +116,136 @@
         <span class="ba-label ba-label-after">Present</span>
         <div class="ba-handle" aria-hidden="true"><span>⇆</span></div>
       </div>
-
       <div class="mt-4 text-center max-w-xl mx-auto">
-        <h4 id="ba-title" class="font-bold text-white"></h4>
-        <p id="ba-caption" class="text-xs text-slate-400 mt-1 leading-relaxed"></p>
+        <h4 id="ba-title" class="font-extrabold"></h4>
+        <p id="ba-caption" class="text-xs text-[var(--muted)] mt-1 leading-relaxed"></p>
       </div>
     </section>
 
-    <!-- Nokia Keypad Simulator -->
-    <section id="sms" class="scroll-mt-24 mt-14 bg-gradient-to-br from-museum-900 to-slate-950 border border-slate-800 rounded-3xl p-6 sm:p-10 max-w-4xl mx-auto shadow-2xl">
-      <div class="text-center max-w-lg mx-auto mb-6">
-        <span class="font-retro text-museum-accent text-xl">INTERACTIVE VIRTUAL RELIC</span>
-        <h3 class="text-2xl font-bold text-white mt-1">2000s SMS Keypad Simulator</h3>
-        <p class="text-xs text-slate-400 mt-2">Test how Filipinos communicated under the strict 160-character SMS limit.</p>
+    <!-- SMS simulator -->
+    <section id="sms" class="scroll-mt-28 mt-16 max-w-3xl mx-auto">
+      <div class="section-head">
+        <span class="retro">INTERACTIVE VIRTUAL RELIC</span>
+        <h3>2000s SMS Keypad Simulator</h3>
+        <p>Pick a classic message or type your own. Remember: one text maxed out at 160 characters.</p>
       </div>
-
-      <div class="bg-slate-950 p-6 rounded-2xl border border-slate-800 max-w-md mx-auto shadow-inner">
-        <div class="bg-[#9ea771] p-4 rounded-lg font-retro text-slate-900 text-xl tracking-wider min-h-[90px] shadow-inner mb-4 flex items-center justify-center text-center border-4 border-[#868f5c]" id="nokia-screen">
-          "D2 na me, wer na u? txt bk asap! &lt;3"
+      <div class="phone-card">
+        <div class="nokia-screen" id="nokia-screen">"D2 na me, wer na u? txt bk asap! &lt;3"</div>
+        <div class="sms-meter"><span id="sms-count">0</span> / 160</div>
+        <textarea id="sms-input" maxlength="160" rows="2" oninput="onSmsInput()" placeholder="Type your own 2000s text here…" aria-label="Type your own text message"></textarea>
+        <div class="grid grid-cols-2 gap-2 mt-3">
+          <button type="button" onclick="changeSms('txt_clan')" class="btn btn-sm">📱 Text Clan Invite</button>
+          <button type="button" onclick="changeSms('edsa2')" class="btn btn-sm">📢 EDSA II Chain Msg</button>
+          <button type="button" onclick="changeSms('gm')" class="btn btn-sm">🌅 2005 Group Message</button>
+          <button type="button" onclick="changeSms('jejemon')" class="btn btn-sm">🧢 Jejemon Greeting</button>
         </div>
-        <div class="grid grid-cols-2 gap-2 text-xs">
-          <button onclick="changeSms('txt_clan')" class="p-2.5 bg-slate-900 hover:bg-slate-800 text-slate-200 rounded-lg border border-slate-800 transition">📱 Text Clan Invite</button>
-          <button onclick="changeSms('edsa2')" class="p-2.5 bg-slate-900 hover:bg-slate-800 text-slate-200 rounded-lg border border-slate-800 transition">📢 EDSA II Chain Msg</button>
-          <button onclick="changeSms('gm')" class="p-2.5 bg-slate-900 hover:bg-slate-800 text-slate-200 rounded-lg border border-slate-800 transition">🌅 2005 Group Message (GM)</button>
-          <button onclick="changeSms('jejemon')" class="p-2.5 bg-slate-900 hover:bg-slate-800 text-slate-200 rounded-lg border border-slate-800 transition">🧢 Jejemon Greeting</button>
-        </div>
       </div>
     </section>
 
-  <!-- MEET THE CURATORS -->
-    <section id="curators" class="scroll-mt-24 mt-16 max-w-5xl mx-auto">
-      <div class="text-center max-w-lg mx-auto mb-6">
-        <span class="font-retro text-museum-accent text-xl">GROUP 3</span>
-        <h3 class="text-2xl font-bold text-white mt-1">Meet the Curators</h3>
-        <p class="text-xs text-slate-400 mt-2">Open each curator's Friendster profile.</p>
+    <!-- Curators -->
+    <section id="curators" class="scroll-mt-28 mt-16 max-w-5xl mx-auto">
+      <div class="section-head">
+        <span class="retro">GROUP 3</span>
+        <h3>Meet the Curators</h3>
+        <p>Open each curator's circa-2005 Friendster profile.</p>
       </div>
-      <div id="curator-grid" class="grid grid-cols-1 sm:grid-cols-3 gap-4"></div>
+      <div id="curator-grid" class="grid grid-cols-1 sm:grid-cols-3 gap-5"></div>
     </section>
-
   </main>
 
-  <!-- POPUP: Friendster Modal (content rendered from js/data.js) -->
-  <div id="friendster-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden"
-       onclick="if (event.target === this) closeFriendsterModal()" role="dialog" aria-modal="true" aria-label="Friendster profiles">
-    <div class="fs-window">
-      <div class="flex items-center justify-between pb-3 mb-3 border-b border-blue-400/50 text-white">
-        <div class="flex items-center space-x-2">
-          <span class="text-xl font-black tracking-tighter text-amber-300">friendster.</span>
-          <span class="text-[10px] bg-blue-800 px-2 py-0.5 rounded">Circa 2005</span>
+  <!-- ROOM MODAL (content rendered from js/data.js) -->
+  <div id="room-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-label="Exhibit room"
+       onclick="if (event.target === this) closeRoom()">
+    <div class="room-panel" id="room-panel">
+      <button type="button" class="modal-close" onclick="closeRoom()" aria-label="Close room">✕</button>
+      <div id="room-content" class="room-scroll"></div>
+      <div class="room-nav">
+        <button type="button" class="btn btn-sm" onclick="prevRoom()">◀ <span id="room-prev-label">Prev</span></button>
+        <div class="text-center">
+          <div id="room-dots" class="flex gap-1.5 justify-center flex-wrap"></div>
+          <div id="room-count" class="text-[10px] font-bold text-[var(--muted)] mt-1"></div>
         </div>
-        <button onclick="closeFriendsterModal()" class="text-white hover:text-amber-300 text-lg font-bold" aria-label="Close">✕</button>
-      </div>
-
-      <div id="fs-tabs" class="flex gap-1 mb-2 overflow-x-auto"></div>
-      <div id="fs-body" class="bg-white rounded p-4 text-slate-800 space-y-4 max-h-[60vh] overflow-y-auto"></div>
-
-      <div class="flex items-center justify-between mt-3 text-white text-[11px]">
-        <button onclick="prevProfile()" class="fs-nav-btn">◀ Prev</button>
-        <span id="fs-counter" class="font-semibold"></span>
-        <button onclick="nextProfile()" class="fs-nav-btn">Next ▶</button>
+        <button type="button" class="btn btn-sm" onclick="nextRoom()"><span id="room-next-label">Next</span> ▶</button>
       </div>
     </div>
   </div>
 
-  <!-- FLOATING MINI POPUP MUSIC PLAYER WIDGET -->
-  <div class="fixed bottom-4 right-4 z-40 font-sans">
-    
-    <!-- 1. Collapsed Pill Launcher -->
-    <button 
-      id="player-pill" 
-      onclick="togglePlayerPopup()" 
-      class="flex items-center gap-2.5 px-4 py-2.5 bg-slate-900/95 hover:bg-slate-800 border border-slate-700 rounded-full shadow-2xl backdrop-blur text-xs font-semibold text-white hover:border-museum-accent transition-all duration-200">
-      <div class="flex items-end gap-0.5 h-3.5 w-3.5">
-        <div class="w-1 bg-rose-400 rounded-full eq-bar-1"></div>
-        <div class="w-1 bg-amber-400 rounded-full eq-bar-2"></div>
-        <div class="w-1 bg-sky-400 rounded-full eq-bar-3"></div>
-      </div>
-      <span class="tracking-wide text-xs">📻 2000s Soundtrack</span>
-      <span class="text-[10px] bg-rose-500/20 text-rose-400 border border-rose-500/30 px-1.5 py-0.5 rounded font-pixel">WINAMP</span>
-    </button>
-
-    <!-- 2. Mini Popup Window -->
-    <aside 
-      id="player-popup" 
-      class="hidden w-[90vw] sm:w-80 bg-slate-950/95 border-2 border-slate-700 rounded-2xl p-3.5 shadow-2xl backdrop-blur text-xs">
-      <div class="flex items-center justify-between pb-2 mb-2 border-b border-slate-800">
-        <div class="flex items-center space-x-1.5">
-          <span class="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block"></span>
-          <span class="text-[11px] font-pixel text-rose-400">WINAMP v2.91</span>
+  <!-- FRIENDSTER MODAL (content rendered from js/data.js) -->
+  <div id="friendster-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-label="Friendster profiles"
+       onclick="if (event.target === this) closeFriendsterModal()">
+    <div class="fs-window">
+      <div class="flex items-center justify-between pb-3 mb-3 border-b border-blue-300/50 text-white">
+        <div class="flex items-center gap-2">
+          <span class="text-xl font-black tracking-tighter text-amber-300">friendster.</span>
+          <span class="text-[10px] bg-blue-800 px-2 py-0.5 rounded">Circa 2005</span>
         </div>
-        <button 
-          onclick="togglePlayerPopup()" 
-          class="text-slate-400 hover:text-white hover:bg-slate-800 rounded px-1.5 py-0.5 transition font-bold text-xs" 
-          title="Minimize to Pill">
-          ✕
-        </button>
+        <button type="button" onclick="closeFriendsterModal()" class="text-white hover:text-amber-300 text-lg font-bold" aria-label="Close">✕</button>
       </div>
-
-      <div class="bg-black/90 p-2 rounded-lg border border-slate-800 text-xs mb-2 font-mono">
-        <div class="flex justify-between text-[10px] text-slate-400 mb-0.5">
-          <span>CHANNEL</span>
-          <span id="station-badge" class="text-rose-400 font-bold">STATION 1</span>
-        </div>
-        <p id="playlist-title" class="font-bold text-sky-400 truncate text-[11px]">
-          🎸 2000s Hit Songs
-        </p>
+      <div id="fs-tabs" class="flex gap-1 mb-2 overflow-x-auto"></div>
+      <div id="fs-body" class="bg-white rounded p-4 text-slate-800 space-y-4 max-h-[60vh] overflow-y-auto"></div>
+      <div class="flex items-center justify-between mt-3 text-white text-[11px]">
+        <button type="button" onclick="prevProfile()" class="fs-nav-btn">◀ Prev</button>
+        <span id="fs-counter" class="font-semibold"></span>
+        <button type="button" onclick="nextProfile()" class="fs-nav-btn">Next ▶</button>
       </div>
-
-      <div class="rounded-xl overflow-hidden border border-slate-800 bg-black shadow-inner mb-2.5 aspect-video">
-        <iframe 
-          id="yt-inpage-player"
-          class="w-full h-full"
-          src="https://www.youtube.com/embed/videoseries?list=RDCLAK5uy_k6FEgr-_4EVPoITSfmGGCMt1M6WtLBLbU" 
-          title="Philippine Pop Culture 2000s Soundtrack" 
-          frameborder="0" 
-          referrerpolicy="strict-origin-when-cross-origin"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-          allowfullscreen>
-        </iframe>
-      </div>
-
-      <div class="grid grid-cols-2 gap-1.5 text-[10px]">
-        <button onclick="switchStation(1)" id="btn-station-1" class="py-1 px-1.5 rounded-lg bg-slate-800 text-white font-semibold border border-slate-600 transition text-center truncate">
-          🎸 Station 1: International
-        </button>
-        <button onclick="switchStation(2)" id="btn-station-2" class="py-1 px-1.5 rounded-lg bg-slate-900 text-slate-400 font-semibold border border-slate-800 hover:bg-slate-800 transition text-center truncate">
-          📼 Station 2: Local
-        </button>
-      </div>
-    </aside>
-
+    </div>
   </div>
 
-  <!-- Museum Footer -->
-  <footer class="border-t border-slate-800 py-8 px-6 text-center text-xs text-slate-500 mt-12">
-    <p class="mb-1 text-slate-400 font-medium">Evolution of Philippine Pop Culture: 2000–2010 vs. Present</p>
+  <!-- FLOATING MINI PLAYER -->
+  <div class="player-dock">
+    <button type="button" id="player-pill" class="player-pill" onclick="togglePlayerPopup()" aria-label="Open the 2000s soundtrack player">
+      <span class="eq" aria-hidden="true"><i class="eq-bar-1"></i><i class="eq-bar-2"></i><i class="eq-bar-3"></i></span>
+      <span>📻 2000s Soundtrack</span>
+      <span class="winamp-tag">WINAMP</span>
+    </button>
+
+    <aside id="player-popup" class="player-popup hidden" aria-label="2000s soundtrack player">
+      <div class="flex items-center justify-between pb-2 mb-2 border-b-2 border-dashed border-[var(--line)]">
+        <div class="flex items-center gap-1.5">
+          <span class="w-2.5 h-2.5 rounded-full bg-[var(--pink)] inline-block"></span>
+          <span class="font-pixel text-[11px] text-[var(--pink)]">WINAMP v2.91</span>
+        </div>
+        <button type="button" onclick="togglePlayerPopup()" class="modal-close-sm" title="Minimize" aria-label="Minimize player">✕</button>
+      </div>
+
+      <div class="player-screen">
+        <div class="flex justify-between text-[10px] opacity-70 mb-0.5"><span>CHANNEL</span><span id="station-badge" class="font-bold text-[#ff8fc0]">STATION 1</span></div>
+        <p id="playlist-title" class="font-bold truncate text-[11px] text-[#7fe7ff]"></p>
+      </div>
+
+      <!-- Tab 1: embedded YouTube playlist -->
+      <div id="yt-embed-wrap">
+        <div id="yt-video-box" class="player-video">
+          <iframe id="yt-inpage-player" class="w-full h-full" title="2000s soundtrack playlist" frameborder="0"
+                  referrerpolicy="strict-origin-when-cross-origin"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowfullscreen></iframe>
+        </div>
+        <a id="yt-open-link" class="player-link" href="#" target="_blank" rel="noopener noreferrer">Not playing? Open on YouTube ↗</a>
+      </div>
+
+      <!-- Tab 2: YouTube Music opens in a new tab (it can't be embedded) -->
+      <div id="yt-music-wrap" class="hidden">
+        <div class="music-card">
+          <div class="text-4xl mb-2">🎵</div>
+          <p class="text-xs font-semibold mb-3" id="ytm-note">YouTube Music can't be embedded, so it opens in a new tab.</p>
+          <a id="ytm-open-link" class="btn btn-pink btn-sm" href="#" target="_blank" rel="noopener noreferrer">Open in YouTube Music ↗</a>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-1.5 mt-2.5 text-[10px]">
+        <button type="button" onclick="switchStation(1)" id="btn-station-1" class="station-btn active">▶ YouTube</button>
+        <button type="button" onclick="switchStation(2)" id="btn-station-2" class="station-btn">🎵 YouTube Music</button>
+      </div>
+    </aside>
+  </div>
+
+  <footer class="text-center text-xs text-[var(--muted)] px-6 py-10">
+    <p class="font-bold text-[var(--ink)] mb-1">Evolution of Philippine Pop Culture: 2000–2010 vs. Present</p>
     <p>Group 3 Curators: Ysha Rose Beatrice Hubilla, Benz Buluran, Ingrid Mary Sacramento • MMDC Digital Museum</p>
   </footer>
 
-  <!-- Relative Modular Scripts (Loaded in strict order) -->
+  <!-- Scripts (data first, then app) -->
   <script src="./js/data.js"></script>
   <script src="./js/app.js"></script>
 </body>
