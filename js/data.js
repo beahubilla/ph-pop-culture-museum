@@ -9,14 +9,14 @@
 // ============================================================
 const playlistStations = [
   {
-    tab: "🎸 International",
-    title: "📼 2000s Pop, Dance & Nostalgia Hits",
+    tab: "📼 Local",
+    title: "2000s OPM Hits",
     type: "embed",
-    url: "https://www.youtube.com/playlist?list=RDCLAK5uy_k6FEgr-_4EVPoITSfmGGCMt1M6WtLBLbU"
+    url: "https://www.youtube.com/playlist?list=PLiy0XOfUv4hGbDDI0gx6sFqsYdcQ6zMWx"
   },
   {
-    tab: "📼 Local",
-    title: "🎸 2000s Pinoy Rock & Band Mania",
+    tab:  "🎸 International",
+    title: "📼 2000s Pop, Dance & Nostalgia Hits",  
     type: "embed",
     url: "https://www.youtube.com/playlist?list=RDCLAK5uy_l70bSMa3aOX5oPp8j7Of_22VHbSDRGyYE"
   },
@@ -24,7 +24,7 @@ const playlistStations = [
     tab: "🎵 YT Music",
     title: "🎵 Open in YouTube Music",
     type: "link",
-    url: "https://music.youtube.com/playlist?list=RDCLAK5uy_l70bSMa3aOX5oPp8j7Of_22VHbSDRGyYE"
+    url: "https://music.youtube.com/playlist?list=RDCLAK5uy_mZ0IsRBiplkwK-nuyY63tYi9TerQRQJc4"
   }
 ];
 
