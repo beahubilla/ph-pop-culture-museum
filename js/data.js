@@ -53,7 +53,7 @@ const exhibits = [
     domain: "Social Domain", badge: "Nokia 3310 & Friendster", tag: "SMS CLANS & OFWS",
     title: "The Texting Capital to 5G Feeds",
     blurb: "Evolution from 160-character SMS clans and early OFW video calls to instant global feeds.",
-    image: "./images/nokia.png",
+    image: "./images/phones.png",
     alt: "Nokia Mobile Phones",
     then: "Nokia 3310 keypad texting, SMS clans, Friendster testimonials, and Yahoo Messenger video calls for OFW families.",
     now: "5G mobile smartphones, TikTok algorithms, Instagram Reels, Messenger, and live-streaming online communities.",
