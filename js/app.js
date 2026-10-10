@@ -3,7 +3,6 @@
 // ------------------------------------------------------------
 const $ = id => document.getElementById(id);
 
-// Escape text before putting it into HTML
 function esc(value) {
   return String(value)
     .replace(/&/g, '&amp;')
@@ -12,7 +11,6 @@ function esc(value) {
     .replace(/"/g, '&quot;');
 }
 
-// Profile helpers: fall back to the name if short/initials aren't set
 function profShort(p) { return p.short || String(p.name || '?').trim().split(/\s+/)[0]; }
 function profInitials(p) {
   if (p.initials) return p.initials;
@@ -21,7 +19,7 @@ function profInitials(p) {
 }
 
 // ------------------------------------------------------------
-// GALLERY (cards are generated from `exhibits` in data.js)
+// GALLERY
 // ------------------------------------------------------------
 function renderWingTabs() {
   const wrap = $('wing-tabs');
@@ -62,7 +60,6 @@ function renderGallery() {
       </div>
     </article>`).join('');
 
-  // Click / keyboard on a card opens its room
   grid.addEventListener('click', e => {
     const card = e.target.closest('.exhibit-card');
     if (card) openRoom(Number(card.dataset.index));
@@ -73,7 +70,6 @@ function renderGallery() {
     if (card) { e.preventDefault(); openRoom(Number(card.dataset.index)); }
   });
 
-  // Fade cards in as they scroll into view
   const cards = grid.querySelectorAll('.reveal');
   if ('IntersectionObserver' in window) {
     const io = new IntersectionObserver(entries => {
@@ -85,7 +81,6 @@ function renderGallery() {
   }
 }
 
-// Exhibition Wing Filtering with Mobile Auto-Centering
 function switchWing(category) {
   document.querySelectorAll('.tab-btn').forEach(tab => {
     const isActive = tab.getAttribute('data-wing') === category;
@@ -99,11 +94,10 @@ function switchWing(category) {
   );
 }
 
-// Display Mode: Side-by-Side vs 2000s vs Present
 function toggleEraView(mode) {
   const past = document.querySelectorAll('.exhibit-card .era-2000');
   const present = document.querySelectorAll('.exhibit-card .era-now');
-  const btns = { split: $('view-split-btn'), '2000': $('view-2000-btn'), now:$('view-now-btn') };
+  const btns = { split: $('view-split-btn'), '2000': $('view-2000-btn'), now: $('view-now-btn') };
 
   Object.keys(btns).forEach(key => btns[key].classList.toggle('active', key === mode));
   past.forEach(el => el.classList.toggle('hidden', mode === 'now'));
@@ -111,7 +105,7 @@ function toggleEraView(mode) {
 }
 
 // ------------------------------------------------------------
-// MODAL LAYERS: phone back-button support, scroll lock, focus, swipe
+// MODAL LAYERS
 // ------------------------------------------------------------
 let historyOK = true;
 const lastFocus = { room: null, fs: null, lb: null };
@@ -161,7 +155,6 @@ function trapTab(e, container) {
   else if (!e.shiftKey && active === last) { e.preventDefault(); first.focus(); }
 }
 
-// Swipe gestures
 function addSwipe(el, onLeft, onRight) {
   if (!el) return;
   let x0 = 0, y0 = 0, t0 = 0, tracking = false;
@@ -189,9 +182,8 @@ window.addEventListener('popstate', () => {
   }
 });
 
-// ---------- Photo viewer (lightbox) ----------
+// ---------- Lightbox ----------
 let lbIndex = 0;
-
 function currentGallery() {
   const ex = exhibits[currentRoom];
   return (ex && Array.isArray(ex.gallery)) ? ex.gallery : [];
@@ -247,7 +239,6 @@ function renderRoom(index) {
   const ex = exhibits[currentRoom];
 
   $('room-panel').style.setProperty('--c', ex.color);
-
   const curator = (typeof ex.curator === 'number' && friendsterProfiles[ex.curator]) ? friendsterProfiles[ex.curator] : null;
 
   const gallery = Array.isArray(ex.gallery) ? ex.gallery : [];
@@ -355,25 +346,373 @@ function openRoomFromHash() {
 }
 
 // ------------------------------------------------------------
-// SMS SIMULATOR
+// NOKIA 3310: AUDIO TONES & SIMULATOR ENGINE
 // ------------------------------------------------------------
-function setSmsText(text) {
-  $('nokia-screen').textContent = text;
-  $('sms-count').textContent = text.length;
+let nokiaMode = 'sms'; // 'sms' | 'snake'
+let currentSmsText = typeof smsDefault !== 'undefined' ? smsDefault : '"D2 na me, wer na u? txt bck asap! <3"';
+let lastKey = null;
+let keyIndex = 0;
+let keyTimer = null;
+
+const nokiaKeyMap = {
+  '1': ['.', ',', '?', '!', '1', '-', '@'],
+  '2': ['a', 'b', 'c', '2'],
+  '3': ['d', 'e', 'f', '3'],
+  '4': ['g', 'h', 'i', '4'],
+  '5': ['j', 'k', 'l', '5'],
+  '6': ['m', 'n', 'o', '6'],
+  '7': ['p', 'q', 'r', 's', '7'],
+  '8': ['t', 'u', 'v', '8'],
+  '9': ['w', 'x', 'y', 'z', '9'],
+  '0': [' ', '0'],
+  '*': ['*', '+', '<', '>', '#'],
+  '#': ['#', '\n']
+};
+
+function playNokiaTone(freq = 900, duration = 0.05, type = 'square') {
+  try {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return;
+    const ctx = new AudioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, ctx.currentTime);
+    gain.gain.setValueAtTime(0.04, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + duration);
+  } catch (e) { /* audio disabled */ }
 }
 
+function setNokiaMode(mode) {
+  nokiaMode = mode;
+  const smsView = $('nokia-sms-view');
+  const snakeView = $('nokia-snake-view');
+  const smsBtn = $('nokia-mode-sms-btn');
+  const snakeBtn = $('nokia-mode-snake-btn');
+
+  if (mode === 'snake') {
+    smsView.classList.add('hidden');
+    snakeView.classList.remove('hidden');
+    if (smsBtn) smsBtn.classList.remove('active');
+    if (snakeBtn) snakeBtn.classList.add('active');
+    initSnake();
+    playNokiaTone(600, 0.08);
+  } else {
+    snakeView.classList.add('hidden');
+    smsView.classList.remove('hidden');
+    if (smsBtn) smsBtn.classList.add('active');
+    if (snakeBtn) snakeBtn.classList.remove('active');
+    stopSnake();
+    playNokiaTone(850, 0.05);
+  }
+}
+
+// SMS Display
+function updateSmsDisplay(text) {
+  currentSmsText = text.slice(0, 160);
+  const screen = $('nokia-screen');
+  const counter = $('sms-count');
+  const input = $('sms-input');
+
+  if (screen) screen.textContent = currentSmsText || ' ';
+  if (counter) counter.textContent = currentSmsText.length;
+  if (input && input.value !== currentSmsText) input.value = currentSmsText;
+}
+
+// Keypad handler (0-9, *, #)
+function nokiaKeyPress(key) {
+  if (nokiaMode === 'snake') {
+    handleSnakeKey(key);
+    return;
+  }
+
+  // SMS Multi-tap
+  playNokiaTone(700 + parseInt(key || 1, 10) * 45);
+  const chars = nokiaKeyMap[key];
+  if (!chars) return;
+
+  if (lastKey === key && keyTimer) {
+    clearTimeout(keyTimer);
+    keyIndex = (keyIndex + 1) % chars.length;
+    currentSmsText = currentSmsText.slice(0, -1) + chars[keyIndex];
+  } else {
+    if (currentSmsText.length >= 160) return;
+    keyIndex = 0;
+    currentSmsText += chars[keyIndex];
+  }
+
+  lastKey = key;
+  updateSmsDisplay(currentSmsText);
+
+  keyTimer = setTimeout(() => {
+    lastKey = null;
+    keyTimer = null;
+  }, 800);
+}
+
+// "C" Key: Backspace or Exit Snake
+function nokiaBackspace() {
+  if (nokiaMode === 'snake') {
+    setNokiaMode('sms');
+    return;
+  }
+  playNokiaTone(420);
+  if (keyTimer) {
+    clearTimeout(keyTimer);
+    keyTimer = null;
+    lastKey = null;
+  }
+  currentSmsText = currentSmsText.slice(0, -1);
+  updateSmsDisplay(currentSmsText);
+}
+
+// Navi Key: Send SMS or Start Snake
+function nokiaNaviPress() {
+  if (nokiaMode === 'snake') {
+    toggleSnakePlay();
+    return;
+  }
+  playNokiaTone(1200);
+  const screen = $('nokia-screen');
+  if (!screen) return;
+  const original = screen.textContent;
+  screen.textContent = '📨 Message Sent!';
+  setTimeout(() => { screen.textContent = original; }, 900);
+}
+
+// Scroll Rocker (▲ / ▼)
+function nokiaScroll(dir) {
+  if (nokiaMode === 'snake') {
+    if (dir < 0) snakeChangeDir(0, -1);
+    else snakeChangeDir(0, 1);
+    return;
+  }
+  playNokiaTone(800);
+  const screen = $('nokia-screen');
+  if (screen) screen.scrollTop += dir * 25;
+}
+
+// Presets
 function changeSms(key) {
+  if (nokiaMode === 'snake') setNokiaMode('sms');
   if (typeof smsData === 'undefined' || !smsData[key]) return;
-  const text = smsData[key];
-  $('sms-input').value = text.slice(0, 160);
-  setSmsText(text);
+  playNokiaTone(980);
+  updateSmsDisplay(smsData[key]);
 }
 
 function onSmsInput() {
-  const text = $('sms-input').value;
-  setSmsText(text || 'Type something…');
-  $('sms-count').textContent = text.length;
+  const input = $('sms-input');
+  if (input) updateSmsDisplay(input.value);
 }
+
+function clearSms() {
+  playNokiaTone(350);
+  updateSmsDisplay('');
+}
+
+// ------------------------------------------------------------
+// NOKIA 3310 SNAKE II ENGINE
+// ------------------------------------------------------------
+const SNAKE_COLS = 20;
+const SNAKE_ROWS = 12;
+const CELL_SIZE = 8; // 20 * 8 = 160w, 12 * 8 = 96h
+let snakeCanvas, snakeCtx;
+let snakeLoop = null;
+let snakeRunning = false;
+let snakeScore = 0;
+let snakeHighScore = 0;
+let snake = [];
+let snakeDir = { x: 1, y: 0 };
+let snakeNextDir = { x: 1, y: 0 };
+let snakeFood = { x: 10, y: 5 };
+
+function initSnake() {
+  snakeCanvas = $('snake-canvas');
+  if (!snakeCanvas) return;
+  snakeCtx = snakeCanvas.getContext('2d');
+  snakeHighScore = Number(localStorage.getItem('nokia_snake_hi') || 0);
+  $('snake-hi-display').textContent = `HI: ${snakeHighScore}`;
+  resetSnakeGame();
+  drawSnake();
+}
+
+function resetSnakeGame() {
+  snake = [
+    { x: 5, y: 6 },
+    { x: 4, y: 6 },
+    { x: 3, y: 6 }
+  ];
+  snakeDir = { x: 1, y: 0 };
+  snakeNextDir = { x: 1, y: 0 };
+  snakeScore = 0;
+  $('snake-score-display').textContent = 'SCR: 0';
+  spawnSnakeFood();
+}
+
+function spawnSnakeFood() {
+  let valid = false;
+  while (!valid) {
+    const fx = Math.floor(Math.random() * SNAKE_COLS);
+    const fy = Math.floor(Math.random() * SNAKE_ROWS);
+    if (!snake.some(s => s.x === fx && s.y === fy)) {
+      snakeFood = { x: fx, y: fy };
+      valid = true;
+    }
+  }
+}
+
+function toggleSnakePlay() {
+  if (snakeRunning) {
+    pauseSnake();
+  } else {
+    startSnake();
+  }
+}
+
+function startSnake() {
+  if (snakeRunning) return;
+  const overlay = $('snake-overlay');
+  if (overlay) overlay.classList.add('hidden');
+  $('snake-status-text').textContent = 'Playing';
+  snakeRunning = true;
+  playNokiaTone(900, 0.08);
+
+  if (snakeLoop) clearInterval(snakeLoop);
+  snakeLoop = setInterval(updateSnakeStep, 130);
+}
+
+function pauseSnake() {
+  snakeRunning = false;
+  if (snakeLoop) clearInterval(snakeLoop);
+  $('snake-status-text').textContent = 'Paused';
+  const overlay = $('snake-overlay');$('snake-msg').textContent = 'PAUSED';
+  if (overlay) overlay.classList.remove('hidden');
+}
+
+function stopSnake() {
+  snakeRunning = false;
+  if (snakeLoop) clearInterval(snakeLoop);
+}
+
+function snakeDie() {
+  stopSnake();
+  playNokiaTone(200, 0.25, 'sawtooth');
+  setTimeout(() => playNokiaTone(140, 0.35, 'sawtooth'), 120);
+
+  if (snakeScore > snakeHighScore) {
+    snakeHighScore = snakeScore;
+    try { localStorage.setItem('nokia_snake_hi', snakeHighScore); } catch (e) {}
+    $('snake-hi-display').textContent = `HI: ${snakeHighScore}`;
+  }
+
+  $('snake-status-text').textContent = 'Game Over';$('snake-msg').textContent = `GAME OVER! (${snakeScore})`;
+  $('snake-overlay').classList.remove('hidden');
+  resetSnakeGame();
+}
+
+function updateSnakeStep() {
+  snakeDir = snakeNextDir;
+  const head = { x: snake[0].x + snakeDir.x, y: snake[0].y + snakeDir.y };
+
+  // Wall collision (classic solid borders)
+  if (head.x < 0 || head.x >= SNAKE_COLS || head.y < 0 || head.y >= SNAKE_ROWS) {
+    snakeDie();
+    return;
+  }
+
+  // Self collision
+  if (snake.some(segment => segment.x === head.x && segment.y === head.y)) {
+    snakeDie();
+    return;
+  }
+
+  snake.unshift(head);
+
+  // Check food
+  if (head.x === snakeFood.x && head.y === snakeFood.y) {
+    snakeScore += 10;
+    $('snake-score-display').textContent = `SCR: ${snakeScore}`;
+    playNokiaTone(1250, 0.04);
+    spawnSnakeFood();
+  } else {
+    snake.pop();
+  }
+
+  drawSnake();
+}
+
+function drawSnake() {
+  if (!snakeCtx) return;
+  // LCD background
+  snakeCtx.fillStyle = '#9cad57';
+  snakeCtx.fillRect(0, 0, 160, 96);
+
+  // Pixel Matrix Snake
+  snakeCtx.fillStyle = '#172207';
+  snake.forEach((pt, idx) => {
+    // 1px inner gap for authentic dot-matrix look
+    snakeCtx.fillRect(pt.x * CELL_SIZE + 0.5, pt.y * CELL_SIZE + 0.5, CELL_SIZE - 1, CELL_SIZE - 1);
+  });
+
+  // Food (small centered block)
+  snakeCtx.fillRect(snakeFood.x * CELL_SIZE + 1.5, snakeFood.y * CELL_SIZE + 1.5, CELL_SIZE - 3, CELL_SIZE - 3);
+}
+
+function snakeChangeDir(dx, dy) {
+  // Prevent reverse direction
+  if (snakeDir.x === -dx && snakeDir.y === -dy) return;
+  snakeNextDir = { x: dx, y: dy };
+  playNokiaTone(750, 0.02);
+}
+
+function handleSnakeKey(key) {
+  if (!snakeRunning && key !== '5') {
+    startSnake();
+  }
+  if (key === '2') snakeChangeDir(0, -1); // Up
+  else if (key === '8') snakeChangeDir(0, 1); // Down
+  else if (key === '4') snakeChangeDir(-1, 0); // Left
+  else if (key === '6') snakeChangeDir(1, 0); // Right
+  else if (key === '5') toggleSnakePlay(); // Pause / Play
+}
+
+// Keyboard controls
+document.addEventListener('keydown', e => {
+  if (nokiaMode === 'snake') {
+    if (['ArrowUp', 'KeyW'].includes(e.code)) { snakeChangeDir(0, -1); e.preventDefault(); }
+    else if (['ArrowDown', 'KeyS'].includes(e.code)) { snakeChangeDir(0, 1); e.preventDefault(); }
+    else if (['ArrowLeft', 'KeyA'].includes(e.code)) { snakeChangeDir(-1, 0); e.preventDefault(); }
+    else if (['ArrowRight', 'KeyD'].includes(e.code)) { snakeChangeDir(1, 0); e.preventDefault(); }
+    else if (['Space', 'Enter'].includes(e.code)) { toggleSnakePlay(); e.preventDefault(); }
+    else if (e.key === 'Escape') { setNokiaMode('sms'); }
+    return;
+  }
+
+  if (lbIsOpen()) {
+    if (e.key === 'Escape') closeLightbox();
+    else if (e.key === 'ArrowRight') lightboxStep(1);
+    else if (e.key === 'ArrowLeft') lightboxStep(-1);
+    else if (e.key === 'Tab') trapTab(e, $('lightbox'));
+    return;
+  }
+  if (fsIsOpen()) {
+    if (e.key === 'Escape') closeFriendsterModal();
+    else if (e.key === 'ArrowRight') nextProfile();
+    else if (e.key === 'ArrowLeft') prevProfile();
+    else if (e.key === 'Tab') trapTab(e, $('fs-window'));
+    return;
+  }
+  if (roomIsOpen()) {
+    if (e.key === 'Escape') closeRoom();
+    else if (e.key === 'ArrowRight') nextRoom();
+    else if (e.key === 'ArrowLeft') prevRoom();
+    else if (e.key === 'Tab') trapTab(e, $('room-panel'));
+  }
+});
 
 // ------------------------------------------------------------
 // FRIENDSTER PROFILES
@@ -397,7 +736,6 @@ function showProfile(index) {
     `<button type="button" class="fs-tab ${i === currentProfile ? 'active' : ''}" onclick="showProfile(${i})">${esc(profShort(f))}</button>`
   ).join('');
 
-  // Auto-scroll active friendster tab into view on mobile
   const activeTab = $('fs-tabs').querySelector('.fs-tab.active');
   if (activeTab && window.innerWidth < 640) {
     activeTab.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
@@ -479,32 +817,6 @@ function renderCurators() {
       <button type="button" onclick="openFriendsterModal(${i})" class="btn btn-yellow btn-sm mt-3">✨ View Friendster</button>
     </div>`).join('');
 }
-
-// ------------------------------------------------------------
-// KEYBOARD CONTROLS
-// ------------------------------------------------------------
-document.addEventListener('keydown', e => {
-  if (lbIsOpen()) {
-    if (e.key === 'Escape') closeLightbox();
-    else if (e.key === 'ArrowRight') lightboxStep(1);
-    else if (e.key === 'ArrowLeft') lightboxStep(-1);
-    else if (e.key === 'Tab') trapTab(e, $('lightbox'));
-    return;
-  }
-  if (fsIsOpen()) {
-    if (e.key === 'Escape') closeFriendsterModal();
-    else if (e.key === 'ArrowRight') nextProfile();
-    else if (e.key === 'ArrowLeft') prevProfile();
-    else if (e.key === 'Tab') trapTab(e, $('fs-window'));
-    return;
-  }
-  if (roomIsOpen()) {
-    if (e.key === 'Escape') closeRoom();
-    else if (e.key === 'ArrowRight') nextRoom();
-    else if (e.key === 'ArrowLeft') prevRoom();
-    else if (e.key === 'Tab') trapTab(e, $('room-panel'));
-  }
-});
 
 // ------------------------------------------------------------
 // BEFORE / AFTER SLIDER
@@ -663,6 +975,6 @@ document.addEventListener('DOMContentLoaded', () => {
   addSwipe($('room-content'), nextRoom, prevRoom);
   addSwipe($('lightbox'), () => lightboxStep(1), () => lightboxStep(-1));
   addSwipe($('fs-window'), nextProfile, prevProfile);
-  if (typeof smsDefault !== 'undefined') { $('sms-input').value = ''; setSmsText(smsDefault); }
+  if (typeof smsDefault !== 'undefined') { $('sms-input').value = ''; updateSmsDisplay(smsDefault); }
   openRoomFromHash();
 });
