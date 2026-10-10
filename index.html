@@ -46,7 +46,7 @@
         <nav class="hidden lg:flex items-center" aria-label="Museum sections">
           <a href="#exhibits" class="nav-link">Exhibits</a>
           <a href="#then-now" class="nav-link">Then vs. Now</a>
-          <a href="#sms" class="nav-link">SMS Lab</a>
+          <a href="#sms" class="nav-link">SMS &amp; Games</a>
           <a href="#curators" class="nav-link">Curators</a>
         </nav>
         <button type="button" onclick="openFriendsterModal(0)" class="btn btn-yellow btn-sm">✨ Friendster</button>
@@ -56,7 +56,7 @@
     <nav class="lg:hidden flex gap-1 overflow-x-auto no-scrollbar px-3.5 pb-2 border-t border-[rgba(43,29,69,0.06)] pt-1.5" aria-label="Museum sections">
       <a href="#exhibits" class="nav-link">Exhibits</a>
       <a href="#then-now" class="nav-link">Then vs. Now</a>
-      <a href="#sms" class="nav-link">SMS Lab</a>
+      <a href="#sms" class="nav-link">SMS &amp; Games</a>
       <a href="#curators" class="nav-link">Curators</a>
     </nav>
   </header>
@@ -109,7 +109,6 @@
         <h3>Then vs. Now</h3>
         <p>Drag the handle (or swipe left/right) to compare 2000–2010 with today.</p>
       </div>
-      <!-- Horizontal mobile carousel tabs for comparison pairs -->
       <div id="ba-tabs" class="pill-carousel mb-3 sm:mb-4"></div>
       <div id="ba-slider" class="ba-slider" role="slider" tabindex="0"
            aria-label="Before and after comparison" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
@@ -125,23 +124,173 @@
       </div>
     </section>
 
-    <!-- SMS simulator -->
-    <section id="sms" class="scroll-mt-24 sm:scroll-mt-28 mt-14 sm:mt-16 max-w-3xl mx-auto">
+    <!-- SMS & SNAKE SIMULATOR (Nokia 3310 Edition) -->
+    <section id="sms" class="scroll-mt-24 sm:scroll-mt-28 mt-14 sm:mt-16 max-w-xl mx-auto px-2">
       <div class="section-head">
         <span class="retro">INTERACTIVE VIRTUAL RELIC</span>
-        <h3>2000s SMS Keypad Simulator</h3>
-        <p>Pick a classic message or type your own. One text capped at 160 characters.</p>
+        <h3>Nokia 3310 Interactive Relic</h3>
+        <p>Switch between composing an SMS or playing classic 1998 Snake with the keypad buttons!</p>
       </div>
-      <div class="phone-card">
-        <div class="nokia-screen" id="nokia-screen">"D2 na me, wer na u? txt bck asap! &lt;3"</div>
-        <div class="sms-meter"><span id="sms-count">0</span> / 160</div>
-        <textarea id="sms-input" maxlength="160" rows="2" oninput="onSmsInput()" placeholder="Type your own 2000s text here…" aria-label="Type your own text message"></textarea>
-        <div class="grid grid-cols-2 gap-2 mt-3">
-          <button type="button" onclick="changeSms('txt_clan')" class="btn btn-sm text-[11px] truncate">📱 Clan Invite</button>
-          <button type="button" onclick="changeSms('edsa2')" class="btn btn-sm text-[11px] truncate">📢 EDSA II Chain</button>
-          <button type="button" onclick="changeSms('gm')" class="btn btn-sm text-[11px] truncate">🌅 2007 GM</button>
-          <button type="button" onclick="changeSms('jejemon')" class="btn btn-sm text-[11px] truncate">🧢 Jejemon</button>
+
+      <!-- Mode Selector: SMS vs Snake -->
+      <div class="flex justify-center mb-4">
+        <div class="seg max-w-xs shadow-[3px_3px_0_var(--ink)]">
+          <button type="button" id="nokia-mode-sms-btn" onclick="setNokiaMode('sms')" class="seg-btn active">✉️ SMS Text</button>
+          <button type="button" id="nokia-mode-snake-btn" onclick="setNokiaMode('snake')" class="seg-btn">🐍 Snake II</button>
         </div>
+      </div>
+
+      <!-- Nokia 3310 Phone Hardware -->
+      <div class="nokia-phone-case">
+        <!-- Inner Faceplate -->
+        <div class="nokia-faceplate">
+          <!-- Earpiece Speaker -->
+          <div class="nokia-speaker" aria-hidden="true"></div>
+
+          <!-- Brand Header -->
+          <div class="nokia-brand">NOKIA</div>
+
+          <!-- Screen Bezel -->
+          <div class="nokia-screen-frame">
+            <!-- Green Monochrome LCD Screen -->
+            <div class="nokia-lcd">
+
+              <!-- VIEW 1: SMS SCREEN -->
+              <div id="nokia-sms-view" class="nokia-view">
+                <!-- LCD Top Status Bar -->
+                <div class="nokia-status-bar" aria-hidden="true">
+                  <div class="nokia-signal" title="Signal Strength">
+                    <span class="bar b1"></span>
+                    <span class="bar b2"></span>
+                    <span class="bar b3"></span>
+                    <span class="bar b4"></span>
+                  </div>
+                  <div class="nokia-operator">SMART-PH</div>
+                  <div class="nokia-battery" title="Battery Meter">
+                    <span class="bar b1"></span>
+                    <span class="bar b2"></span>
+                    <span class="bar b3"></span>
+                    <span class="bar b4"></span>
+                  </div>
+                </div>
+
+                <!-- SMS Text Display Area -->
+                <div class="nokia-screen-content" id="nokia-screen">"D2 na me, wer na u? txt bck asap! &lt;3"</div>
+
+                <!-- LCD SMS Footer -->
+                <div class="nokia-screen-foot">
+                  <span>Options</span>
+                  <span class="nokia-char-count"><span id="sms-count">36</span>/160</span>
+                  <span>Back</span>
+                </div>
+              </div>
+
+              <!-- VIEW 2: SNAKE GAME SCREEN -->
+              <div id="nokia-snake-view" class="nokia-view hidden">
+                <div class="nokia-status-bar" aria-hidden="true">
+                  <span class="font-bold">SNAKE II</span>
+                  <span id="snake-score-display">SCR: 0</span>
+                  <span id="snake-hi-display">HI: 0</span>
+                </div>
+                <div class="nokia-snake-canvas-wrap">
+                  <canvas id="snake-canvas" width="160" height="96"></canvas>
+                  <div id="snake-overlay" class="snake-overlay">
+                    <div id="snake-msg">PRESS NAVI TO PLAY</div>
+                    <div class="snake-sub-msg">Keys: 2=▲ 4=◀ 6=▶ 8=▼</div>
+                  </div>
+                </div>
+                <div class="nokia-screen-foot">
+                  <span onclick="setNokiaMode('sms')" class="cursor-pointer">Exit (C)</span>
+                  <span id="snake-status-text">Ready</span>
+                  <span onclick="toggleSnakePlay()" class="cursor-pointer font-bold">Navi=Play</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Functional Navigation Keys -->
+          <div class="nokia-nav-controls">
+            <button type="button" class="nokia-key-c" onclick="nokiaBackspace()" title="Delete character or Exit game" aria-label="Clear or Exit">C</button>
+            <button type="button" class="nokia-key-navi" onclick="nokiaNaviPress()" title="Navi Key: Send SMS or Start Snake" aria-label="Navi Key">
+              <span></span>
+            </button>
+            <div class="nokia-scroll-rocker">
+              <button type="button" class="nokia-scroll-arrow" onclick="nokiaScroll(-1)" title="Up arrow" aria-label="Up">▲</button>
+              <button type="button" class="nokia-scroll-arrow" onclick="nokiaScroll(1)" title="Down arrow" aria-label="Down">▼</button>
+            </div>
+          </div>
+
+          <!-- 3x4 Numeric Keypad -->
+          <div class="nokia-keypad">
+            <button type="button" class="nokia-btn" onclick="nokiaKeyPress('1')">
+              <span class="num">1</span><span class="sub">. , ?</span>
+            </button>
+            <button type="button" class="nokia-btn" onclick="nokiaKeyPress('2')" title="Key 2: Up in Snake">
+              <span class="num">2</span><span class="sub">abc ▲</span>
+            </button>
+            <button type="button" class="nokia-btn" onclick="nokiaKeyPress('3')">
+              <span class="num">3</span><span class="sub">def</span>
+            </button>
+
+            <button type="button" class="nokia-btn" onclick="nokiaKeyPress('4')" title="Key 4: Left in Snake">
+              <span class="num">4</span><span class="sub">ghi ◀</span>
+            </button>
+            <button type="button" class="nokia-btn" onclick="nokiaKeyPress('5')">
+              <span class="num">5</span><span class="sub">jkl</span>
+            </button>
+            <button type="button" class="nokia-btn" onclick="nokiaKeyPress('6')" title="Key 6: Right in Snake">
+              <span class="num">6</span><span class="sub">mno ▶</span>
+            </button>
+
+            <button type="button" class="nokia-btn" onclick="nokiaKeyPress('7')">
+              <span class="num">7</span><span class="sub">pqrs</span>
+            </button>
+            <button type="button" class="nokia-btn" onclick="nokiaKeyPress('8')" title="Key 8: Down in Snake">
+              <span class="num">8</span><span class="sub">tuv ▼</span>
+            </button>
+            <button type="button" class="nokia-btn" onclick="nokiaKeyPress('9')">
+              <span class="num">9</span><span class="sub">wxyz</span>
+            </button>
+
+            <button type="button" class="nokia-btn" onclick="nokiaKeyPress('*')">
+              <span class="num">*</span><span class="sub">+</span>
+            </button>
+            <button type="button" class="nokia-btn" onclick="nokiaKeyPress('0')">
+              <span class="num">0</span><span class="sub">␣</span>
+            </button>
+            <button type="button" class="nokia-btn" onclick="nokiaKeyPress('#')">
+              <span class="num">#</span><span class="sub">⇧</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4 Original Preset Options (Retained in full) -->
+      <div class="phone-shortcuts mt-5 max-w-md mx-auto">
+        <div class="grid grid-cols-2 gap-2 sm:gap-2.5 mb-3">
+          <button type="button" onclick="changeSms('txt_clan')" class="btn btn-sm text-center leading-tight">📱 Text Clan Invite</button>
+          <button type="button" onclick="changeSms('edsa2')" class="btn btn-sm text-center leading-tight">📢 EDSA II Chain Msg</button>
+          <button type="button" onclick="changeSms('gm')" class="btn btn-sm text-center leading-tight">🌅 2007 Group Message</button>
+          <button type="button" onclick="changeSms('jejemon')" class="btn btn-sm text-center leading-tight">🧢 Jejemon Greeting</button>
+        </div>
+
+        <!-- Direct Keyboard Typing Box -->
+        <details class="keyboard-tray bg-white rounded-xl border-2 border-[var(--ink)] p-3 text-xs shadow-[3px_3px_0_var(--ink)]">
+          <summary class="font-bold cursor-pointer text-[var(--muted)] hover:text-[var(--ink)] select-none">
+            ⌨️ Type using your device's keyboard
+          </summary>
+          <div class="mt-2.5">
+            <textarea id="sms-input" maxlength="160" rows="2" oninput="onSmsInput()"
+                      placeholder="Type your own 2000s text here…"
+                      class="w-full p-2 border-2 border-[var(--ink)] rounded-lg text-xs bg-[#fffdf5] focus:outline-none focus:border-[var(--pink)]"
+                      aria-label="Type message"></textarea>
+            <div class="flex justify-between items-center mt-1 text-[11px] text-[var(--muted)]">
+              <span>Mirrors onto the Nokia screen</span>
+              <button type="button" onclick="clearSms()" class="text-red-500 hover:underline font-bold">Clear text</button>
+            </div>
+          </div>
+        </details>
       </div>
     </section>
 
