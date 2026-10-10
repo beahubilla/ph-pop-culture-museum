@@ -42,7 +42,7 @@ function renderGallery() {
       <div>
         <div class="card-media">
           <span class="card-emoji" aria-hidden="true">${esc(ex.icon)}</span>
-          <img src="${esc(ex.image)}" alt="${esc(ex.alt || ex.badge)}" loading="lazy" onerror="this.remove()">
+          <img src="${esc(ex.image)}" alt="${esc(ex.alt || ex.badge)}" loading="lazy" decoding="async" onerror="this.remove()">
           <span class="card-badge">${esc(ex.badge)}</span>
         </div>
         <div class="card-body">
@@ -107,14 +107,143 @@ function toggleEraView(mode) {
 }
 
 // ------------------------------------------------------------
+// MODAL LAYERS: phone back-button support, scroll lock, focus, swipe
+//   level 1 = room or Friendster window, level 2 = photo viewer
+// ------------------------------------------------------------
+let historyOK = true;
+const lastFocus = { room: null, fs: null, lb: null };
+
+function histLevel() { return (history.state && history.state.lvl) || 0; }
+
+function enterLevel(lvl, hash) {
+  if (!historyOK) return;
+  try {
+    const base = location.pathname + location.search;
+    const url = hash || (lvl > 1 ? base + location.hash : base);
+    if (histLevel() >= lvl) history.replaceState({ lvl }, '', url);
+    else history.pushState({ lvl }, '', url);
+  } catch (e) { historyOK = false; }
+}
+
+// Close a layer: use the browser's back so history stays in sync
+function leaveLevel(lvl, hideFn) {
+  if (historyOK && histLevel() >= lvl) {
+    try { history.back(); } catch (e) { hideFn(); return; }
+    // Safety net in case the browser never fires popstate
+    setTimeout(() => { if (histLevel() >= lvl) hideFn(); }, 400);
+  } else {
+    hideFn();
+  }
+}
+
+function roomIsOpen() { const m = $('room-modal'); return !!m && !m.classList.contains('hidden'); }
+function fsIsOpen() { const m = $('friendster-modal'); return !!m && !m.classList.contains('hidden'); }
+function lbIsOpen() { const m = $('lightbox'); return !!m && !m.classList.contains('hidden'); }
+
+function lockScroll() { document.body.style.overflow = 'hidden'; }
+function unlockScrollIfIdle() { if (!roomIsOpen() && !fsIsOpen() && !lbIsOpen()) document.body.style.overflow = ''; }
+
+function focusPanel(id) { const el = $(id); if (el && el.focus) el.focus({ preventScroll: true }); }
+function restoreFocus(key) {
+  const el = lastFocus[key];
+  lastFocus[key] = null;
+  if (el && el.focus && (!document.contains || document.contains(el))) el.focus({ preventScroll: true });
+}
+
+// Keep Tab inside the open window
+function trapTab(e, container) {
+  if (!container) return;
+  const items = [...container.querySelectorAll('button, a[href], textarea, input, [tabindex]:not([tabindex="-1"])')]
+    .filter(el => !el.disabled && el.getClientRects().length > 0);
+  if (!items.length) { e.preventDefault(); return; }
+  const first = items[0], last = items[items.length - 1], active = document.activeElement;
+  if (e.shiftKey && (active === first || active === container)) { e.preventDefault(); last.focus(); }
+  else if (!e.shiftKey && active === last) { e.preventDefault(); first.focus(); }
+}
+
+// Swipe left/right on touch screens
+function addSwipe(el, onLeft, onRight) {
+  if (!el) return;
+  let x0 = 0, y0 = 0, t0 = 0, tracking = false;
+  el.addEventListener('touchstart', e => {
+    if (e.touches.length !== 1) { tracking = false; return; }
+    x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; t0 = Date.now(); tracking = true;
+  }, { passive: true });
+  el.addEventListener('touchend', e => {
+    if (!tracking) return;
+    tracking = false;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - x0, dy = t.clientY - y0;
+    if (Date.now() - t0 < 700 && Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.6) {
+      (dx < 0 ? onLeft : onRight)();
+    }
+  }, { passive: true });
+}
+
+// Browser back button / swipe-back closes the top-most window
+window.addEventListener('popstate', () => {
+  const lvl = histLevel();
+  if (lvl < 2 && lbIsOpen()) hideLightbox();
+  if (lvl < 1) {
+    if (roomIsOpen()) hideRoom();
+    if (fsIsOpen()) hideFriendster();
+  }
+});
+
+// ---------- Photo viewer (lightbox) ----------
+let lbIndex = 0;
+
+function currentGallery() {
+  const ex = exhibits[currentRoom];
+  return (ex && Array.isArray(ex.gallery)) ? ex.gallery : [];
+}
+
+function showLightbox(i) {
+  const items = currentGallery();
+  if (!items.length) return;
+  lbIndex = (i + items.length) % items.length;
+  const g = items[lbIndex];
+  const img = $('lb-img');
+  img.classList.remove('lb-broken');
+  img.alt = g.caption || '';
+  img.src = g.src;
+  $('lb-caption').textContent = (g.caption || '') + (g.year ? ` (${g.year})` : '');
+  $('lb-credit').textContent = g.credit || '';
+  $('lb-count').textContent = `${lbIndex + 1} / ${items.length}`;
+  $('lb-full').href = g.src;
+  document.querySelectorAll('.lb-nav').forEach(b => b.classList.toggle('hidden', items.length < 2));
+}
+
+function openLightbox(i) {
+  lastFocus.lb = document.activeElement;
+  enterLevel(2);
+  showLightbox(i);
+  $('lightbox').classList.remove('hidden');
+  lockScroll();
+  focusPanel('lightbox');
+}
+function hideLightbox() {
+  $('lightbox').classList.add('hidden');
+  $('lb-img').removeAttribute('src');
+  unlockScrollIfIdle();
+  restoreFocus('lb');
+}
+function closeLightbox() { leaveLevel(2, hideLightbox); }
+function lightboxStep(d) { showLightbox(lbIndex + d); }
+
+// Hide a gallery photo (and its section) if the file can't be loaded
+function galleryImgFailed(img) {
+  const item = img.closest('.gallery-item');
+  const grid = img.closest('.gallery-grid');
+  const section = img.closest('.gallery-section');
+  if (item) item.remove();
+  if (grid && !grid.children.length && section) section.remove();
+}
+
+// ------------------------------------------------------------
 // DETAIL ROOMS
 // ------------------------------------------------------------
 let currentRoom = 0;
-
-function roomIsOpen() {
-  const m = $('room-modal');
-  return m && !m.classList.contains('hidden');
-}
 
 function renderRoom(index) {
   const total = exhibits.length;
@@ -124,6 +253,19 @@ function renderRoom(index) {
   $('room-panel').style.setProperty('--c', ex.color);
 
   const curator = (typeof ex.curator === 'number' && friendsterProfiles[ex.curator]) ? friendsterProfiles[ex.curator] : null;
+
+  const gallery = Array.isArray(ex.gallery) ? ex.gallery : [];
+  const galleryHtml = gallery.length ? `
+      <section class="gallery-section">
+        <h3 class="room-h">📸 Photo gallery <span class="room-h-sub">tap a photo to enlarge</span></h3>
+        <div class="gallery-grid">
+          ${gallery.map((g, i) => `
+            <button type="button" class="gallery-item" onclick="openLightbox(${i})" aria-label="Enlarge photo: ${esc(g.caption || 'Photo ' + (i + 1))}">
+              <span class="gallery-frame"><img src="${esc(g.src)}" alt="${esc(g.caption || '')}" loading="lazy" decoding="async" onerror="galleryImgFailed(this)"></span>
+              <span class="gallery-cap">${esc(g.caption || '')}${g.year ? ` <em>(${esc(g.year)})</em>` : ''}</span>
+            </button>`).join('')}
+        </div>
+      </section>` : '';
 
   const content = $('room-content');
   content.innerHTML = `
@@ -144,6 +286,8 @@ function renderRoom(index) {
         <div class="era-block era-then" style="margin:0"><span class="era-label">2000–2010 Decade</span>${esc(ex.then)}</div>
         <div class="era-block era-present" style="margin:0"><span class="era-label">Present Time</span>${esc(ex.now)}</div>
       </div>
+
+      ${galleryHtml}
 
       <h3 class="room-h">💡 Did you know?</h3>
       <ul class="fact-list">${ex.facts.map(f => `<li>${esc(f)}</li>`).join('')}</ul>
@@ -175,26 +319,36 @@ function renderRoom(index) {
   $('room-count').textContent = `Room ${currentRoom + 1} of ${total} • ${ex.wing}`;
 
   // Shareable link, e.g. .../#room-sports
-  try { history.replaceState(null, '', '#room-' + ex.id); } catch (e) { /* ignore */ }
+  try { history.replaceState(history.state, '', '#room-' + ex.id); } catch (e) { /* ignore */ }
 }
 
 function openRoom(index) {
-  renderRoom(typeof index === 'number' ? index : 0);
+  const n = exhibits.length;
+  const i = (((typeof index === 'number' ? index : 0) % n) + n) % n;
+  lastFocus.room = document.activeElement;
+  enterLevel(1, '#room-' + exhibits[i].id);
+  renderRoom(i);
   $('room-modal').classList.remove('hidden');
-  document.body.style.overflow = 'hidden';
+  lockScroll();
+  focusPanel('room-panel');
 }
 
-function closeRoom() {
+function hideRoom() {
   $('room-modal').classList.add('hidden');
-  document.body.style.overflow = '';
-  try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { /* ignore */ }
+  unlockScrollIfIdle();
+  restoreFocus('room');
+  if (location.hash.indexOf('#room-') === 0) {
+    try { history.replaceState(history.state, '', location.pathname + location.search); } catch (e) { /* ignore */ }
+  }
 }
+
+function closeRoom() { leaveLevel(1, hideRoom); }
 
 function nextRoom() { renderRoom(currentRoom + 1); }
 function prevRoom() { renderRoom(currentRoom - 1); }
 
 function visitCurator(profileIndex) {
-  closeRoom();
+  hideRoom();
   openFriendsterModal(profileIndex);
 }
 
@@ -297,15 +451,21 @@ function nextProfile() { showProfile(currentProfile + 1); }
 function prevProfile() { showProfile(currentProfile - 1); }
 
 function openFriendsterModal(index) {
+  lastFocus.fs = document.activeElement;
+  enterLevel(1);
   showProfile(typeof index === 'number' ? index : 0);
   $('friendster-modal').classList.remove('hidden');
-  document.body.style.overflow = 'hidden';
+  lockScroll();
+  focusPanel('fs-window');
 }
 
-function closeFriendsterModal() {
+function hideFriendster() {
   $('friendster-modal').classList.add('hidden');
-  document.body.style.overflow = '';
+  unlockScrollIfIdle();
+  restoreFocus('fs');
 }
+
+function closeFriendsterModal() { leaveLevel(1, hideFriendster); }
 
 function renderCurators() {
   const grid = $('curator-grid');
@@ -319,19 +479,27 @@ function renderCurators() {
     </div>`).join('');
 }
 
-// Keyboard: Esc closes, arrow keys move between rooms / profiles
+// Keyboard: Esc closes, arrow keys move around, Tab stays inside the open window
 document.addEventListener('keydown', e => {
-  const fsOpen = $('friendster-modal') && !$('friendster-modal').classList.contains('hidden');
-  if (fsOpen) {
+  if (lbIsOpen()) {
+    if (e.key === 'Escape') closeLightbox();
+    else if (e.key === 'ArrowRight') lightboxStep(1);
+    else if (e.key === 'ArrowLeft') lightboxStep(-1);
+    else if (e.key === 'Tab') trapTab(e, $('lightbox'));
+    return;
+  }
+  if (fsIsOpen()) {
     if (e.key === 'Escape') closeFriendsterModal();
-    if (e.key === 'ArrowRight') nextProfile();
-    if (e.key === 'ArrowLeft') prevProfile();
+    else if (e.key === 'ArrowRight') nextProfile();
+    else if (e.key === 'ArrowLeft') prevProfile();
+    else if (e.key === 'Tab') trapTab(e, $('fs-window'));
     return;
   }
   if (roomIsOpen()) {
     if (e.key === 'Escape') closeRoom();
-    if (e.key === 'ArrowRight') nextRoom();
-    if (e.key === 'ArrowLeft') prevRoom();
+    else if (e.key === 'ArrowRight') nextRoom();
+    else if (e.key === 'ArrowLeft') prevRoom();
+    else if (e.key === 'Tab') trapTab(e, $('room-panel'));
   }
 });
 
@@ -491,6 +659,8 @@ document.addEventListener('DOMContentLoaded', () => {
   renderCurators();
   initBeforeAfter();
   renderStationTabs();
+  addSwipe($('room-content'), nextRoom, prevRoom);
+  addSwipe($('lightbox'), () => lightboxStep(1), () => lightboxStep(-1));
   if (typeof smsDefault !== 'undefined') { $('sms-input').value = ''; setSmsText(smsDefault); }
   openRoomFromHash();
 });
