@@ -85,11 +85,15 @@ function renderGallery() {
   }
 }
 
-// Exhibition Wing Filtering
+// Exhibition Wing Filtering with Mobile Auto-Centering
 function switchWing(category) {
-  document.querySelectorAll('.tab-btn').forEach(tab =>
-    tab.classList.toggle('active', tab.getAttribute('data-wing') === category)
-  );
+  document.querySelectorAll('.tab-btn').forEach(tab => {
+    const isActive = tab.getAttribute('data-wing') === category;
+    tab.classList.toggle('active', isActive);
+    if (isActive && window.innerWidth < 640) {
+      tab.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    }
+  });
   document.querySelectorAll('.exhibit-card').forEach(card =>
     card.classList.toggle('hidden', !(category === 'all' || card.getAttribute('data-category') === category))
   );
@@ -99,7 +103,7 @@ function switchWing(category) {
 function toggleEraView(mode) {
   const past = document.querySelectorAll('.exhibit-card .era-2000');
   const present = document.querySelectorAll('.exhibit-card .era-now');
-  const btns = { split: $('view-split-btn'), '2000': $('view-2000-btn'), now: $('view-now-btn') };
+  const btns = { split: $('view-split-btn'), '2000': $('view-2000-btn'), now:$('view-now-btn') };
 
   Object.keys(btns).forEach(key => btns[key].classList.toggle('active', key === mode));
   past.forEach(el => el.classList.toggle('hidden', mode === 'now'));
@@ -108,7 +112,6 @@ function toggleEraView(mode) {
 
 // ------------------------------------------------------------
 // MODAL LAYERS: phone back-button support, scroll lock, focus, swipe
-//   level 1 = room or Friendster window, level 2 = photo viewer
 // ------------------------------------------------------------
 let historyOK = true;
 const lastFocus = { room: null, fs: null, lb: null };
@@ -125,11 +128,9 @@ function enterLevel(lvl, hash) {
   } catch (e) { historyOK = false; }
 }
 
-// Close a layer: use the browser's back so history stays in sync
 function leaveLevel(lvl, hideFn) {
   if (historyOK && histLevel() >= lvl) {
     try { history.back(); } catch (e) { hideFn(); return; }
-    // Safety net in case the browser never fires popstate
     setTimeout(() => { if (histLevel() >= lvl) hideFn(); }, 400);
   } else {
     hideFn();
@@ -150,7 +151,6 @@ function restoreFocus(key) {
   if (el && el.focus && (!document.contains || document.contains(el))) el.focus({ preventScroll: true });
 }
 
-// Keep Tab inside the open window
 function trapTab(e, container) {
   if (!container) return;
   const items = [...container.querySelectorAll('button, a[href], textarea, input, [tabindex]:not([tabindex="-1"])')]
@@ -161,7 +161,7 @@ function trapTab(e, container) {
   else if (!e.shiftKey && active === last) { e.preventDefault(); first.focus(); }
 }
 
-// Swipe left/right on touch screens
+// Swipe gestures
 function addSwipe(el, onLeft, onRight) {
   if (!el) return;
   let x0 = 0, y0 = 0, t0 = 0, tracking = false;
@@ -174,13 +174,12 @@ function addSwipe(el, onLeft, onRight) {
     tracking = false;
     const t = e.changedTouches[0];
     const dx = t.clientX - x0, dy = t.clientY - y0;
-    if (Date.now() - t0 < 700 && Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.6) {
+    if (Date.now() - t0 < 700 && Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) {
       (dx < 0 ? onLeft : onRight)();
     }
   }, { passive: true });
 }
 
-// Browser back button / swipe-back closes the top-most window
 window.addEventListener('popstate', () => {
   const lvl = histLevel();
   if (lvl < 2 && lbIsOpen()) hideLightbox();
@@ -208,8 +207,7 @@ function showLightbox(i) {
   img.alt = g.caption || '';
   img.src = g.src;
   $('lb-caption').textContent = (g.caption || '') + (g.year ? ` (${g.year})` : '');
-  $('lb-credit').textContent = g.credit || '';
-  $('lb-count').textContent = `${lbIndex + 1} / ${items.length}`;
+  $('lb-credit').textContent = g.credit \vert{}\vert{} '';$('lb-count').textContent = `${lbIndex + 1} / ${items.length}`;
   $('lb-full').href = g.src;
   document.querySelectorAll('.lb-nav').forEach(b => b.classList.toggle('hidden', items.length < 2));
 }
@@ -223,15 +221,13 @@ function openLightbox(i) {
   focusPanel('lightbox');
 }
 function hideLightbox() {
-  $('lightbox').classList.add('hidden');
-  $('lb-img').removeAttribute('src');
+  $('lightbox').classList.add('hidden');$('lb-img').removeAttribute('src');
   unlockScrollIfIdle();
   restoreFocus('lb');
 }
 function closeLightbox() { leaveLevel(2, hideLightbox); }
 function lightboxStep(d) { showLightbox(lbIndex + d); }
 
-// Hide a gallery photo (and its section) if the file can't be loaded
 function galleryImgFailed(img) {
   const item = img.closest('.gallery-item');
   const grid = img.closest('.gallery-grid');
@@ -262,7 +258,7 @@ function renderRoom(index) {
           ${gallery.map((g, i) => `
             <button type="button" class="gallery-item" onclick="openLightbox(${i})" aria-label="Enlarge photo: ${esc(g.caption || 'Photo ' + (i + 1))}">
               <span class="gallery-frame"><img src="${esc(g.src)}" alt="${esc(g.caption || '')}" loading="lazy" decoding="async" onerror="galleryImgFailed(this)"></span>
-              <span class="gallery-cap">${esc(g.caption || '')}${g.year ? ` <em>(${esc(g.year)})</em>` : ''}</span>
+              <span class="gallery-cap">${esc(g.caption \vert{}\vert{} '')}${g.year ? ` <em>(${esc(g.year)})</em>` : ''}</span>
             </button>`).join('')}
         </div>
       </section>` : '';
@@ -282,7 +278,7 @@ function renderRoom(index) {
     <div class="room-body">
       <p class="room-intro">${esc(ex.intro)}</p>
 
-      <div class="grid sm:grid-cols-2 gap-3">
+      <div class="grid sm:grid-cols-2 gap-2.5">
         <div class="era-block era-then" style="margin:0"><span class="era-label">2000–2010 Decade</span>${esc(ex.then)}</div>
         <div class="era-block era-present" style="margin:0"><span class="era-label">Present Time</span>${esc(ex.now)}</div>
       </div>
@@ -304,7 +300,7 @@ function renderRoom(index) {
       <div class="impact-box">⭐ Impact: ${esc(ex.impact)}</div>
 
       ${curator ? `
-        <div class="mt-5 text-center">
+        <div class="mt-4 text-center">
           <button type="button" class="btn btn-yellow" onclick="visitCurator(${ex.curator})">✨ Meet the curator: ${esc(profShort(curator))}</button>
         </div>` : ''}
     </div>`;
@@ -314,11 +310,11 @@ function renderRoom(index) {
   $('room-dots').innerHTML = exhibits.map((e, i) =>
     `<button type="button" class="room-dot ${i === currentRoom ? 'active' : ''}" onclick="renderRoom(${i})" title="${esc(e.wing)}" aria-label="Go to ${esc(e.wing)} room">${esc(e.icon)}</button>`
   ).join('');
-  $('room-prev-label').textContent = exhibits[(currentRoom - 1 + total) % total].wing;
-  $('room-next-label').textContent = exhibits[(currentRoom + 1) % total].wing;
+
+  if ($('room-prev-label'))$('room-prev-label').textContent = exhibits[(currentRoom - 1 + total) % total].wing;
+  if ($('room-next-label'))$('room-next-label').textContent = exhibits[(currentRoom + 1) % total].wing;
   $('room-count').textContent = `Room ${currentRoom + 1} of ${total} • ${ex.wing}`;
 
-  // Shareable link, e.g. .../#room-sports
   try { history.replaceState(history.state, '', '#room-' + ex.id); } catch (e) { /* ignore */ }
 }
 
@@ -343,7 +339,6 @@ function hideRoom() {
 }
 
 function closeRoom() { leaveLevel(1, hideRoom); }
-
 function nextRoom() { renderRoom(currentRoom + 1); }
 function prevRoom() { renderRoom(currentRoom - 1); }
 
@@ -402,6 +397,12 @@ function showProfile(index) {
     `<button type="button" class="fs-tab ${i === currentProfile ? 'active' : ''}" onclick="showProfile(${i})">${esc(profShort(f))}</button>`
   ).join('');
 
+  // Auto-scroll active friendster tab into view on mobile
+  const activeTab = $('fs-tabs').querySelector('.fs-tab.active');
+  if (activeTab && window.innerWidth < 640) {
+    activeTab.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+  }
+
   const friends = friendsterProfiles
     .map((f, i) => ({ f, i }))
     .filter(x => x.i !== currentProfile)
@@ -412,36 +413,36 @@ function showProfile(index) {
       </button>`).join('');
 
   $('fs-body').innerHTML = `
-    <div class="flex flex-col sm:flex-row gap-4 items-center sm:items-start">
+    <div class="flex flex-row gap-3 items-center sm:items-start">
       <div class="fs-avatar">${avatarHtml(p)}</div>
-      <div class="min-w-0 text-center sm:text-left">
-        <h4 class="font-bold text-base text-blue-900 break-words">${esc(p.handle)}</h4>
-        <p class="text-[11px] font-semibold text-slate-600">${esc(p.name)}</p>
-        <p class="text-[11px] text-slate-500 italic mb-2">"${esc(p.quote)}"</p>
-        <div class="text-[11px] space-y-0.5 text-slate-600">
+      <div class="min-w-0 text-left flex-1">
+        <h4 class="font-bold text-sm sm:text-base text-blue-900 break-words leading-tight">${esc(p.handle)}</h4>
+        <p class="text-[10px] sm:text-[11px] font-semibold text-slate-600">${esc(p.name)}</p>
+        <p class="text-[10px] sm:text-[11px] text-slate-500 italic mb-1 truncate">"${esc(p.quote)}"</p>
+        <div class="text-[10px] sm:text-[11px] space-y-0.5 text-slate-600">
           <p><strong>Status:</strong> ${esc(p.status)}</p>
-          <p><strong>Member Since:</strong> ${esc(p.memberSince)}</p>
-          <p><strong>Hometown:</strong> ${esc(p.hometown)}</p>
+          <p><strong>Since:</strong> ${esc(p.memberSince)}</p>
+          <p><strong>From:</strong> ${esc(p.hometown)}</p>
         </div>
       </div>
     </div>
-    <div class="border border-blue-200 rounded p-3 bg-blue-50/50">
+    <div class="border border-blue-200 rounded p-2.5 sm:p-3 bg-blue-50/50">
       <h5 class="font-bold text-blue-900 mb-1 border-b border-blue-200 pb-1">About Me</h5>
       <p class="text-[11px] text-slate-700 leading-relaxed mb-2">${esc(p.about)}</p>
       <div>${p.interests.map(t => `<span class="fs-chip">${esc(t)}</span>`).join('')}</div>
     </div>
-    <div class="border border-blue-200 rounded p-3 bg-blue-50/50">
+    <div class="border border-blue-200 rounded p-2.5 sm:p-3 bg-blue-50/50">
       <h5 class="font-bold text-blue-900 mb-2 border-b border-blue-200 pb-1">Testimonials (${p.testimonials.length})</h5>
-      <div class="space-y-2">
+      <div class="space-y-1.5">
         ${p.testimonials.map(t => `
-          <div class="bg-white p-2 rounded border border-blue-100 text-[11px]">
+          <div class="bg-white p-2 rounded border border-blue-100 text-[10px] sm:text-[11px]">
             <span class="font-semibold text-blue-800">${esc(t.from)}:</span> "${esc(t.text)}"
           </div>`).join('')}
       </div>
     </div>
-    <div class="border border-blue-200 rounded p-3 bg-blue-50/50">
+    <div class="border border-blue-200 rounded p-2.5 sm:p-3 bg-blue-50/50">
       <h5 class="font-bold text-blue-900 mb-2 border-b border-blue-200 pb-1">Top Friends</h5>
-      <div class="flex gap-3 flex-wrap">${friends}</div>
+      <div class="flex gap-2.5 flex-wrap">${friends}</div>
     </div>`;
   $('fs-body').scrollTop = 0;
   $('fs-counter').textContent = `Profile ${currentProfile + 1} of ${total}`;
@@ -475,11 +476,13 @@ function renderCurators() {
       <div class="fs-avatar">${avatarHtml(p)}</div>
       <h4 class="font-extrabold text-sm">${esc(p.name)}</h4>
       ${p.role ? `<p class="text-[11px] text-[var(--muted)] mt-1">${esc(p.role)}</p>` : ''}
-      <button type="button" onclick="openFriendsterModal(${i})" class="btn btn-yellow btn-sm mt-3">✨ View Friendster Profile</button>
+      <button type="button" onclick="openFriendsterModal(${i})" class="btn btn-yellow btn-sm mt-3">✨ View Friendster</button>
     </div>`).join('');
 }
 
-// Keyboard: Esc closes, arrow keys move around, Tab stays inside the open window
+// ------------------------------------------------------------
+// KEYBOARD CONTROLS
+// ------------------------------------------------------------
 document.addEventListener('keydown', e => {
   if (lbIsOpen()) {
     if (e.key === 'Escape') closeLightbox();
@@ -524,10 +527,15 @@ function showBeforeAfter(index) {
   const pair = beforeAfterPairs[index];
   if (!pair) return;
   $('ba-before').innerHTML = baLayerHtml(pair.before);
-  $('ba-after').innerHTML = baLayerHtml(pair.after);
-  $('ba-title').textContent = pair.title;
+  $('ba-after').innerHTML = baLayerHtml(pair.after);$('ba-title').textContent = pair.title;
   $('ba-caption').textContent = pair.caption;
-  document.querySelectorAll('#ba-tabs button').forEach((btn, i) => btn.classList.toggle('active', i === index));
+  document.querySelectorAll('#ba-tabs button').forEach((btn, i) => {
+    const isActive = i === index;
+    btn.classList.toggle('active', isActive);
+    if (isActive && window.innerWidth < 640) {
+      btn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    }
+  });
   setBaPosition(50);
 }
 
@@ -560,13 +568,10 @@ function initBeforeAfter() {
 }
 
 // ------------------------------------------------------------
-// MINI PLAYER (stations come from `playlistStations` in data.js)
-//   type "embed" -> plays inside the page
-//   type "link"  -> opens in a new tab (YouTube Music)
+// MINI PLAYER
 // ------------------------------------------------------------
-let currentStation = 1; // 1-based
+let currentStation = 1;
 
-// Pull the playlist ID out of any YouTube / YouTube Music link
 function getPlaylistId(url) {
   if (!url) return null;
   try { return new URL(url).searchParams.get('list') || null; } catch (e) { return null; }
@@ -604,18 +609,16 @@ function switchStation(stationNum) {
     embedWrap.classList.add('hidden');
     musicWrap.classList.remove('hidden');
 
-    // Stop the embedded video while on a link station
     const iframe = $('yt-inpage-player');
     if (iframe) iframe.src = 'about:blank';
 
     $('ytm-open-link').href = hasId ? st.url : playlistSearch.music;
     $('ytm-note').textContent = hasId
-      ? "YouTube Music can't be embedded, so it opens in a new tab."
+      ? "YouTube Music opens in a new tab."
       : 'No playlist link set yet. Paste yours into js/data.js (playlistStations).';
     return;
   }
 
-  // type "embed"
   musicWrap.classList.add('hidden');
   embedWrap.classList.remove('hidden');
   const box = $('yt-video-box');
@@ -626,7 +629,6 @@ function switchStation(stationNum) {
     $('yt-open-link').textContent = 'Search YouTube for 2000s OPM ↗';
     return;
   }
-  // Rebuild the iframe if the "missing" message replaced it
   if (!$('yt-inpage-player')) {
     box.classList.remove('missing');
     box.innerHTML = '<iframe id="yt-inpage-player" class="w-full h-full" title="2000s soundtrack playlist" frameborder="0" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>';
@@ -646,7 +648,6 @@ function togglePlayerPopup() {
   popup.classList.toggle('hidden', !opening);
   pill.classList.toggle('hidden', opening);
 
-  // Load the player only when it's first opened (faster page load)
   if (opening) switchStation(currentStation);
 }
 
@@ -661,6 +662,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderStationTabs();
   addSwipe($('room-content'), nextRoom, prevRoom);
   addSwipe($('lightbox'), () => lightboxStep(1), () => lightboxStep(-1));
+  addSwipe($('fs-window'), nextProfile, prevProfile);
   if (typeof smsDefault !== 'undefined') { $('sms-input').value = ''; setSmsText(smsDefault); }
   openRoomFromHash();
 });
