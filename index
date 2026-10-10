@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Tatak 2000s: Philippine Pop Culture Virtual Museum</title>
+  <meta name="description" content="A virtual museum tracing Philippine pop culture from 2000–2010 to today: SMS clans, Friendster, OPM rock, LAN shops, EDSA II, BPO nights, and Typhoon Ondoy.">
+  <meta name="theme-color" content="#fff4fa">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8F%9B%EF%B8%8F%3C/text%3E%3C/svg%3E">
+
+  <!-- Marks the page as JS-enabled so reveal animations only run when scripts work -->
+  <script>document.documentElement.classList.add('js');</script>
+
+  <!-- Tailwind CSS CDN (layout utilities) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: { fontFamily: {
+        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+        retro: ['"VT323"', 'monospace'],
+        pixel: ['"Silkscreen"', 'monospace']
+      } } }
+    }
+  </script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=VT323&family=Silkscreen&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="./css/style.css">
+</head>
+<body class="font-sans">
+
+  <!-- Bright animated background -->
+  <div class="bg-sky" aria-hidden="true"></div>
+
+  <!-- Top navigation -->
+  <header class="site-header">
+    <div class="max-w-7xl mx-auto px-3.5 sm:px-6 h-14 sm:h-16 flex items-center justify-between gap-2.5">
+      <a href="#top" class="flex items-center gap-2 sm:gap-3 min-w-0">
+        <span class="brand-badge">2000–2010</span>
+        <span class="font-extrabold tracking-tight truncate text-sm sm:text-base">Tatak 2000s <span class="hidden md:inline text-[var(--muted)] font-semibold text-sm">| Philippine Pop Culture Virtual Museum</span></span>
+      </a>
+      <div class="flex items-center gap-2 flex-shrink-0">
+        <nav class="hidden lg:flex items-center" aria-label="Museum sections">
+          <a href="#exhibits" class="nav-link">Exhibits</a>
+          <a href="#then-now" class="nav-link">Then vs. Now</a>
+          <a href="#sms" class="nav-link">SMS &amp; Games</a>
+          <a href="#curators" class="nav-link">Curators</a>
+        </nav>
+        <button type="button" onclick="openFriendsterModal(0)" class="btn btn-yellow btn-sm">✨ Friendster</button>
+      </div>
+    </div>
+    <!-- Mobile sub-navigation bar with hidden scrollbars -->
+    <nav class="lg:hidden flex gap-1 overflow-x-auto no-scrollbar px-3.5 pb-2 border-t border-[rgba(43,29,69,0.06)] pt-1.5" aria-label="Museum sections">
+      <a href="#exhibits" class="nav-link">Exhibits</a>
+      <a href="#then-now" class="nav-link">Then vs. Now</a>
+      <a href="#sms" class="nav-link">SMS &amp; Games</a>
+      <a href="#curators" class="nav-link">Curators</a>
+    </nav>
+  </header>
+
+  <!-- Hero / Grand Lobby -->
+  <section id="top" class="px-4 pt-10 sm:pt-14 pb-8 text-center">
+    <div class="max-w-5xl mx-auto">
+      <span class="hero-pill">📼 Retrospective Exhibition • 2000–2010 vs. Present</span>
+      <h2 class="hero-title">
+        From <span class="grad-text">Unli-Text &amp; Friendster</span><br>to P-Pop &amp; 5G Streams
+      </h2>
+      <p class="max-w-2xl mx-auto text-xs sm:text-base leading-relaxed text-[var(--muted)] mb-6 sm:mb-7">
+        Trace how the analog-digital hybrid era of 2000–2010 shaped modern Philippine communication, entertainment, sports, and socio-political identity.
+      </p>
+      <div class="flex flex-wrap justify-center gap-2.5 sm:gap-3 mb-6 sm:mb-8">
+        <button type="button" onclick="openRoom(0)" class="btn btn-pink">🚪 Start the tour</button>
+        <a href="#exhibits" class="btn">Browse exhibits ↓</a>
+      </div>
+
+      <!-- Horizontal mobile carousel / wrapped desktop tabs -->
+      <div id="wing-tabs" class="pill-carousel max-w-3xl mx-auto" role="tablist" aria-label="Exhibition wings"></div>
+    </div>
+  </section>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 pb-10">
+
+    <div id="exhibits" class="scroll-mt-24 sm:scroll-mt-28"></div>
+
+    <!-- View mode selector -->
+    <div class="panel mb-7 p-3.5 sm:p-5 flex flex-col md:flex-row items-center justify-between gap-3 sm:gap-4">
+      <div class="text-center md:text-left">
+        <h3 class="font-extrabold text-sm sm:text-base">🏛️ Exhibition Gallery Displays</h3>
+        <p class="text-xs text-[var(--muted)]">Tap any exhibit to step inside. Switch cards between 2000s, today, or both.</p>
+      </div>
+      <div class="seg" role="group" aria-label="Display mode">
+        <button type="button" id="view-split-btn" onclick="toggleEraView('split')" class="seg-btn active">Side by Side</button>
+        <button type="button" id="view-2000-btn" onclick="toggleEraView('2000')" class="seg-btn">2000–2010</button>
+        <button type="button" id="view-now-btn" onclick="toggleEraView('now')" class="seg-btn">Present</button>
+      </div>
+    </div>
+
+    <!-- Exhibit cards are generated from js/data.js -->
+    <div id="gallery-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6"></div>
+    <noscript><p class="panel p-4 mt-4 text-sm">This museum needs JavaScript turned on to show its exhibits.</p></noscript>
+
+    <!-- THEN vs NOW slider -->
+    <section id="then-now" class="scroll-mt-24 sm:scroll-mt-28 mt-14 sm:mt-16 max-w-4xl mx-auto">
+      <div class="section-head">
+        <span class="retro">INTERACTIVE COMPARISON</span>
+        <h3>Then vs. Now</h3>
+        <p>Drag the handle (or swipe left/right) to compare 2000–2010 with today.</p>
+      </div>
+      <div id="ba-tabs" class="pill-carousel mb-3 sm:mb-4"></div>
+      <div id="ba-slider" class="ba-slider" role="slider" tabindex="0"
+           aria-label="Before and after comparison" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
+        <div class="ba-layer ba-after" id="ba-after"></div>
+        <div class="ba-layer ba-before" id="ba-before"></div>
+        <span class="ba-label ba-label-before">2000–2010</span>
+        <span class="ba-label ba-label-after">Present</span>
+        <div class="ba-handle" aria-hidden="true"><span>⇆</span></div>
+      </div>
+      <div class="mt-3.5 text-center max-w-xl mx-auto px-2">
+        <h4 id="ba-title" class="font-extrabold text-sm sm:text-base"></h4>
+        <p id="ba-caption" class="text-xs text-[var(--muted)] mt-1 leading-relaxed"></p>
+      </div>
+    </section>
+
+    <!-- SMS & SNAKE SIMULATOR (Nokia 3310 Edition) -->
+    <section id="sms" class="scroll-mt-24 sm:scroll-mt-28 mt-14 sm:mt-16 max-w-xl mx-auto px-2">
+      <div class="section-head">
+        <span class="retro">INTERACTIVE VIRTUAL RELIC</span>
+        <h3>Nokia 3310 Interactive Relic</h3>
+        <p>Switch between composing an SMS or playing classic 1998 Snake with the keypad buttons!</p>
+      </div>
+
+      <!-- Mode Selector: SMS vs Snake -->
+      <div class="flex justify-center mb-4">
+        <div class="seg max-w-xs shadow-[3px_3px_0_var(--ink)]">
+          <button type="button" id="nokia-mode-sms-btn" onclick="setNokiaMode('sms')" class="seg-btn active">✉️ SMS Text</button>
+          <button type="button" id="nokia-mode-snake-btn" onclick="setNokiaMode('snake')" class="seg-btn">🐍 Snake II</button>
+        </div>
+      </div>
+
+      <!-- Nokia 3310 Phone Hardware -->
+      <div class="nokia-phone-case">
+        <!-- Inner Faceplate -->
+        <div class="nokia-faceplate">
+          <!-- Earpiece Speaker -->
+          <div class="nokia-speaker" aria-hidden="true"></div>
+
+          <!-- Brand Header -->
+          <div class="nokia-brand">NOKIA</div>
+
+          <!-- Screen Bezel -->
+          <div class="nokia-screen-frame">
+            <!-- Green Monochrome LCD Screen -->
+            <div class="nokia-lcd">
+
+              <!-- VIEW 1: SMS SCREEN -->
+              <div id="nokia-sms-view" class="nokia-view">
+                <!-- LCD Top Status Bar -->
+                <div class="nokia-status-bar" aria-hidden="true">
+                  <div class="nokia-signal" title="Signal Strength">
+                    <span class="bar b1"></span>
+                    <span class="bar b2"></span>
+                    <span class="bar b3"></span>
+                    <span class="bar b4"></span>
+                  </div>
+                  <div class="nokia-operator">SMART-PH</div>
+                  <div class="nokia-battery" title="Battery Meter">
+                    <span class="bar b1"></span>
+                    <span class="bar b2"></span>
+                    <span class="bar b3"></span>
+                    <span class="bar b4"></span>
+                  </div>
+                </div>
+
+                <!-- SMS Text Display Area -->
+                <div class="nokia-screen-content" id="nokia-screen">"D2 na me, wer na u? txt bck asap! &lt;3"</div>
+
+                <!-- LCD SMS Footer -->
+                <div class="nokia-screen-foot">
+                  <span>Options</span>
+                  <span class="nokia-char-count"><span id="sms-count">36</span>/160</span>
+                  <span>Back</span>
+                </div>
+              </div>
+
+              <!-- VIEW 2: SNAKE GAME SCREEN -->
+              <div id="nokia-snake-view" class="nokia-view hidden">
+                <div class="nokia-status-bar" aria-hidden="true">
+                  <span class="font-bold">SNAKE II</span>
+                  <span id="snake-score-display">SCR: 0</span>
+                  <span id="snake-hi-display">HI: 0</span>
+                </div>
+                <div class="nokia-snake-canvas-wrap">
+                  <canvas id="snake-canvas" width="160" height="96"></canvas>
+                  <div id="snake-overlay" class="snake-overlay">
+                    <div id="snake-msg">PRESS NAVI TO PLAY</div>
+                    <div class="snake-sub-msg">Keys: 2=▲ 4=◀ 6=▶ 8=▼</div>
+                  </div>
+                </div>
+                <div class="nokia-screen-foot">
+                  <span onclick="setNokiaMode('sms')" class="cursor-pointer">Exit (C)</span>
+                  <span id="snake-status-text">Ready</span>
+                  <span onclick="toggleSnakePlay()" class="cursor-pointer font-bold">Navi=Play</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Functional Navigation Keys -->
+          <div class="nokia-nav-controls">
+            <button type="button" class="nokia-key-c" onclick="nokiaBackspace()" title="Delete character or Exit game" aria-label="Clear or Exit">C</button>
+            <button type="button" class="nokia-key-navi" onclick="nokiaNaviPress()" title="Navi Key: Send SMS or Start Snake" aria-label="Navi Key">
+              <span></span>
+            </button>
+            <div class="nokia-scroll-rocker">
+              <button type="button" class="nokia-scroll-arrow" onclick="nokiaScroll(-1)" title="Up arrow" aria-label="Up">▲</button>
+              <button type="button" class="nokia-scroll-arrow" onclick="nokiaScroll(1)" title="Down arrow" aria-label="Down">▼</button>
+            </div>
+          </div>
+
+          <!-- 3x4 Numeric Keypad -->
+          <div class="nokia-keypad">
+            <button type="button" class="nokia-btn" onclick="nokiaKeyPress('1')">
+              <span class="num">1</span><span class="sub">. , ?</span>
+            </button>
+            <button type="button" class="nokia-btn" onclick="nokiaKeyPress('2')" title="Key 2: Up in Snake">
+              <span class="num">2</span><span class="sub">abc ▲</span>
+            </button>
+            <button type="button" class="nokia-btn" onclick="nokiaKeyPress('3')">
+              <span class="num">3</span><span class="sub">def</span>
+            </button>
+
+            <button type="button" class="nokia-btn" onclick="nokiaKeyPress('4')" title="Key 4: Left in Snake">
+              <span class="num">4</span><span class="sub">ghi ◀</span>
+            </button>
+            <button type="button" class="nokia-btn" onclick="nokiaKeyPress('5')">
+              <span class="num">5</span><span class="sub">jkl</span>
+            </button>
+            <button type="button" class="nokia-btn" onclick="nokiaKeyPress('6')" title="Key 6: Right in Snake">
+              <span class="num">6</span><span class="sub">mno ▶</span>
+            </button>
+
+            <button type="button" class="nokia-btn" onclick="nokiaKeyPress('7')">
+              <span class="num">7</span><span class="sub">pqrs</span>
+            </button>
+            <button type="button" class="nokia-btn" onclick="nokiaKeyPress('8')" title="Key 8: Down in Snake">
+              <span class="num">8</span><span class="sub">tuv ▼</span>
+            </button>
+            <button type="button" class="nokia-btn" onclick="nokiaKeyPress('9')">
+              <span class="num">9</span><span class="sub">wxyz</span>
+            </button>
+
+            <button type="button" class="nokia-btn" onclick="nokiaKeyPress('*')">
+              <span class="num">*</span><span class="sub">+</span>
+            </button>
+            <button type="button" class="nokia-btn" onclick="nokiaKeyPress('0')">
+              <span class="num">0</span><span class="sub">␣</span>
+            </button>
+            <button type="button" class="nokia-btn" onclick="nokiaKeyPress('#')">
+              <span class="num">#</span><span class="sub">⇧</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4 Original Preset Options (Retained in full) -->
+      <div class="phone-shortcuts mt-5 max-w-md mx-auto">
+        <div class="grid grid-cols-2 gap-2 sm:gap-2.5 mb-3">
+          <button type="button" onclick="changeSms('txt_clan')" class="btn btn-sm text-center leading-tight">📱 Text Clan Invite</button>
+          <button type="button" onclick="changeSms('edsa2')" class="btn btn-sm text-center leading-tight">📢 EDSA II Chain Msg</button>
+          <button type="button" onclick="changeSms('gm')" class="btn btn-sm text-center leading-tight">🌅 2007 Group Message</button>
+          <button type="button" onclick="changeSms('jejemon')" class="btn btn-sm text-center leading-tight">🧢 Jejemon Greeting</button>
+        </div>
+
+        <!-- Direct Keyboard Typing Box -->
+        <details class="keyboard-tray bg-white rounded-xl border-2 border-[var(--ink)] p-3 text-xs shadow-[3px_3px_0_var(--ink)]">
+          <summary class="font-bold cursor-pointer text-[var(--muted)] hover:text-[var(--ink)] select-none">
+            ⌨️ Type using your device's keyboard
+          </summary>
+          <div class="mt-2.5">
+            <textarea id="sms-input" maxlength="160" rows="2" oninput="onSmsInput()"
+                      placeholder="Type your own 2000s text here…"
+                      class="w-full p-2 border-2 border-[var(--ink)] rounded-lg text-xs bg-[#fffdf5] focus:outline-none focus:border-[var(--pink)]"
+                      aria-label="Type message"></textarea>
+            <div class="flex justify-between items-center mt-1 text-[11px] text-[var(--muted)]">
+              <span>Mirrors onto the Nokia screen</span>
+              <button type="button" onclick="clearSms()" class="text-red-500 hover:underline font-bold">Clear text</button>
+            </div>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <!-- Curators -->
+    <section id="curators" class="scroll-mt-24 sm:scroll-mt-28 mt-14 sm:mt-16 max-w-5xl mx-auto">
+      <div class="section-head">
+        <span class="retro">GROUP 3</span>
+        <h3>Meet the Curators</h3>
+        <p>Open each curator's circa-2007 Friendster profile.</p>
+      </div>
+      <div id="curator-grid" class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5"></div>
+    </section>
+  </main>
+
+  <!-- ROOM MODAL -->
+  <div id="room-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-label="Exhibit room"
+       onclick="if (event.target === this) closeRoom()">
+    <div class="room-panel" id="room-panel" tabindex="-1">
+      <div class="sm:hidden modal-drag-bar" aria-hidden="true"></div>
+      <button type="button" class="modal-close" onclick="closeRoom()" aria-label="Close room">✕</button>
+      <div id="room-content" class="room-scroll"></div>
+      <div class="room-nav">
+        <button type="button" class="btn btn-sm" onclick="prevRoom()">◀ <span class="hidden sm:inline" id="room-prev-label">Prev</span><span class="sm:hidden">Prev</span></button>
+        <div class="text-center min-w-0 flex-1 px-1">
+          <div id="room-dots" class="flex gap-1 justify-center flex-wrap"></div>
+          <div id="room-count" class="text-[10px] font-bold text-[var(--muted)] mt-0.5 truncate"></div>
+        </div>
+        <button type="button" class="btn btn-sm" onclick="nextRoom()"><span class="hidden sm:inline" id="room-next-label">Next</span><span class="sm:hidden">Next</span> ▶</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHOTO VIEWER (lightbox) -->
+  <div id="lightbox" class="lightbox hidden" role="dialog" aria-modal="true" aria-label="Photo viewer" tabindex="-1"
+       onclick="if (event.target === this || event.target.classList.contains('lb-figure')) closeLightbox()">
+    <button type="button" class="lb-close" onclick="closeLightbox()" aria-label="Close photo viewer">✕</button>
+    <button type="button" class="lb-nav lb-prev" onclick="lightboxStep(-1)" aria-label="Previous photo">◀</button>
+    <figure class="lb-figure">
+      <img id="lb-img" alt="" draggable="false" onerror="this.classList.add('lb-broken')">
+      <figcaption>
+        <b id="lb-caption"></b>
+        <span id="lb-credit"></span>
+        <span id="lb-count"></span>
+        <a id="lb-full" class="lb-full" href="#" target="_blank" rel="noopener noreferrer">Open full size ↗</a>
+      </figcaption>
+    </figure>
+    <button type="button" class="lb-nav lb-next" onclick="lightboxStep(1)" aria-label="Next photo">▶</button>
+  </div>
+
+  <!-- FRIENDSTER MODAL -->
+  <div id="friendster-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-label="Friendster profiles"
+       onclick="if (event.target === this) closeFriendsterModal()">
+    <div class="fs-window" id="fs-window" tabindex="-1">
+      <div class="flex items-center justify-between pb-2.5 mb-2.5 border-b border-blue-300/50 text-white">
+        <div class="flex items-center gap-2">
+          <span class="text-lg sm:text-xl font-black tracking-tighter text-amber-300">friendster.</span>
+          <span class="text-[10px] bg-blue-800 px-2 py-0.5 rounded">Circa 2007</span>
+        </div>
+        <button type="button" onclick="closeFriendsterModal()" class="text-white hover:text-amber-300 text-lg font-bold px-2" aria-label="Close">✕</button>
+      </div>
+      <div id="fs-tabs" class="flex gap-1 mb-2 overflow-x-auto no-scrollbar"></div>
+      <div id="fs-body" class="bg-white rounded p-3.5 sm:p-4 text-slate-800 space-y-3.5 max-h-[62vh] max-h-[62dvh] overflow-y-auto"></div>
+      <div class="flex items-center justify-between mt-2.5 text-white text-[11px]">
+        <button type="button" onclick="prevProfile()" class="fs-nav-btn">◀ Prev</button>
+        <span id="fs-counter" class="font-semibold"></span>
+        <button type="button" onclick="nextProfile()" class="fs-nav-btn">Next ▶</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLOATING MINI PLAYER -->
+  <div class="player-dock">
+    <button type="button" id="player-pill" class="player-pill" onclick="togglePlayerPopup()" aria-label="Open the 2000s soundtrack player">
+      <span class="eq" aria-hidden="true"><i class="eq-bar-1"></i><i class="eq-bar-2"></i><i class="eq-bar-3"></i></span>
+      <span>📻 Soundtrack</span>
+      <span class="winamp-tag">WINAMP</span>
+    </button>
+
+    <aside id="player-popup" class="player-popup hidden" aria-label="2000s soundtrack player">
+      <div class="flex items-center justify-between pb-2 mb-2 border-b-2 border-dashed border-[var(--line)]">
+        <div class="flex items-center gap-1.5">
+          <span class="w-2.5 h-2.5 rounded-full bg-[var(--pink)] inline-block"></span>
+          <span class="font-pixel text-[11px] text-[var(--pink)]">WINAMP v2.91</span>
+        </div>
+        <button type="button" onclick="togglePlayerPopup()" class="modal-close-sm" title="Minimize" aria-label="Minimize player">✕</button>
+      </div>
+
+      <div class="player-screen">
+        <div class="flex justify-between text-[10px] opacity-70 mb-0.5"><span>CHANNEL</span><span id="station-badge" class="font-bold text-[#ff8fc0]">STATION 1</span></div>
+        <p id="playlist-title" class="font-bold truncate text-[11px] text-[#7fe7ff]"></p>
+      </div>
+
+      <!-- Tab 1: embedded YouTube playlist -->
+      <div id="yt-embed-wrap">
+        <div id="yt-video-box" class="player-video">
+          <iframe id="yt-inpage-player" class="w-full h-full" title="2000s soundtrack playlist" frameborder="0"
+                  referrerpolicy="strict-origin-when-cross-origin"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowfullscreen></iframe>
+        </div>
+        <a id="yt-open-link" class="player-link" href="#" target="_blank" rel="noopener noreferrer">Not playing? Open on YouTube ↗</a>
+      </div>
+
+      <!-- Tab 2: YouTube Music opens in a new tab -->
+      <div id="yt-music-wrap" class="hidden">
+        <div class="music-card">
+          <div class="text-4xl mb-2">🎵</div>
+          <p class="text-xs font-semibold mb-3" id="ytm-note">YouTube Music opens in a new tab.</p>
+          <a id="ytm-open-link" class="btn btn-pink btn-sm" href="#" target="_blank" rel="noopener noreferrer">Open in YouTube Music ↗</a>
+        </div>
+      </div>
+
+      <div id="station-tabs" class="grid gap-1.5 mt-2.5 text-[10px]"></div>
+    </aside>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-card">
+      <p class="footer-title">Evolution of Philippine Pop Culture: 2000–2010 vs. Present</p>
+      <p class="footer-subject">📚 Subject: <strong>Philippine Pop Culture A1101</strong></p>
+      <p class="footer-line">Group 3 Curators: Ysha Rose Beatrice Hubilla, Benz Buluran, Ingrid Mary Sacramento</p>
+      <p class="footer-line">MMDC Digital Museum</p>
+      <a href="#top" class="footer-top">↑ Back to top</a>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="./js/data.js"></script>
+  <script src="./js/app.js"></script>
+</body>
+</html>
