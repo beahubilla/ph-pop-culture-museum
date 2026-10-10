@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Tatak 2000s: Philippine Pop Culture Virtual Museum</title>
   <meta name="description" content="A virtual museum tracing Philippine pop culture from 2000–2010 to today: SMS clans, Friendster, OPM rock, LAN shops, EDSA II, BPO nights, and Typhoon Ondoy.">
   <meta name="theme-color" content="#fff4fa">
@@ -156,7 +156,7 @@
   <!-- ROOM MODAL (content rendered from js/data.js) -->
   <div id="room-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-label="Exhibit room"
        onclick="if (event.target === this) closeRoom()">
-    <div class="room-panel" id="room-panel">
+    <div class="room-panel" id="room-panel" tabindex="-1">
       <button type="button" class="modal-close" onclick="closeRoom()" aria-label="Close room">✕</button>
       <div id="room-content" class="room-scroll"></div>
       <div class="room-nav">
@@ -164,16 +164,34 @@
         <div class="text-center">
           <div id="room-dots" class="flex gap-1.5 justify-center flex-wrap"></div>
           <div id="room-count" class="text-[10px] font-bold text-[var(--muted)] mt-1"></div>
+          <div class="room-hint">← → switch rooms • Esc to close</div>
         </div>
         <button type="button" class="btn btn-sm" onclick="nextRoom()"><span id="room-next-label">Next</span> ▶</button>
       </div>
     </div>
   </div>
 
+  <!-- PHOTO VIEWER (lightbox) -->
+  <div id="lightbox" class="lightbox hidden" role="dialog" aria-modal="true" aria-label="Photo viewer" tabindex="-1"
+       onclick="if (event.target === this || event.target.classList.contains('lb-figure')) closeLightbox()">
+    <button type="button" class="lb-close" onclick="closeLightbox()" aria-label="Close photo viewer">✕</button>
+    <button type="button" class="lb-nav lb-prev" onclick="lightboxStep(-1)" aria-label="Previous photo">◀</button>
+    <figure class="lb-figure">
+      <img id="lb-img" alt="" draggable="false" onerror="this.classList.add('lb-broken')">
+      <figcaption>
+        <b id="lb-caption"></b>
+        <span id="lb-credit"></span>
+        <span id="lb-count"></span>
+        <a id="lb-full" class="lb-full" href="#" target="_blank" rel="noopener noreferrer">Open full size ↗</a>
+      </figcaption>
+    </figure>
+    <button type="button" class="lb-nav lb-next" onclick="lightboxStep(1)" aria-label="Next photo">▶</button>
+  </div>
+
   <!-- FRIENDSTER MODAL (content rendered from js/data.js) -->
   <div id="friendster-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-label="Friendster profiles"
        onclick="if (event.target === this) closeFriendsterModal()">
-    <div class="fs-window">
+    <div class="fs-window" id="fs-window" tabindex="-1">
       <div class="flex items-center justify-between pb-3 mb-3 border-b border-blue-300/50 text-white">
         <div class="flex items-center gap-2">
           <span class="text-xl font-black tracking-tighter text-amber-300">friendster.</span>
@@ -193,7 +211,7 @@
 
   <!-- FLOATING MINI PLAYER -->
   <div class="player-dock">
-    <button type="button" id="player-pill" class="player-pill" onclick="togglePlayerPopup()" aria-label="Open the 00s soundtrack player">
+    <button type="button" id="player-pill" class="player-pill" onclick="togglePlayerPopup()" aria-label="Open the 2000s soundtrack player">
       <span class="eq" aria-hidden="true"><i class="eq-bar-1"></i><i class="eq-bar-2"></i><i class="eq-bar-3"></i></span>
       <span>📻 2000s Soundtrack</span>
       <span class="winamp-tag">WINAMP</span>
@@ -233,16 +251,18 @@
         </div>
       </div>
 
-      <div class="grid grid-cols-2 gap-1.5 mt-2.5 text-[10px]">
-        <button type="button" onclick="switchStation(1)" id="btn-station-1" class="station-btn active">▶ YouTube</button>
-        <button type="button" onclick="switchStation(2)" id="btn-station-2" class="station-btn">🎵 YouTube Music</button>
-      </div>
+      <div id="station-tabs" class="grid gap-1.5 mt-2.5 text-[10px]"></div>
     </aside>
   </div>
 
-  <footer class="text-center text-xs text-[var(--muted)] px-6 py-10">
-    <p class="font-bold text-[var(--ink)] mb-1">Evolution of Philippine Pop Culture: 2000–2010 vs. Present</p>
-    <p>Group 3 Curators: Ysha Rose Beatrice Hubilla, Benz Buluran, Ingrid Mary Sacramento • MMDC Digital Museum</p>
+  <footer class="site-footer">
+    <div class="footer-card">
+      <p class="footer-title">Evolution of Philippine Pop Culture: 2000–2010 vs. Present</p>
+      <p class="footer-subject">📚 Subject: <strong>Philippine Pop Culture A1101</strong></p>
+      <p class="footer-line">Group 3 Curators: Ysha Rose Beatrice Hubilla, Benz Buluran, Ingrid Mary Sacramento</p>
+      <p class="footer-line">MMDC Digital Museum</p>
+      <a href="#top" class="footer-top">↑ Back to top</a>
+    </div>
   </footer>
 
   <!-- Scripts (data first, then app) -->
