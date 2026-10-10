@@ -16,7 +16,7 @@
   --orange: #ff8a3d;
 }
 
-*, *::before, *::after { box-sizing: border-box; }
+* { box-sizing: border-box; }
 html { scroll-behavior: smooth; background: var(--paper); }
 body {
   color: var(--ink);
@@ -354,6 +354,7 @@ a { color: inherit; }
   .exhibit-card, .curator-card, .btn { transition: none; }
 }
 
+
 /* ============================================================
    Photo gallery, photo viewer, and phone / laptop refinements
    ============================================================ */
@@ -419,11 +420,13 @@ button, .btn, .exhibit-card, .gallery-item { -webkit-tap-highlight-color: transp
 }
 
 /* ---------- Phones ---------- */
+/* Use the "dynamic" viewport so browser toolbars don't cut modals off */
 .room-panel { max-height: 92vh; max-height: 92dvh; }
 #fs-body { max-height: 60vh; max-height: 60dvh; }
 .modal-backdrop {
   padding: max(1rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right)) max(1rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left));
 }
+/* Keep the player and page bottom clear of the home bar / notch */
 .player-dock { right: max(1rem, env(safe-area-inset-right)); bottom: max(1rem, env(safe-area-inset-bottom)); }
 body { padding-bottom: calc(7rem + env(safe-area-inset-bottom)); }
 
@@ -464,18 +467,22 @@ body { padding-bottom: calc(7rem + env(safe-area-inset-bottom)); }
   .player-pill:hover { transform: none; box-shadow: 4px 4px 0 var(--pink); }
 }
 
-/* ---------- Footer / footnote ---------- */
-.site-footer { padding: 2.5rem 1.25rem 3rem; }
-.footer-card {
-  max-width: 40rem; margin: 0 auto; padding: 1.4rem 1.25rem; text-align: center;
-  background: rgba(255, 255, 255, 0.85); border: 2px solid var(--ink); border-radius: 1.25rem;
-  box-shadow: 5px 5px 0 var(--pink);
+
+/* ---------- Footer / footnote (full-width dark band) ---------- */
+body { padding-bottom: 0; }  /* footer now sits flush at the bottom */
+.site-footer {
+  margin-top: 3.5rem;
+  /* extra bottom space keeps the floating music player from covering the text */
+  padding: 1.4rem 1.25rem calc(4.5rem + env(safe-area-inset-bottom));
+  background: var(--ink);
+  color: #d9cff0;
+  border-top: 3px solid var(--pink);
+  text-align: center;
 }
-.footer-title { font-weight: 800; font-size: 0.9rem; margin-bottom: 0.5rem; }
-.footer-subject {
-  display: inline-block; margin-bottom: 0.6rem; padding: 0.25rem 0.8rem; font-size: 0.78rem;
-  background: var(--yellow); border: 2px solid var(--ink); border-radius: 999px;
-}
-.footer-line { font-size: 0.72rem; color: var(--muted); line-height: 1.6; }
-.footer-top { display: inline-block; margin-top: 0.8rem; font-size: 0.72rem; font-weight: 700; text-decoration: none; }
+.footer-card { max-width: 46rem; margin: 0 auto; padding: 0; background: none; border: 0; box-shadow: none; }
+.footer-title { margin-bottom: 0.3rem; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.02em; color: #fff; }
+.footer-subject { display: block; margin: 0 0 0.3rem; padding: 0; font-size: 0.65rem; color: var(--yellow); background: none; border: 0; border-radius: 0; }
+.footer-subject strong { font-weight: 800; }
+.footer-line { font-size: 0.62rem; line-height: 1.6; color: #b9aad6; }
+.footer-top { display: inline-block; margin-top: 0.55rem; font-size: 0.62rem; font-weight: 700; color: var(--yellow); text-decoration: none; }
 .footer-top:hover { color: var(--pink); }
