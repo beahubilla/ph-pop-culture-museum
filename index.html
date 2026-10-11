@@ -9,7 +9,14 @@
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8F%9B%EF%B8%8F%3C/text%3E%3C/svg%3E">
 
   <!-- Marks the page as JS-enabled so reveal animations only run when scripts work -->
-  <script>document.documentElement.classList.add('js');</script>
+  <script>
+    document.documentElement.classList.add('js');
+    (function () {
+      var era = 'then';
+      try { if (localStorage.getItem('ppc-era') === 'now') era = 'now'; } catch (e) {}
+      document.documentElement.classList.add('era-' + era);
+    })();
+  </script>
 
   <!-- Tailwind CSS CDN (layout utilities) -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -37,34 +44,42 @@
 
   <!-- Top navigation -->
   <header class="site-header">
-    <div class="max-w-7xl mx-auto px-3.5 sm:px-6 h-14 sm:h-16 flex items-center justify-between gap-2.5">
+    <div class="max-w-7xl mx-auto px-3.5 sm:px-6 h-14 sm:h-16 flex items-center justify-between gap-2">
       <a href="#top" class="flex items-center gap-2 sm:gap-3 min-w-0">
-        <span class="brand-badge">2000–2010</span>
-        <span class="font-extrabold tracking-tight truncate text-sm sm:text-base">Tatak 2000s <span class="hidden md:inline text-[var(--muted)] font-semibold text-sm">| Philippine Pop Culture Virtual Museum</span></span>
+        <span class="brand-badge"><span class="only-then">2000–2010</span><span class="only-now">TODAY</span></span>
+        <span class="font-extrabold tracking-tight truncate text-sm sm:text-base hidden min-[400px]:inline">Tatak 2000s <span class="hidden xl:inline text-[var(--muted)] font-semibold text-sm">| Philippine Pop Culture Virtual Museum</span></span>
       </a>
-      <div class="flex items-center gap-2 flex-shrink-0">
+      <div class="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
         <nav class="hidden lg:flex items-center" aria-label="Museum sections">
           <a href="#exhibits" class="nav-link">Exhibits</a>
           <a href="#then-now" class="nav-link">Then vs. Now</a>
           <a href="#sms" class="nav-link">SMS &amp; Games</a>
           <a href="#curators" class="nav-link">Curators</a>
+          <button type="button" onclick="openFriendsterModal(0)" class="nav-link">✨ Friendster</button>
         </nav>
-        <button type="button" onclick="openFriendsterModal(0)" class="btn btn-yellow btn-sm">✨ Friendster</button>
+        <!-- Time Machine -->
+        <div class="tm" role="group" aria-label="Time machine: choose an era">
+          <button type="button" class="tm-btn active" data-era="then" aria-pressed="true" onclick="setEra('then')">⏪ 2000s</button>
+          <button type="button" class="tm-btn" data-era="now" aria-pressed="false" onclick="setEra('now')">Today ⏩</button>
+        </div>
+        <button type="button" class="icon-btn" onclick="openPassport()" aria-label="Open your museum passport" title="Museum passport">🛂<span class="icon-badge pp-count">0/12</span></button>
+        <button type="button" class="icon-btn" onclick="openMap()" aria-label="Open the museum floor map" title="Floor map">🗺️</button>
       </div>
     </div>
-    <!-- Mobile sub-navigation bar with hidden scrollbars -->
+    <!-- Mobile sub-navigation bar -->
     <nav class="lg:hidden flex gap-1 overflow-x-auto no-scrollbar px-3.5 pb-2 border-t border-[rgba(43,29,69,0.06)] pt-1.5" aria-label="Museum sections">
       <a href="#exhibits" class="nav-link">Exhibits</a>
       <a href="#then-now" class="nav-link">Then vs. Now</a>
       <a href="#sms" class="nav-link">SMS &amp; Games</a>
       <a href="#curators" class="nav-link">Curators</a>
+      <button type="button" onclick="openFriendsterModal(0)" class="nav-link">✨ Friendster</button>
     </nav>
   </header>
 
   <!-- Hero / Grand Lobby -->
   <section id="top" class="px-4 pt-10 sm:pt-14 pb-8 text-center">
     <div class="max-w-5xl mx-auto">
-      <span class="hero-pill">📼 Retrospective Exhibition • 2000–2010 vs. Present</span>
+      <span class="hero-pill"><span class="only-then">📼 The 2000s Wing is open • 2000–2010</span><span class="only-now">📱 The Today Wing is open • 2020s</span></span>
       <h2 class="hero-title">
         From <span class="grad-text">Unli-Text &amp; Friendster</span><br>to P-Pop &amp; 5G Streams
       </h2>
@@ -74,10 +89,11 @@
       <div class="flex flex-wrap justify-center gap-2.5 sm:gap-3 mb-6 sm:mb-8">
         <button type="button" onclick="openRoom(0)" class="btn btn-pink">🚪 Start the tour</button>
         <a href="#exhibits" class="btn">Browse exhibits ↓</a>
+        <button type="button" onclick="openMap()" class="btn">🗺️ Floor map</button>
       </div>
 
       <!-- Horizontal mobile carousel / wrapped desktop tabs -->
-      <div id="wing-tabs" class="pill-carousel max-w-3xl mx-auto" role="tablist" aria-label="Exhibition wings"></div>
+      <div id="wing-tabs" class="pill-carousel max-w-3xl mx-auto" role="tablist" aria-label="Filter exhibits by topic"></div>
     </div>
   </section>
 
@@ -85,16 +101,19 @@
 
     <div id="exhibits" class="scroll-mt-24 sm:scroll-mt-28"></div>
 
-    <!-- View mode selector -->
-    <div class="panel mb-7 p-3.5 sm:p-5 flex flex-col md:flex-row items-center justify-between gap-3 sm:gap-4">
-      <div class="text-center md:text-left">
-        <h3 class="font-extrabold text-sm sm:text-base">🏛️ Exhibition Gallery Displays</h3>
-        <p class="text-xs text-[var(--muted)]">Tap any exhibit to step inside. Switch cards between 2000s, today, or both.</p>
+    <!-- Wing picker (also controlled by the Time Machine in the header) -->
+    <div class="wing-picker panel mb-7">
+      <div class="text-center mb-3">
+        <h3 class="font-extrabold text-sm sm:text-base">🏛️ Choose a wing</h3>
+        <p id="wing-desc" class="text-xs text-[var(--muted)] mt-0.5"></p>
       </div>
-      <div class="seg" role="group" aria-label="Display mode">
-        <button type="button" id="view-split-btn" onclick="toggleEraView('split')" class="seg-btn active">Side by Side</button>
-        <button type="button" id="view-2000-btn" onclick="toggleEraView('2000')" class="seg-btn">2000–2010</button>
-        <button type="button" id="view-now-btn" onclick="toggleEraView('now')" class="seg-btn">Present</button>
+      <div class="wing-switch" role="group" aria-label="Choose a wing">
+        <button type="button" class="wing-btn wing-then active" data-era="then" aria-pressed="true" onclick="setEra('then')">
+          <span class="wing-emoji">🕹️</span><b>The 2000s Wing</b><small>2000–2010</small>
+        </button>
+        <button type="button" class="wing-btn wing-now" data-era="now" aria-pressed="false" onclick="setEra('now')">
+          <span class="wing-emoji">📱</span><b>The Today Wing</b><small>2020s</small>
+        </button>
       </div>
     </div>
 
@@ -318,7 +337,34 @@
           <div id="room-dots" class="flex gap-1 justify-center flex-wrap"></div>
           <div id="room-count" class="text-[10px] font-bold text-[var(--muted)] mt-0.5 truncate"></div>
         </div>
+        <button type="button" class="btn btn-sm" onclick="openMapFromRoom()" aria-label="Open floor map" title="Floor map">🗺️</button>
         <button type="button" class="btn btn-sm" onclick="nextRoom()"><span class="hidden sm:inline" id="room-next-label">Next</span><span class="sm:hidden">Next</span> ▶</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PASSPORT MODAL -->
+  <div id="passport-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-label="Museum passport"
+       onclick="if (event.target === this) closePassport()">
+    <div class="sheet-panel" id="passport-panel" tabindex="-1">
+      <div class="sm:hidden modal-drag-bar" aria-hidden="true"></div>
+      <button type="button" class="modal-close" onclick="closePassport()" aria-label="Close passport">✕</button>
+      <div class="sheet-scroll">
+        <div class="sheet-head"><span class="retro">TATAK 2000s</span><h3>🛂 Museum Passport</h3></div>
+        <div id="passport-body"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLOOR MAP MODAL -->
+  <div id="map-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-label="Museum floor map"
+       onclick="if (event.target === this) closeMap()">
+    <div class="sheet-panel sheet-wide" id="map-panel" tabindex="-1">
+      <div class="sm:hidden modal-drag-bar" aria-hidden="true"></div>
+      <button type="button" class="modal-close" onclick="closeMap()" aria-label="Close floor map">✕</button>
+      <div class="sheet-scroll">
+        <div class="sheet-head"><span class="retro">FLOOR PLAN</span><h3>🗺️ Museum Map</h3></div>
+        <div id="map-body"></div>
       </div>
     </div>
   </div>
@@ -360,6 +406,10 @@
       </div>
     </div>
   </div>
+
+  <!-- Stamp notifications + time-travel flash -->
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <div id="warp" class="warp" aria-hidden="true"></div>
 
   <!-- FLOATING MINI PLAYER -->
   <div class="player-dock">
