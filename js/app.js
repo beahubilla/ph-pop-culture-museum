@@ -20,13 +20,84 @@ function profInitials(p) {
 }
 
 // ------------------------------------------------------------
-// GALLERY
+// TIME MACHINE (2000s <-> Today) + EXHIBIT WINGS
 // ------------------------------------------------------------
+const ERA_STORAGE_KEY = 'ppc-era';
+let currentEra = document.documentElement.classList.contains('era-now') ? 'now' : 'then';
+let currentTopic = 'all';
+let warpTimers = [];
+
+const ERA_INFO = {
+  then: { name: 'The 2000s Wing', theme: '#fff4fa',
+          desc: '2000–2010: texting clans, Friendster, burned CDs, LAN shops, and the first online rescue calls.' },
+  now:  { name: 'The Today Wing', theme: '#f3f6ff',
+          desc: 'The 2020s: short videos, e-wallets, P-Pop, mobile esports, and real-time weather alerts.' }
+};
+
+// One exhibit, seen through one era. Missing fields fall back to safe blanks.
+function eraData(ex, era) {
+  if (era === 'now') {
+    const t = ex.today || {};
+    return {
+      era: 'now', label: 'Today',
+      title: t.title || ex.title || '', blurb: t.blurb || ex.blurb || '',
+      badge: t.badge || ex.badge || '', tag: t.tag || ex.tag || '',
+      icon: t.icon || ex.icon || '✨', image: t.image || '', alt: t.alt || t.badge || ex.badge || '',
+      summary: ex.now || '', intro: t.intro || '', facts: t.facts || [], artifacts: t.artifacts || [],
+      gallery: t.gallery || [], impact: t.impact || ex.impact || ''
+    };
+  }
+  return {
+    era: 'then', label: '2000–2010',
+    title: ex.thenTitle || ex.title || '', blurb: ex.thenBlurb || ex.blurb || '',
+    badge: ex.badge || '', tag: ex.tag || '',
+    icon: ex.icon || '✨', image: ex.image || '', alt: ex.alt || ex.badge || '',
+    summary: ex.then || '', intro: ex.intro || '', facts: ex.facts || [], artifacts: ex.artifacts || [],
+    gallery: ex.gallery || [], impact: ex.impact || ''
+  };
+}
+
+function setEra(era) {
+  if (era !== 'then' && era !== 'now') return;
+  if (era === currentEra) return;
+  warpTimers.forEach(clearTimeout); warpTimers = [];
+  const reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const warp = $('warp');
+  if (warp && !reduce) {
+    warp.className = 'warp warping to-' + era;
+    warpTimers.push(setTimeout(() => applyEra(era), 260));   // swap while the screen is covered
+    warpTimers.push(setTimeout(() => { warp.className = 'warp'; }, 760));
+  } else {
+    applyEra(era);
+  }
+}
+
+function applyEra(era) {
+  currentEra = era;
+  const root = document.documentElement;
+  root.classList.remove('era-then', 'era-now');
+  root.classList.add('era-' + era);
+  try { localStorage.setItem(ERA_STORAGE_KEY, era); } catch (e) { /* ignore */ }
+
+  document.querySelectorAll('[data-era]').forEach(b => {
+    const on = b.dataset.era === era;
+    b.classList.toggle('active', on);
+    b.setAttribute('aria-pressed', on ? 'true' : 'false');
+  });
+  const desc = $('wing-desc');
+  if (desc) desc.textContent = ERA_INFO[era].desc;
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.setAttribute('content', ERA_INFO[era].theme);
+
+  renderGallery();
+  switchWing(currentTopic);
+}
+
 function renderWingTabs() {
   const wrap = $('wing-tabs');
   if (!wrap) return;
   wrap.innerHTML =
-    `<button type="button" class="chip-btn tab-btn active" data-wing="all" onclick="switchWing('all')">All Wings</button>` +
+    `<button type="button" class="chip-btn tab-btn active" data-wing="all" onclick="switchWing('all')">All Topics</button>` +
     exhibits.map(ex =>
       `<button type="button" class="chip-btn tab-btn" data-wing="${esc(ex.id)}" onclick="switchWing('${esc(ex.id)}')">${esc(ex.icon)} ${esc(ex.wing)}</button>`
     ).join('');
@@ -35,41 +106,35 @@ function renderWingTabs() {
 function renderGallery() {
   const grid = $('gallery-grid');
   if (!grid) return;
-  grid.innerHTML = exhibits.map((ex, i) => `
+  grid.innerHTML = exhibits.map((ex, i) => {
+    const d = eraData(ex, currentEra);
+    const visited = hasStamp(ex.id, currentEra);
+    return `
     <article class="exhibit-card reveal" tabindex="0" role="button" data-category="${esc(ex.id)}" data-index="${i}"
-             style="--c:${esc(ex.color)}" aria-label="Enter the ${esc(ex.wing)} room: ${esc(ex.title)}">
+             style="--c:${esc(ex.color)}" aria-label="Enter the ${esc(ex.wing)} room (${esc(d.label)}): ${esc(d.title)}">
       <div>
         <div class="card-media">
-          <span class="card-emoji" aria-hidden="true">${esc(ex.icon)}</span>
-          <img src="${esc(ex.image)}" alt="${esc(ex.alt || ex.badge)}" loading="lazy" decoding="async" onerror="this.remove()">
-          <span class="card-badge">${esc(ex.badge)}</span>
+          <span class="card-emoji" aria-hidden="true">${esc(d.icon)}</span>
+          ${d.image ? `<img src="${esc(d.image)}" alt="${esc(d.alt)}" loading="lazy" decoding="async" onerror="this.remove()">` : ''}
+          <span class="card-badge">${esc(d.badge)}</span>
+          <span class="card-era">${esc(d.label)}</span>
         </div>
         <div class="card-body">
           <div class="flex items-center justify-between gap-2">
             <span class="domain">${esc(ex.domain)}</span>
-            <span class="retro-tag">${esc(ex.tag)}</span>
+            <span class="retro-tag">${esc(d.tag)}</span>
           </div>
-          <h4>${esc(ex.title)}</h4>
-          <p class="blurb">${esc(ex.blurb)}</p>
-          <div class="era-2000 era-block era-then"><span class="era-label">2000–2010 Decade</span>${esc(ex.then)}</div>
-          <div class="era-now era-block era-present"><span class="era-label">Present Time</span>${esc(ex.now)}</div>
+          <h4>${esc(d.title)}</h4>
+          <p class="blurb">${esc(d.blurb)}</p>
+          <div class="era-block ${currentEra === 'then' ? 'era-then' : 'era-present'}"><span class="era-label">${currentEra === 'then' ? '2000–2010 Decade' : 'Present Time'}</span>${esc(d.summary)}</div>
         </div>
       </div>
       <div class="card-foot">
-        <span>Impact: <em>${esc(ex.impact)}</em></span>
-        <span class="enter">Enter room →</span>
+        <span>${currentEra === 'then' ? 'Impact' : 'Why it matters'}: <em>${esc(d.impact)}</em></span>
+        <span class="enter">${visited ? '✓ ' : ''}Enter room →</span>
       </div>
-    </article>`).join('');
-
-  grid.addEventListener('click', e => {
-    const card = e.target.closest('.exhibit-card');
-    if (card) openRoom(Number(card.dataset.index));
-  });
-  grid.addEventListener('keydown', e => {
-    if (e.key !== 'Enter' && e.key !== ' ') return;
-    const card = e.target.closest('.exhibit-card');
-    if (card) { e.preventDefault(); openRoom(Number(card.dataset.index)); }
-  });
+    </article>`;
+  }).join('');
 
   const cards = grid.querySelectorAll('.reveal');
   if ('IntersectionObserver' in window) {
@@ -82,7 +147,23 @@ function renderGallery() {
   }
 }
 
+// Attached once (the cards themselves are re-built whenever the era changes)
+function initGalleryEvents() {
+  const grid = $('gallery-grid');
+  if (!grid) return;
+  grid.addEventListener('click', e => {
+    const card = e.target.closest('.exhibit-card');
+    if (card) openRoom(Number(card.dataset.index));
+  });
+  grid.addEventListener('keydown', e => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    const card = e.target.closest('.exhibit-card');
+    if (card) { e.preventDefault(); openRoom(Number(card.dataset.index)); }
+  });
+}
+
 function switchWing(category) {
+  currentTopic = category;
   document.querySelectorAll('.tab-btn').forEach(tab => {
     const isActive = tab.getAttribute('data-wing') === category;
     tab.classList.toggle('active', isActive);
@@ -95,21 +176,11 @@ function switchWing(category) {
   );
 }
 
-function toggleEraView(mode) {
-  const past = document.querySelectorAll('.exhibit-card .era-2000');
-  const present = document.querySelectorAll('.exhibit-card .era-now');
-  const btns = { split: $('view-split-btn'), '2000': $('view-2000-btn'), now: $('view-now-btn') };
-
-  Object.keys(btns).forEach(key => btns[key].classList.toggle('active', key === mode));
-  past.forEach(el => el.classList.toggle('hidden', mode === 'now'));
-  present.forEach(el => el.classList.toggle('hidden', mode === '2000'));
-}
-
 // ------------------------------------------------------------
 // MODAL LAYERS
 // ------------------------------------------------------------
 let historyOK = true;
-const lastFocus = { room: null, fs: null, lb: null };
+const lastFocus = { room: null, fs: null, lb: null, pp: null, map: null };
 
 function histLevel() { return (history.state && history.state.lvl) || 0; }
 
@@ -135,9 +206,13 @@ function leaveLevel(lvl, hideFn) {
 function roomIsOpen() { const m = $('room-modal'); return !!m && !m.classList.contains('hidden'); }
 function fsIsOpen() { const m = $('friendster-modal'); return !!m && !m.classList.contains('hidden'); }
 function lbIsOpen() { const m = $('lightbox'); return !!m && !m.classList.contains('hidden'); }
+function passportIsOpen() { const m = $('passport-modal'); return !!m && !m.classList.contains('hidden'); }
+function mapIsOpen() { const m = $('map-modal'); return !!m && !m.classList.contains('hidden'); }
 
 function lockScroll() { document.body.style.overflow = 'hidden'; }
-function unlockScrollIfIdle() { if (!roomIsOpen() && !fsIsOpen() && !lbIsOpen()) document.body.style.overflow = ''; }
+function unlockScrollIfIdle() {
+  if (!roomIsOpen() && !fsIsOpen() && !lbIsOpen() && !passportIsOpen() && !mapIsOpen()) document.body.style.overflow = '';
+}
 
 function focusPanel(id) { const el = $(id); if (el && el.focus) el.focus({ preventScroll: true }); }
 function restoreFocus(key) {
@@ -180,14 +255,17 @@ window.addEventListener('popstate', () => {
   if (lvl < 1) {
     if (roomIsOpen()) hideRoom();
     if (fsIsOpen()) hideFriendster();
+    if (passportIsOpen()) hidePassport();
+    if (mapIsOpen()) hideMap();
   }
 });
 
 // ---------- Lightbox ----------
 let lbIndex = 0;
+let lbEra = 'then';
 function currentGallery() {
   const ex = exhibits[currentRoom];
-  return (ex && Array.isArray(ex.gallery)) ? ex.gallery : [];
+  return ex ? eraData(ex, lbEra).gallery : [];
 }
 
 function showLightbox(i) {
@@ -205,7 +283,8 @@ function showLightbox(i) {
   document.querySelectorAll('.lb-nav').forEach(b => b.classList.toggle('hidden', items.length < 2));
 }
 
-function openLightbox(i) {
+function openLightbox(i, era) {
+  lbEra = era === 'now' ? 'now' : 'then';
   lastFocus.lb = document.activeElement;
   enterLevel(2);
   showLightbox(i);
@@ -230,71 +309,151 @@ function galleryImgFailed(img) {
 }
 
 // ------------------------------------------------------------
-// DETAIL ROOMS
+// DETAIL ROOMS (every room has 2000s / Today / Compare tabs)
 // ------------------------------------------------------------
 let currentRoom = 0;
+let roomEra = 'then'; // 'then' | 'now' | 'compare'
 
-function renderRoom(index) {
+function roomHash(id, era) { return '#room-' + id + (era && era !== 'then' ? '/' + era : ''); }
+
+function roomGalleryHtml(items, era, heading) {
+  if (!items || !items.length) return '';
+  return `
+    <section class="gallery-section">
+      <h3 class="room-h">${heading || '📸 Photo gallery'} <span class="room-h-sub">tap a photo to enlarge</span></h3>
+      <div class="gallery-grid">
+        ${items.map((g, i) => `
+          <button type="button" class="gallery-item" onclick="openLightbox(${i}, '${era}')" aria-label="Enlarge photo: ${esc(g.caption || 'Photo ' + (i + 1))}">
+            <span class="gallery-frame"><img src="${esc(g.src)}" alt="${esc(g.caption || '')}" loading="lazy" decoding="async" onerror="galleryImgFailed(this)"></span>
+            <span class="gallery-cap">${esc(g.caption || '')}${g.year ? ` <em>(${esc(g.year)})</em>` : ''}</span>
+          </button>`).join('')}
+      </div>
+    </section>`;
+}
+
+function roomFactsHtml(facts) {
+  if (!facts || !facts.length) return '';
+  return `<h3 class="room-h">💡 Did you know?</h3><ul class="fact-list">${facts.map(f => `<li>${esc(f)}</li>`).join('')}</ul>`;
+}
+
+function roomArtifactsHtml(items) {
+  if (!items || !items.length) return '';
+  return `
+    <h3 class="room-h">🗂️ Artifacts in this room</h3>
+    <div class="artifact-grid">
+      ${items.map(a => `
+        <div class="artifact">
+          <span class="artifact-emoji">${esc(a.emoji)}</span>
+          <div><b>${esc(a.name)}</b><p>${esc(a.note)}</p></div>
+        </div>`).join('')}
+    </div>`;
+}
+
+function roomHeroHtml(ex, era) {
+  if (era === 'compare') {
+    const half = (d, cls) => `
+      <div class="hero-half ${cls}">
+        <span class="hero-half-emoji" aria-hidden="true">${esc(d.icon)}</span>
+        ${d.image ? `<img src="${esc(d.image)}" alt="${esc(d.alt)}" onerror="this.remove()">` : ''}
+        <span class="hero-half-tag">${esc(d.label)}</span>
+      </div>`;
+    return `
+      <div class="room-hero compare">
+        ${half(eraData(ex, 'then'), 'then')}${half(eraData(ex, 'now'), 'now')}
+        <div class="room-hero-shade"></div>
+        <div class="room-hero-text">
+          <span class="room-domain">${esc(ex.domain)} • Compare</span>
+          <h2>${esc(ex.title)}</h2>
+          <p>${esc(ex.blurb)}</p>
+        </div>
+      </div>`;
+  }
+  const d = eraData(ex, era);
+  return `
+    <div class="room-hero era-${era}">
+      <span class="room-hero-emoji" aria-hidden="true">${esc(d.icon)}</span>
+      ${d.image ? `<img src="${esc(d.image)}" alt="${esc(d.alt)}" onerror="this.remove()">` : ''}
+      <div class="room-hero-shade"></div>
+      <div class="room-hero-text">
+        <span class="room-domain">${esc(ex.domain)} • ${esc(d.label)}</span>
+        <h2>${esc(d.title)}</h2>
+        <p>${esc(d.blurb)}</p>
+      </div>
+    </div>`;
+}
+
+function roomTabsHtml(ex) {
+  const tabs = [['then', '🕹️', '2000s'], ['now', '📱', 'Today'], ['compare', '⚖️', 'Compare']];
+  return `<div class="room-tabs" role="tablist" aria-label="Choose an era">` +
+    tabs.map(([k, ic, label]) => {
+      const stamped = k !== 'compare' && hasStamp(ex.id, k);
+      return `<button type="button" role="tab" aria-selected="${roomEra === k}" class="room-tab tab-${k} ${roomEra === k ? 'active' : ''}" onclick="setRoomEra('${k}')">${ic} ${label}${stamped ? ' <span class="tab-stamp" title="Stamp collected">✓</span>' : ''}</button>`;
+    }).join('') + `</div>`;
+}
+
+function roomActionsHtml(ex, era) {
+  const curator = (typeof ex.curator === 'number' && friendsterProfiles[ex.curator]) ? friendsterProfiles[ex.curator] : null;
+  const other = era === 'then' ? 'now' : 'then';
+  return `
+    <div class="room-actions">
+      <button type="button" class="btn btn-pink" onclick="setRoomEra('${other}')">${other === 'now' ? 'See the Today version ⏩' : '⏪ Back to the 2000s'}</button>
+      <button type="button" class="btn" onclick="setRoomEra('compare')">⚖️ Compare both</button>
+      ${curator ? `<button type="button" class="btn btn-yellow" onclick="visitCurator(${ex.curator})">✨ Meet the curator: ${esc(profShort(curator))}</button>` : ''}
+    </div>`;
+}
+
+function roomEraBodyHtml(ex, era) {
+  const d = eraData(ex, era);
+  return `
+    ${d.intro ? `<p class="room-intro">${esc(d.intro)}</p>` : ''}
+    <div class="era-block ${era === 'then' ? 'era-then' : 'era-present'}" style="margin:0">
+      <span class="era-label">${era === 'then' ? '2000–2010 Decade' : 'Present Time'}</span>${esc(d.summary)}
+    </div>
+    ${roomGalleryHtml(d.gallery, era)}
+    ${roomFactsHtml(d.facts)}
+    ${roomArtifactsHtml(d.artifacts)}
+    ${d.impact ? `<div class="impact-box">⭐ ${era === 'then' ? 'Impact' : 'Why it matters'}: ${esc(d.impact)}</div>` : ''}
+    ${roomActionsHtml(ex, era)}`;
+}
+
+function roomCompareBodyHtml(ex) {
+  const col = (d, cls) => `
+    <div class="cmp-col ${cls}">
+      <h4 class="cmp-head">${cls === 'then' ? '🕹️ 2000–2010' : '📱 Today'}</h4>
+      <div class="era-block ${cls === 'then' ? 'era-then' : 'era-present'}" style="margin:0 0 .6rem">
+        <span class="era-label">${esc(d.title)}</span>${esc(d.summary)}
+      </div>
+      ${d.facts.length ? `<ul class="cmp-facts">${d.facts.slice(0, 3).map(f => `<li>${esc(f)}</li>`).join('')}</ul>` : ''}
+      <div class="cmp-chips">${d.artifacts.map(a => `<span class="cmp-chip" title="${esc(a.note)}">${esc(a.emoji)} ${esc(a.name)}</span>`).join('')}</div>
+    </div>`;
+  const a = eraData(ex, 'then'), b = eraData(ex, 'now');
+  return `
+    <div class="change-box">🔄 <b>The big shift:</b> ${esc(ex.change || ex.impact || '')}</div>
+    <div class="cmp-grid">${col(a, 'then')}${col(b, 'now')}</div>
+    ${roomGalleryHtml(a.gallery, 'then', '📸 2000s photos')}
+    ${roomGalleryHtml(b.gallery, 'now', '📸 Today photos')}
+    <div class="room-actions">
+      <button type="button" class="btn" onclick="setRoomEra('then')">🕹️ Enter the 2000s room</button>
+      <button type="button" class="btn btn-pink" onclick="setRoomEra('now')">📱 Enter the Today room</button>
+    </div>`;
+}
+
+function renderRoom(index, era) {
   const total = exhibits.length;
-  currentRoom = (index + total) % total;
+  currentRoom = ((index % total) + total) % total;
+  if (era === 'then' || era === 'now' || era === 'compare') roomEra = era;
   const ex = exhibits[currentRoom];
 
   $('room-panel').style.setProperty('--c', ex.color);
-  const curator = (typeof ex.curator === 'number' && friendsterProfiles[ex.curator]) ? friendsterProfiles[ex.curator] : null;
-
-  const gallery = Array.isArray(ex.gallery) ? ex.gallery : [];
-  const galleryHtml = gallery.length ? `
-      <section class="gallery-section">
-        <h3 class="room-h">📸 Photo gallery <span class="room-h-sub">tap a photo to enlarge</span></h3>
-        <div class="gallery-grid">
-          ${gallery.map((g, i) => `
-            <button type="button" class="gallery-item" onclick="openLightbox(${i})" aria-label="Enlarge photo: ${esc(g.caption || 'Photo ' + (i + 1))}">
-              <span class="gallery-frame"><img src="${esc(g.src)}" alt="${esc(g.caption || '')}" loading="lazy" decoding="async" onerror="galleryImgFailed(this)"></span>
-              <span class="gallery-cap">${esc(g.caption || '')}${g.year ? ` <em>(${esc(g.year)})</em>` : ''}</span>
-            </button>`).join('')}
-        </div>
-      </section>` : '';
+  $('room-panel').dataset.era = roomEra;
+  stampVisit(ex.id, roomEra);   // collect a passport stamp (before tabs are drawn so the ✓ shows)
 
   const content = $('room-content');
   content.innerHTML = `
-    <div class="room-hero">
-      <span class="room-hero-emoji" aria-hidden="true">${esc(ex.icon)}</span>
-      <img src="${esc(ex.image)}" alt="${esc(ex.alt || ex.badge)}" onerror="this.remove()">
-      <div class="room-hero-shade"></div>
-      <div class="room-hero-text">
-        <span class="room-domain">${esc(ex.domain)}</span>
-        <h2>${esc(ex.title)}</h2>
-        <p>${esc(ex.blurb)}</p>
-      </div>
-    </div>
+    ${roomHeroHtml(ex, roomEra)}
+    ${roomTabsHtml(ex)}
     <div class="room-body">
-      <p class="room-intro">${esc(ex.intro)}</p>
-
-      <div class="grid sm:grid-cols-2 gap-2.5">
-        <div class="era-block era-then" style="margin:0"><span class="era-label">2000–2010 Decade</span>${esc(ex.then)}</div>
-        <div class="era-block era-present" style="margin:0"><span class="era-label">Present Time</span>${esc(ex.now)}</div>
-      </div>
-
-      ${galleryHtml}
-
-      <h3 class="room-h">💡 Did you know?</h3>
-      <ul class="fact-list">${ex.facts.map(f => `<li>${esc(f)}</li>`).join('')}</ul>
-
-      <h3 class="room-h">🗂️ Artifacts in this room</h3>
-      <div class="artifact-grid">
-        ${ex.artifacts.map(a => `
-          <div class="artifact">
-            <span class="artifact-emoji">${esc(a.emoji)}</span>
-            <div><b>${esc(a.name)}</b><p>${esc(a.note)}</p></div>
-          </div>`).join('')}
-      </div>
-
-      <div class="impact-box">⭐ Impact: ${esc(ex.impact)}</div>
-
-      ${curator ? `
-        <div class="mt-4 text-center">
-          <button type="button" class="btn btn-yellow" onclick="visitCurator(${ex.curator})">✨ Meet the curator: ${esc(profShort(curator))}</button>
-        </div>` : ''}
+      ${roomEra === 'compare' ? roomCompareBodyHtml(ex) : roomEraBodyHtml(ex, roomEra)}
     </div>`;
   content.scrollTop = 0;
   content.classList.remove('swap'); void content.offsetWidth; content.classList.add('swap');
@@ -302,19 +461,22 @@ function renderRoom(index) {
   $('room-dots').innerHTML = exhibits.map((e, i) =>
     `<button type="button" class="room-dot ${i === currentRoom ? 'active' : ''}" onclick="renderRoom(${i})" title="${esc(e.wing)}" aria-label="Go to ${esc(e.wing)} room">${esc(e.icon)}</button>`
   ).join('');
+  if ($('room-prev-label')) $('room-prev-label').textContent = exhibits[(currentRoom - 1 + total) % total].wing;
+  if ($('room-next-label')) $('room-next-label').textContent = exhibits[(currentRoom + 1) % total].wing;
+  const eraName = roomEra === 'then' ? '2000s' : roomEra === 'now' ? 'Today' : 'Compare';
+  $('room-count').textContent = `Room ${currentRoom + 1} of ${total} • ${ex.wing} • ${eraName}`;
 
-  if ($('room-prev-label'))$('room-prev-label').textContent = exhibits[(currentRoom - 1 + total) % total].wing;
-  if ($('room-next-label'))$('room-next-label').textContent = exhibits[(currentRoom + 1) % total].wing;
-  $('room-count').textContent = `Room ${currentRoom + 1} of ${total} • ${ex.wing}`;
-
-  try { history.replaceState(history.state, '', '#room-' + ex.id); } catch (e) { /* ignore */ }
+  try { history.replaceState(history.state, '', roomHash(ex.id, roomEra)); } catch (e) { /* ignore */ }
 }
 
-function openRoom(index) {
+function setRoomEra(era) { renderRoom(currentRoom, era); }
+
+function openRoom(index, era) {
   const n = exhibits.length;
   const i = (((typeof index === 'number' ? index : 0) % n) + n) % n;
+  roomEra = (era === 'then' || era === 'now' || era === 'compare') ? era : currentEra;
   lastFocus.room = document.activeElement;
-  enterLevel(1, '#room-' + exhibits[i].id);
+  enterLevel(1, roomHash(exhibits[i].id, roomEra));
   renderRoom(i);
   $('room-modal').classList.remove('hidden');
   lockScroll();
@@ -340,10 +502,10 @@ function visitCurator(profileIndex) {
 }
 
 function openRoomFromHash() {
-  const m = location.hash.match(/^#room-(.+)$/);
+  const m = location.hash.match(/^#room-([\w-]+?)(?:\/(then|now|compare))?$/);
   if (!m) return;
   const i = exhibits.findIndex(e => e.id === m[1]);
-  if (i >= 0) openRoom(i);
+  if (i >= 0) openRoom(i, m[2] || 'then');
 }
 
 // ------------------------------------------------------------
@@ -711,6 +873,16 @@ document.addEventListener('keydown', e => {
     else if (e.key === 'Tab') trapTab(e, $('fs-window'));
     return;
   }
+  if (passportIsOpen()) {
+    if (e.key === 'Escape') closePassport();
+    else if (e.key === 'Tab') trapTab(e, $('passport-panel'));
+    return;
+  }
+  if (mapIsOpen()) {
+    if (e.key === 'Escape') closeMap();
+    else if (e.key === 'Tab') trapTab(e, $('map-panel'));
+    return;
+  }
   if (roomIsOpen()) {
     if (e.key === 'Escape') closeRoom();
     else if (e.key === 'ArrowRight') nextRoom();
@@ -969,11 +1141,222 @@ function togglePlayerPopup() {
 }
 
 // ------------------------------------------------------------
+// MUSEUM PASSPORT (a stamp for every room, in both eras)
+// ------------------------------------------------------------
+const PASSPORT_KEY = 'ppc-passport-v1';
+
+function loadPassport() {
+  try {
+    const raw = localStorage.getItem(PASSPORT_KEY);
+    const d = raw && JSON.parse(raw);
+    return (d && typeof d.stamps === 'object' && d.stamps) ? d.stamps : {};
+  } catch (e) { return {}; }
+}
+let passportStamps = loadPassport();
+
+function savePassport() {
+  try { localStorage.setItem(PASSPORT_KEY, JSON.stringify({ stamps: passportStamps })); } catch (e) { /* ignore */ }
+}
+function hasStamp(id, era) { return !!passportStamps[id + ':' + era]; }
+function passportTotal() { return exhibits.length * 2; }
+function passportCount() {
+  let n = 0;
+  exhibits.forEach(ex => { ['then', 'now'].forEach(era => { if (hasStamp(ex.id, era)) n++; }); });
+  return n;
+}
+function updatePassportBadge() {
+  document.querySelectorAll('.pp-count').forEach(el => { el.textContent = passportCount() + '/' + passportTotal(); });
+}
+
+function stampVisit(id, era) {
+  const eras = era === 'compare' ? ['then', 'now'] : [era];
+  const fresh = eras.filter(e => !hasStamp(id, e));
+  if (!fresh.length) return;
+  const stamp = Date.now();
+  fresh.forEach(e => { passportStamps[id + ':' + e] = stamp; });
+  savePassport();
+  updatePassportBadge();
+
+  const ex = exhibits.find(x => x.id === id);
+  const label = fresh.map(e => e === 'then' ? '2000s' : 'Today').join(' + ');
+  const n = passportCount(), total = passportTotal();
+  showToast(`🛂 New stamp: ${ex ? ex.wing : id} • ${label} (${n}/${total})`);
+  if (n === total) {
+    setTimeout(() => { showToast('🏅 Museum complete! You collected every stamp.', 4500); burstConfetti(); }, 2000);
+  }
+  if (passportIsOpen()) renderPassport();
+}
+
+function renderPassport() {
+  const total = passportTotal(), n = passportCount();
+  const pct = total ? Math.round((n / total) * 100) : 0;
+  const slot = (ex, i, era) => {
+    const got = passportStamps[ex.id + ':' + era];
+    const when = got ? new Date(got).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : '';
+    return `
+      <button type="button" class="pp-stamp era-${era} ${got ? 'got' : ''}" onclick="passportGo(${i}, '${era}')"
+              aria-label="${esc(ex.wing)}, ${era === 'then' ? '2000s' : 'Today'}: ${got ? 'stamp collected' : 'not visited yet'}">
+        <span class="pp-ring">${got ? '✓' : '?'}</span>
+        <small>${era === 'then' ? '2000s' : 'Today'}</small>
+        ${got ? `<em>${esc(when)}</em>` : ''}
+      </button>`;
+  };
+  $('passport-body').innerHTML = `
+    <div class="pp-progress">
+      <div class="pp-bar" role="progressbar" aria-valuemin="0" aria-valuemax="${total}" aria-valuenow="${n}"><i style="width:${pct}%"></i></div>
+      <b>${n} / ${total} stamps</b>
+    </div>
+    ${n === total
+      ? `<div class="pp-complete">🏅 Museum complete! You explored every room in both eras.</div>`
+      : `<p class="pp-hint">Open each room in the <b>2000s</b> and <b>Today</b> tabs to collect stamps. The <b>Compare</b> tab gives you both at once. Tap a stamp to go there.</p>`}
+    <div class="pp-grid">
+      ${exhibits.map((ex, i) => `
+        <div class="pp-room" style="--c:${esc(ex.color)}">
+          <div class="pp-room-head"><span>${esc(ex.icon)}</span><b>${esc(ex.wing)}</b></div>
+          <div class="pp-stamps">${slot(ex, i, 'then')}${slot(ex, i, 'now')}</div>
+        </div>`).join('')}
+    </div>
+    <div class="pp-foot">
+      <button type="button" class="btn btn-sm" onclick="resetPassport()">Reset passport</button>
+      <span>Saved on this device only.</span>
+    </div>`;
+}
+
+function openPassport() {
+  lastFocus.pp = document.activeElement;
+  enterLevel(1);
+  renderPassport();
+  $('passport-modal').classList.remove('hidden');
+  lockScroll();
+  focusPanel('passport-panel');
+}
+function hidePassport() {
+  $('passport-modal').classList.add('hidden');
+  unlockScrollIfIdle();
+  restoreFocus('pp');
+}
+function closePassport() { leaveLevel(1, hidePassport); }
+
+function passportGo(i, era) { hidePassport(); openRoom(i, era); }
+
+function resetPassport() {
+  if (window.confirm && !window.confirm('Reset your passport? All stamps will be removed.')) return;
+  passportStamps = {};
+  savePassport();
+  updatePassportBadge();
+  renderPassport();
+  renderGallery();
+  switchWing(currentTopic);
+}
+
+// ---------- Toast + confetti ----------
+let toastTimer = null;
+function showToast(message, ms) {
+  const t = $('toast');
+  if (!t) return;
+  t.textContent = message;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), ms || 2800);
+}
+
+function burstConfetti() {
+  if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const bits = ['🎉', '✨', '🏅', '⭐', '🎊', '💖'];
+  for (let i = 0; i < 28; i++) {
+    const s = document.createElement('span');
+    s.className = 'confetti';
+    s.textContent = bits[i % bits.length];
+    s.style.left = (Math.random() * 100) + 'vw';
+    s.style.animationDelay = (Math.random() * 0.6) + 's';
+    s.style.fontSize = (1 + Math.random() * 1.2) + 'rem';
+    document.body.appendChild(s);
+    setTimeout(() => s.remove(), 3600);
+  }
+}
+
+// ------------------------------------------------------------
+// MUSEUM FLOOR MAP (2000s Wing | Grand Lobby | Today Wing)
+// ------------------------------------------------------------
+let mapHere = null; // {id, era} when the map was opened from inside a room
+
+function renderMap() {
+  const doors = era => exhibits.map((ex, i) => {
+    const got = hasStamp(ex.id, era);
+    const here = mapHere && mapHere.id === ex.id && (mapHere.era === era || mapHere.era === 'compare');
+    return `
+      <button type="button" class="door door-${era} ${got ? 'visited' : ''} ${here ? 'here' : ''}" style="--c:${esc(ex.color)}"
+              onclick="mapEnter(${i}, '${era}')"
+              aria-label="Enter the ${esc(ex.wing)} room, ${era === 'then' ? '2000s' : 'Today'} wing${got ? ' (visited)' : ''}${here ? ' (you are here)' : ''}">
+        ${here ? '<span class="you-are-here">📍 You are here</span>' : ''}
+        <span class="door-icon">${esc(ex.icon)}</span>
+        <span class="door-name">${esc(ex.wing)}</span>
+        ${got ? '<span class="door-check">✓</span>' : ''}
+      </button>`;
+  }).join('');
+
+  $('map-body').innerHTML = `
+    <div class="floor">
+      <section class="floor-wing fw-then" aria-label="The 2000s Wing">
+        <h4>🕹️ The 2000s Wing <small>2000–2010</small></h4>
+        <div class="floor-rooms">${doors('then')}</div>
+      </section>
+
+      <section class="floor-lobby ${mapHere ? '' : 'here'}" aria-label="Grand Lobby">
+        ${mapHere ? '' : '<span class="you-are-here">📍 You are here</span>'}
+        <div class="lobby-title">🏛️ Grand Lobby</div>
+        <div class="lobby-links">
+          <button type="button" class="btn btn-sm" onclick="mapOpenPassport()">🛂 Passport</button>
+          <button type="button" class="btn btn-sm" onclick="mapGo('then-now')">↔ Then vs. Now</button>
+          <button type="button" class="btn btn-sm" onclick="mapGo('sms')">📱 Nokia relic</button>
+          <button type="button" class="btn btn-sm" onclick="mapGo('curators')">✨ Curators</button>
+        </div>
+      </section>
+
+      <section class="floor-wing fw-now" aria-label="The Today Wing">
+        <h4>📱 The Today Wing <small>2020s</small></h4>
+        <div class="floor-rooms">${doors('now')}</div>
+      </section>
+    </div>
+    <p class="map-legend">✓ visited &nbsp;•&nbsp; 📍 you are here &nbsp;•&nbsp; tap any door to walk in</p>`;
+}
+
+function openMap(here) {
+  mapHere = (here && typeof here === 'object' && here.id) ? here : null;
+  lastFocus.map = document.activeElement;
+  enterLevel(1);
+  renderMap();
+  $('map-modal').classList.remove('hidden');
+  lockScroll();
+  focusPanel('map-panel');
+}
+function openMapFromRoom() {
+  const here = { id: exhibits[currentRoom].id, era: roomEra };
+  hideRoom();
+  openMap(here);
+}
+function hideMap() {
+  $('map-modal').classList.add('hidden');
+  unlockScrollIfIdle();
+  restoreFocus('map');
+}
+function closeMap() { leaveLevel(1, hideMap); }
+
+function mapEnter(i, era) { hideMap(); openRoom(i, era); }
+function mapOpenPassport() { hideMap(); openPassport(); }
+function mapGo(sectionId) {
+  closeMap();
+  setTimeout(() => { const el = $(sectionId); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 160);
+}
+
+// ------------------------------------------------------------
 // Start everything
 // ------------------------------------------------------------
 document.addEventListener('DOMContentLoaded', () => {
   renderWingTabs();
-  renderGallery();
+  initGalleryEvents();
+  applyEra(currentEra);
+  updatePassportBadge();
   renderCurators();
   initBeforeAfter();
   renderStationTabs();
