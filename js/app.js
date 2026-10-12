@@ -30,7 +30,7 @@ let warpTimers = [];
 const ERA_INFO = {
   then: { name: 'The 2000s Wing', theme: '#fff4fa',
           desc: '2000–2010: texting clans, Friendster, burned CDs, LAN shops, and the first online rescue calls.' },
-  now:  { name: 'The Today Wing', theme: '#f3f6ff',
+  now:  { name: 'The Today Wing', theme: '#e9e6ff',
           desc: 'The 2020s: short videos, e-wallets, P-Pop, mobile esports, and real-time weather alerts.' }
 };
 
@@ -86,11 +86,14 @@ function applyEra(era) {
   });
   const desc = $('wing-desc');
   if (desc) desc.textContent = ERA_INFO[era].desc;
+  const currentWing = $('wing-current');
+  if (currentWing) currentWing.textContent = `Now viewing: ${ERA_INFO[era].name}`;
   const meta = document.querySelector('meta[name="theme-color"]');
   if (meta) meta.setAttribute('content', ERA_INFO[era].theme);
 
   renderGallery();
   switchWing(currentTopic);
+  if (era === 'then') stopModernGame();
 }
 
 function renderWingTabs() {
@@ -108,7 +111,16 @@ function renderGallery() {
   if (!grid) return;
   grid.innerHTML = exhibits.map((ex, i) => {
     const d = eraData(ex, currentEra);
+    const then = eraData(ex, 'then');
+    const now = eraData(ex, 'now');
     const visited = hasStamp(ex.id, currentEra);
+    const eraCopy = (content, era, label, icon) => `
+      <section class="card-era-copy card-era-copy-${era} ${currentEra === era ? 'is-current' : ''}" aria-label="${label} description">
+        <span class="card-era-label"><span aria-hidden="true">${icon}</span>${label}</span>
+        <h4>${esc(content.title)}</h4>
+        <p class="card-era-subtitle">${esc(content.blurb)}</p>
+        <p class="card-era-summary">${esc(content.summary)}</p>
+      </section>`;
     return `
     <article class="exhibit-card reveal" tabindex="0" role="button" data-category="${esc(ex.id)}" data-index="${i}"
              style="--c:${esc(ex.color)}" aria-label="Enter the ${esc(ex.wing)} room (${esc(d.label)}): ${esc(d.title)}">
@@ -124,9 +136,10 @@ function renderGallery() {
             <span class="domain">${esc(ex.domain)}</span>
             <span class="retro-tag">${esc(d.tag)}</span>
           </div>
-          <h4>${esc(d.title)}</h4>
-          <p class="blurb">${esc(d.blurb)}</p>
-          <div class="era-block ${currentEra === 'then' ? 'era-then' : 'era-present'}"><span class="era-label">${currentEra === 'then' ? '2000–2010 Decade' : 'Present Time'}</span>${esc(d.summary)}</div>
+          <div class="card-era-comparison" aria-label="Compare this exhibit across eras">
+            ${eraCopy(then, 'then', '2000–2010', '🕹️')}
+            ${eraCopy(now, 'now', 'Today · 2020s', '📱')}
+          </div>
         </div>
       </div>
       <div class="card-foot">
@@ -331,6 +344,21 @@ function roomGalleryHtml(items, era, heading) {
     </section>`;
 }
 
+function srcLinkHtml(s) {
+  const meta = [s.publisher, s.year].filter(Boolean).map(esc).join(', ');
+  return `<a href="${esc(s.url)}" target="_blank" rel="noopener noreferrer">${esc(s.title)}</a>${meta ? ` <span class="src-pub">— ${meta}</span>` : ''}`;
+}
+
+function roomSourcesHtml(ex, era) {
+  const list = (ex.sources || []).filter(s => era === 'compare' || s.era === 'both' || s.era === era);
+  if (!list.length) return '';
+  return `
+    <details class="room-sources">
+      <summary>📚 Sources for this room (${list.length})</summary>
+      <ol>${list.map(s => `<li>${srcLinkHtml(s)}${s.note ? `<small>${esc(s.note)}</small>` : ''}</li>`).join('')}</ol>
+    </details>`;
+}
+
 function roomFactsHtml(facts) {
   if (!facts || !facts.length) return '';
   return `<h3 class="room-h">💡 Did you know?</h3><ul class="fact-list">${facts.map(f => `<li>${esc(f)}</li>`).join('')}</ul>`;
@@ -413,6 +441,7 @@ function roomEraBodyHtml(ex, era) {
     ${roomFactsHtml(d.facts)}
     ${roomArtifactsHtml(d.artifacts)}
     ${d.impact ? `<div class="impact-box">⭐ ${era === 'then' ? 'Impact' : 'Why it matters'}: ${esc(d.impact)}</div>` : ''}
+    ${roomSourcesHtml(ex, era)}
     ${roomActionsHtml(ex, era)}`;
 }
 
@@ -432,6 +461,7 @@ function roomCompareBodyHtml(ex) {
     <div class="cmp-grid">${col(a, 'then')}${col(b, 'now')}</div>
     ${roomGalleryHtml(a.gallery, 'then', '📸 2000s photos')}
     ${roomGalleryHtml(b.gallery, 'now', '📸 Today photos')}
+    ${roomSourcesHtml(ex, 'compare')}
     <div class="room-actions">
       <button type="button" class="btn" onclick="setRoomEra('then')">🕹️ Enter the 2000s room</button>
       <button type="button" class="btn btn-pink" onclick="setRoomEra('now')">📱 Enter the Today room</button>
@@ -847,6 +877,118 @@ function handleSnakeKey(key) {
   else if (key === '5') toggleSnakePlay(); // Pause / Play
 }
 
+let modernGameInterval = null;
+let modernGameScore = 0;
+let modernGameBest = 0;
+
+function setModernMode(mode) {
+  if (mode !== 'chat' && mode !== 'game') return;
+  const isGame = mode === 'game';
+  const chatView = $('modern-chat-view');
+  const gameView = $('modern-game-view');
+  const chatButton = $('modern-mode-chat-btn');
+  const gameButton = $('modern-mode-game-btn');
+  if (!chatView || !gameView) return;
+
+  chatView.hidden = isGame;
+  gameView.hidden = !isGame;
+  chatView.classList.toggle('is-active', !isGame);
+  gameView.classList.toggle('is-active', isGame);
+  chatButton?.classList.toggle('active', !isGame);
+  gameButton?.classList.toggle('active', isGame);
+  chatButton?.setAttribute('aria-pressed', String(!isGame));
+  gameButton?.setAttribute('aria-pressed', String(isGame));
+  if (!isGame) {
+    stopModernGame();
+    $('modern-game-score').textContent = '00';
+    $('modern-game-time').textContent = '15';
+    $('modern-game-message').textContent = 'Glow Rush';
+    $('modern-game-instructions').textContent = 'Tap the light. Chase your high score.';
+    $('modern-game-start').textContent = 'Play 15 seconds';
+  }
+}
+
+function appendModernMessage(text) {
+  const feed = $('modern-chat-feed');
+  if (!feed) return;
+  const message = document.createElement('div');
+  message.className = 'modern-message modern-message-out';
+  message.textContent = text;
+  const typing = feed.querySelector('.modern-typing');
+  feed.insertBefore(message, typing || null);
+  feed.scrollTop = feed.scrollHeight;
+}
+
+function modernSendMessage(event) {
+  event.preventDefault();
+  const input = $('modern-message-input');
+  const text = input?.value.trim();
+  if (!text) return;
+  appendModernMessage(text);
+  input.value = '';
+  input.focus();
+}
+
+function modernUsePreset(text) {
+  appendModernMessage(text);
+  setModernMode('chat');
+}
+
+function moveModernGameTarget() {
+  const target = $('modern-game-target');
+  if (!target) return;
+  target.style.left = `${18 + Math.random() * 64}%`;
+  target.style.top = `${18 + Math.random() * 64}%`;
+}
+
+function startModernGame() {
+  stopModernGame();
+  modernGameScore = 0;
+  $('modern-game-score').textContent = '00';
+  $('modern-game-time').textContent = '15';
+  $('modern-game-message').textContent = 'Glow Rush';
+  $('modern-game-instructions').textContent = 'Tap the light. Chase your high score.';
+  $('modern-game-start').textContent = 'Play 15 seconds';
+  $('modern-game-overlay').hidden = true;
+  $('modern-game-target').hidden = false;
+  moveModernGameTarget();
+
+  let secondsLeft = 15;
+  modernGameInterval = setInterval(() => {
+    secondsLeft -= 1;
+    $('modern-game-time').textContent = String(secondsLeft).padStart(2, '0');
+    if (secondsLeft <= 0) finishModernGame();
+  }, 1000);
+}
+
+function modernGameTap() {
+  if (!modernGameInterval) return;
+  modernGameScore += 1;
+  $('modern-game-score').textContent = String(modernGameScore).padStart(2, '0');
+  if (modernGameScore > modernGameBest) {
+    modernGameBest = modernGameScore;
+    $('modern-game-best').textContent = String(modernGameBest);
+  }
+  moveModernGameTarget();
+}
+
+function finishModernGame() {
+  stopModernGame();
+  $('modern-game-message').textContent = 'Round complete!';
+  $('modern-game-instructions').textContent = `You caught ${modernGameScore} lights. Want another go?`;
+  $('modern-game-start').textContent = 'Play again';
+  $('modern-game-overlay').hidden = false;
+}
+
+function stopModernGame() {
+  if (modernGameInterval) clearInterval(modernGameInterval);
+  modernGameInterval = null;
+  const target = $('modern-game-target');
+  const overlay = $('modern-game-overlay');
+  if (target) target.hidden = true;
+  if (overlay) overlay.hidden = false;
+}
+
 // Keyboard controls
 document.addEventListener('keydown', e => {
   if (nokiaMode === 'snake') {
@@ -1141,6 +1283,33 @@ function togglePlayerPopup() {
 }
 
 // ------------------------------------------------------------
+// SOURCES SECTION (built from `sources` + `imageCredits` in data.js)
+// ------------------------------------------------------------
+function renderSources() {
+  const wrap = $('sources-list');
+  if (!wrap) return;
+  const tag = era => era === 'both' ? '<span class="src-tag both">2000s + Today</span>'
+    : `<span class="src-tag ${era === 'now' ? 'now' : 'then'}">${era === 'now' ? 'Today' : '2000s'}</span>`;
+  wrap.innerHTML = exhibits.map(ex => `
+    <article class="src-card" style="--c:${esc(ex.color)}">
+      <div class="src-body">
+        <h4><span aria-hidden="true">${esc(ex.icon)}</span> ${esc(ex.wing)}</h4>
+        ${(ex.sources && ex.sources.length)
+          ? `<ol>${ex.sources.map(s => `<li>${tag(s.era)} ${srcLinkHtml(s)}${s.note ? `<small>${esc(s.note)}</small>` : ''}</li>`).join('')}</ol>`
+          : '<p class="src-empty">No sources added yet.</p>'}
+      </div>
+    </article>`).join('');
+
+  const credits = (typeof imageCredits !== 'undefined' && Array.isArray(imageCredits)) ? imageCredits : [];
+  const box = $('credits-wrap');
+  if (box && credits.length) {
+    $('credits-list').innerHTML = credits.map(c =>
+      `<li>${esc(c.item || '')}${c.credit ? ' — ' + esc(c.credit) : ''}${c.url ? ` (<a href="${esc(c.url)}" target="_blank" rel="noopener noreferrer">link</a>)` : ''}</li>`).join('');
+    box.classList.remove('hidden');
+  }
+}
+
+// ------------------------------------------------------------
 // MUSEUM PASSPORT (a stamp for every room, in both eras)
 // ------------------------------------------------------------
 const PASSPORT_KEY = 'ppc-passport-v1';
@@ -1356,8 +1525,10 @@ document.addEventListener('DOMContentLoaded', () => {
   renderWingTabs();
   initGalleryEvents();
   applyEra(currentEra);
+  setModernMode('chat');
   updatePassportBadge();
   renderCurators();
+  renderSources();
   initBeforeAfter();
   renderStationTabs();
   addSwipe($('room-content'), nextRoom, prevRoom);
