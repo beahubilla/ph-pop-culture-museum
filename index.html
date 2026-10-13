@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Tatak 2000s: Philippine Pop Culture Virtual Museum</title>
   <meta name="description" content="A virtual museum tracing Philippine pop culture from 2000–2010 to today: SMS clans, Friendster, OPM rock, LAN shops, EDSA II, BPO nights, and Typhoon Ondoy.">
-  <meta name="theme-color" content="#fff4fa">
+  <meta name="theme-color" content="#e9e6ff">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8F%9B%EF%B8%8F%3C/text%3E%3C/svg%3E">
 
   <!-- Marks the page as JS-enabled so reveal animations only run when scripts work -->
@@ -33,7 +33,7 @@
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=VT323&family=Silkscreen&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Plus+Jakarta+Sans:wght@400;600;700;800&family=VT323&family=Silkscreen&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="./css/style.css">
 </head>
@@ -55,12 +55,13 @@
           <a href="#then-now" class="nav-link">Then vs. Now</a>
           <a href="#sms" class="nav-link">SMS &amp; Games</a>
           <a href="#curators" class="nav-link">Curators</a>
+          <a href="#sources" class="nav-link">Sources</a>
           <button type="button" onclick="openFriendsterModal(0)" class="nav-link">✨ Friendster</button>
         </nav>
         <!-- Time Machine -->
         <div class="tm" role="group" aria-label="Time machine: choose an era">
-          <button type="button" class="tm-btn active" data-era="then" aria-pressed="true" onclick="setEra('then')">⏪ 2000s</button>
-          <button type="button" class="tm-btn" data-era="now" aria-pressed="false" onclick="setEra('now')">Today ⏩</button>
+          <button type="button" class="tm-btn active" data-era="then" aria-label="View the 2000s wing, 2000 to 2010" aria-pressed="true" onclick="setEra('then')">⏪ 2000s<span>2000–2010</span></button>
+          <button type="button" class="tm-btn" data-era="now" aria-label="View the Today wing, the 2020s" aria-pressed="false" onclick="setEra('now')">Today ⏩<span>2020s</span></button>
         </div>
         <button type="button" class="icon-btn" onclick="openPassport()" aria-label="Open your museum passport" title="Museum passport">🛂<span class="icon-badge pp-count">0/12</span></button>
         <button type="button" class="icon-btn" onclick="openMap()" aria-label="Open the museum floor map" title="Floor map">🗺️</button>
@@ -72,25 +73,43 @@
       <a href="#then-now" class="nav-link">Then vs. Now</a>
       <a href="#sms" class="nav-link">SMS &amp; Games</a>
       <a href="#curators" class="nav-link">Curators</a>
+          <a href="#sources" class="nav-link">Sources</a>
       <button type="button" onclick="openFriendsterModal(0)" class="nav-link">✨ Friendster</button>
     </nav>
   </header>
 
   <!-- Hero / Grand Lobby -->
   <section id="top" class="px-4 pt-10 sm:pt-14 pb-8 text-center">
-    <div class="max-w-5xl mx-auto">
-      <span class="hero-pill"><span class="only-then">📼 The 2000s Wing is open • 2000–2010</span><span class="only-now">📱 The Today Wing is open • 2020s</span></span>
-      <h2 class="hero-title">
-        From <span class="grad-text">Unli-Text &amp; Friendster</span><br>to P-Pop &amp; 5G Streams
-      </h2>
-      <p class="max-w-2xl mx-auto text-xs sm:text-base leading-relaxed text-[var(--muted)] mb-6 sm:mb-7">
-        Trace how the analog-digital hybrid era of 2000–2010 shaped modern Philippine communication, entertainment, sports, and socio-political identity.
-      </p>
-      <div class="flex flex-wrap justify-center gap-2.5 sm:gap-3 mb-6 sm:mb-8">
-        <button type="button" onclick="openRoom(0)" class="btn btn-pink">🚪 Start the tour</button>
-        <a href="#exhibits" class="btn">Browse exhibits ↓</a>
-        <button type="button" onclick="openMap()" class="btn">🗺️ Floor map</button>
+    <div class="max-w-5xl mx-auto hero-layout">
+      <div class="hero-copy only-then">
+        <span class="hero-pill">📼 The 2000s Wing is open • 2000–2010</span>
+        <h2 class="hero-title">
+          From <span class="grad-text">Unli-Text &amp; Friendster</span><br>to P-Pop &amp; 5G Streams
+        </h2>
+        <p class="max-w-2xl mx-auto text-xs sm:text-base leading-relaxed text-[var(--muted)] mb-6 sm:mb-7">
+          Trace how the analog-digital hybrid era of 2000–2010 shaped modern Philippine communication, entertainment, sports, and socio-political identity.
+        </p>
+        <div class="flex flex-wrap justify-center gap-2.5 sm:gap-3 mb-6 sm:mb-8">
+          <button type="button" onclick="openRoom(0)" class="btn btn-pink">🚪 Start the tour</button>
+          <a href="#exhibits" class="btn">Browse exhibits ↓</a>
+          <button type="button" onclick="openMap()" class="btn">🗺️ Floor map</button>
+        </div>
       </div>
+
+      <figure class="hero-spotlight only-now">
+        <img src="./images/today-wing-hero.png?v=2" alt="An iridescent Y2K museum display featuring a chrome flip phone, MP3 player, compact discs, and holographic interfaces" fetchpriority="high">
+        <div class="hero-image-shade" aria-hidden="true"></div>
+        <figcaption>
+          <span class="hero-overline">TODAY WING &nbsp; / &nbsp; PHILIPPINE POP CULTURE, REBOOTED</span>
+          <h2 class="hero-title">The future looks<br><em>a little familiar.</em></h2>
+          <p>From pocket-sized text threads to world-stage P-pop, explore the culture shaping what comes next.</p>
+          <div class="hero-actions">
+            <button type="button" onclick="openRoom(0)" class="btn btn-pink">Explore the collection <span aria-hidden="true">↗</span></button>
+            <a href="#exhibits" class="btn">Browse exhibits <span aria-hidden="true">↓</span></a>
+          </div>
+        </figcaption>
+        <span class="hero-index" aria-hidden="true">01 &nbsp;—&nbsp; 06</span>
+      </figure>
 
       <!-- Horizontal mobile carousel / wrapped desktop tabs -->
       <div id="wing-tabs" class="pill-carousel max-w-3xl mx-auto" role="tablist" aria-label="Filter exhibits by topic"></div>
@@ -104,7 +123,9 @@
     <!-- Wing picker (also controlled by the Time Machine in the header) -->
     <div class="wing-picker panel mb-7">
       <div class="text-center mb-3">
-        <h3 class="font-extrabold text-sm sm:text-base">🏛️ Choose a wing</h3>
+        <span class="wing-kicker">TIME MACHINE</span>
+        <h3 class="font-extrabold text-sm sm:text-base">🏛️ Choose an era</h3>
+        <p id="wing-current" class="wing-current" aria-live="polite">Now viewing: The 2000s Wing</p>
         <p id="wing-desc" class="text-xs text-[var(--muted)] mt-0.5"></p>
       </div>
       <div class="wing-switch" role="group" aria-label="Choose a wing">
@@ -143,24 +164,28 @@
       </div>
     </section>
 
-    <!-- SMS & SNAKE SIMULATOR (Nokia 3310 Edition) -->
+    <!-- Interactive messaging and mobile gaming relic -->
     <section id="sms" class="scroll-mt-24 sm:scroll-mt-28 mt-14 sm:mt-16 max-w-xl mx-auto px-2">
       <div class="section-head">
         <span class="retro">INTERACTIVE VIRTUAL RELIC</span>
-        <h3>Nokia 3310 Interactive Relic</h3>
-        <p>Switch between composing an SMS or playing classic 1998 Snake with the keypad buttons!</p>
+        <h3><span class="only-then">Nokia 3310 Interactive Relic</span><span class="only-now">Your phone, your people, your game</span></h3>
+        <p><span class="only-then">Switch between composing an SMS or playing classic 1998 Snake with the keypad buttons!</span><span class="only-now">Step into a modern smartphone: send a message, then try a quick mobile-game high-score run.</span></p>
       </div>
 
-      <!-- Mode Selector: SMS vs Snake -->
-      <div class="flex justify-center mb-4">
+      <div class="flex justify-center mb-4 only-then">
         <div class="seg max-w-xs shadow-[3px_3px_0_var(--ink)]">
-          <button type="button" id="nokia-mode-sms-btn" onclick="setNokiaMode('sms')" class="seg-btn active">✉️ SMS Text</button>
-          <button type="button" id="nokia-mode-snake-btn" onclick="setNokiaMode('snake')" class="seg-btn">🐍 Snake II</button>
+          <button type="button" id="nokia-mode-sms-btn" onclick="setNokiaMode('sms')" class="seg-btn active">SMS Text</button>
+          <button type="button" id="nokia-mode-snake-btn" onclick="setNokiaMode('snake')" class="seg-btn">Snake II</button>
         </div>
       </div>
 
+      <div class="modern-mode-switch only-now" role="group" aria-label="Choose smartphone app">
+        <button type="button" id="modern-mode-chat-btn" class="modern-mode-btn active" aria-pressed="true" onclick="setModernMode('chat')">Messages</button>
+        <button type="button" id="modern-mode-game-btn" class="modern-mode-btn" aria-pressed="false" onclick="setModernMode('game')">Quick game</button>
+      </div>
+
       <!-- Nokia 3310 Phone Hardware -->
-      <div class="nokia-phone-case">
+      <div class="nokia-phone-case only-then">
         <!-- Inner Faceplate -->
         <div class="nokia-faceplate">
           <!-- Earpiece Speaker -->
@@ -285,8 +310,47 @@
         </div>
       </div>
 
-      <!-- 4 Original Preset Options (Retained in full) -->
-      <div class="phone-shortcuts mt-5 max-w-md mx-auto">
+      <div class="smartphone-device only-now">
+        <div class="smartphone-screen">
+          <div class="smartphone-status"><span>9:41</span><span aria-label="Full signal, Wi-Fi, battery">5G &nbsp; ▰</span></div>
+          <div id="modern-chat-view" class="smartphone-app-view">
+            <div class="modern-chat-header">
+              <span class="modern-contact-avatar" aria-hidden="true">B</span>
+              <div><strong>Besties GC</strong><span>4 friends · active now</span></div>
+              <span class="modern-chat-call" aria-hidden="true">•••</span>
+            </div>
+            <div class="modern-chat-feed" id="modern-chat-feed" aria-live="polite" aria-label="Messages">
+              <div class="modern-chat-date">TODAY · 9:38 AM</div>
+              <div class="modern-message modern-message-in"><span class="modern-message-name">Bea</span>Uy, nasa exhibit na kami! Ang ganda ng new phone wing.</div>
+              <div class="modern-message modern-message-in"><span class="modern-message-name">Migs</span>Game tayo after? One quick round lang.</div>
+              <div class="modern-message modern-message-out">On my way! Save me a spot ✨</div>
+              <span class="modern-typing"><i></i><i></i><i></i> Bea is typing</span>
+            </div>
+            <form class="modern-composer" onsubmit="modernSendMessage(event)">
+              <label class="sr-only" for="modern-message-input">Write a message</label>
+              <input id="modern-message-input" type="text" maxlength="220" autocomplete="off" placeholder="Message the group…">
+              <button type="submit" aria-label="Send message" title="Send message">↑</button>
+            </form>
+          </div>
+          <div id="modern-game-view" class="smartphone-app-view modern-game-view" hidden>
+            <div class="modern-game-header"><span>MINI ARCADE</span><span>DAILY PLAY</span></div>
+            <div class="modern-game-scorebar"><span>SCORE <strong id="modern-game-score">00</strong></span><span>TIME <strong id="modern-game-time">15</strong></span></div>
+            <div class="modern-game-arena" id="modern-game-arena">
+              <button type="button" id="modern-game-target" class="modern-game-target" aria-label="Tap the glowing target" onclick="modernGameTap()" hidden><span></span></button>
+              <div id="modern-game-overlay" class="modern-game-overlay">
+                <span class="modern-game-sparkle" aria-hidden="true"></span>
+                <strong id="modern-game-message">Glow Rush</strong>
+                <p id="modern-game-instructions">Tap the light. Chase your high score.</p>
+                <button type="button" id="modern-game-start" onclick="startModernGame()">Play 15 seconds</button>
+              </div>
+            </div>
+            <div class="modern-game-foot"><span>One thumb. One quick round.</span><span>BEST <strong id="modern-game-best">0</strong></span></div>
+          </div>
+          <div class="smartphone-home-indicator" aria-hidden="true"></div>
+        </div>
+      </div>
+
+      <div class="phone-shortcuts mt-5 max-w-md mx-auto only-then">
         <div class="grid grid-cols-2 gap-2 sm:gap-2.5 mb-3">
           <button type="button" onclick="changeSms('txt_clan')" class="btn btn-sm text-center leading-tight">📱 Text Clan Invite</button>
           <button type="button" onclick="changeSms('edsa2')" class="btn btn-sm text-center leading-tight">📢 EDSA II Chain Msg</button>
@@ -310,6 +374,15 @@
             </div>
           </div>
         </details>
+      </div>
+
+      <div class="modern-shortcuts mt-5 max-w-md mx-auto only-now">
+        <span class="modern-shortcuts-label">Try a quick message</span>
+        <div class="modern-preset-list">
+          <button type="button" onclick="modernUsePreset('Nasa museum na kami — ikaw, where you at?')">Where you at?</button>
+          <button type="button" onclick="modernUsePreset('One quick round after this? Game!')">Game tayo?</button>
+          <button type="button" onclick="modernUsePreset('Sent you the pics sa GC!')">Photo check-in</button>
+        </div>
       </div>
     </section>
 
@@ -456,6 +529,23 @@
       <div id="station-tabs" class="grid gap-1.5 mt-2.5 text-[10px]"></div>
     </aside>
   </div>
+
+  <!-- SOURCES -->
+  <section id="sources" class="scroll-mt-24 sm:scroll-mt-28 sources-wrap">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6">
+      <div class="section-head">
+        <span class="retro">REFERENCES</span>
+        <h3>📚 Sources</h3>
+        <p>The facts in each room come from the references below. Tap a link to read the original.</p>
+      </div>
+      <div id="sources-list" class="sources-grid"></div>
+      <div id="credits-wrap" class="credits hidden">
+        <h4>🖼️ Image &amp; audio credits</h4>
+        <ul id="credits-list"></ul>
+      </div>
+      <p class="sources-note">Websites change over time, so details may look different from what each source said when we read it.</p>
+    </div>
+  </section>
 
   <footer class="site-footer">
     <div class="footer-card">
