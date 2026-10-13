@@ -53,6 +53,9 @@ const smsDefault = '"D2 na me, wer na u? txt bck asap! <3"';
 //   gallery, image, icon, badge, tag, impact). Add today.image / today.gallery
 //   with your own photos, e.g. "./images/today/gcash.jpg".
 // - change: one line used in the Compare tab ("what changed").
+// - sources: [{ title, url, publisher, year, era: "then" | "now" | "both", note }]
+//   Shown under each room and in the Sources section at the bottom of the page.
+//   Add the references YOU actually used. Always double-check what a source says.
 // ⚠️ Double-check the facts and add your sources before submitting!
 // ============================================================
 const exhibits = [
@@ -73,12 +76,12 @@ const exhibits = [
     then: "Nokia 3310 keypad texting, SMS clans, Friendster testimonials, and Yahoo Messenger video calls for OFW families.",
     now: "5G mobile smartphones, TikTok algorithms, Instagram Reels, Messenger, and live-streaming online communities.",
     change: "From 160-character texts and paid load to unlimited chat, video calls, and feeds on a single screen.",
-    impact: "Birthed the hyper-connected Pinoy netizen",
+    impact: "Turned the Philippines into the 'texting capital of the world'",
     intro: "In the early 2000s the Philippines became known as the 'texting capital of the world'. Phones were small, load was precious, and every character counted. Filipinos squeezed whole conversations into tiny messages.",
     facts: [
-      "A single SMS was capped at 160 characters, which is why 'txt speak' like 'u', '2', and 'gud am' took off.",
-      "Friendster launched in the US in 2002 but found some of its biggest audiences in Southeast Asia, including the Philippines.",
-      "Yahoo! Messenger and cheap webcams let OFW families see each other long before video calls fit in every pocket."
+      "A single SMS was capped at 160 characters, and texting grew its own lingo, which is why 'txt speak' like 'u', '2', and 'gud am' took off.",
+      "Texting took off because it was far cheaper than phone calls or going online at home.",
+      "Friendster was founded in the US in 2002 and opened to the public in 2003. Its biggest audience was in Southeast Asia, and by 2008 the Philippines made up about 39% of its traffic."
     ],
     artifacts: [
       { emoji: "📱", name: "Nokia 3310", note: "Remembered for its toughness, the Snake game, and the multi-tap keypad." },
@@ -98,9 +101,9 @@ const exhibits = [
       impact: "Everyone is now a creator, broadcaster, and audience at once.",
       intro: "Today a single smartphone handles texting, calls, video, shopping, and school. Social life happens in group chats, short videos, and live streams, and news can reach millions of people in minutes.",
       facts: [
-        "The Philippines is often ranked among the countries that spend the most time on social media each day.",
-        "Group chats, stickers, and voice notes have largely replaced the 160-character 'txt speak' of the 2000s.",
-        "Video calls over Wi-Fi or mobile data let OFW families see each other any time, without paying per minute."
+        "In the Digital 2025 report, Filipinos ranked fourth in the world for daily time on social media, at about 3.5 hours a day.",
+        "Facebook, YouTube, Messenger, and Instagram take much of that time, and TikTok now competes closely with Facebook (Digital 2026 Philippines report).",
+        "About half of Filipino internet users use mobile video calling every month (Digital 2025 report)."
       ],
       artifacts: [
         { emoji: "📱", name: "Smartphone", note: "Camera, maps, wallet, and chat in one device." },
@@ -108,7 +111,19 @@ const exhibits = [
         { emoji: "👥", name: "Group chats", note: "Class, family, and barkada chats run daily life." },
         { emoji: "📡", name: "5G & Wi-Fi", note: "Faster data replaced counting texts and load." }
       ]
-    }
+    },
+    sources: [
+      { title: "3GPP TS 23.040", url: "https://www.3gpp.org/dynareport/23040.htm", publisher: "3GPP", era: "then", note: "Short Message Service technical specification." },
+      { title: "Digital 2026: The Philippines", url: "https://datareportal.com/reports/digital-2026-philippines", publisher: "DataReportal", year: "2026", era: "now", note: "Recent digital and social media context." },
+      { title: "The Philippine text messaging phenomenon", url: "https://www.philstar.com/lifestyle/business-life/2001/05/15/85823/philippine-text-messaging-phenomenon/amp/", publisher: "The Philippine STAR", year: "2001", era: "then", note: "Texting culture, low cost versus the internet, and 'Generation Txt'." },
+      { title: "There was a time when SMS was free", url: "https://gmanetwork.com/news/opinion/content/101788/there-was-a-time-when-sms-was-free/story", publisher: "GMA News", era: "then", note: "The Philippines as the SMS capital of the world." },
+      { title: "Applying the Digital Opportunity Index to the Philippines (presentation)", url: "https://itu.int/osg/spuold/digitalbridges/materials/salazar-ppt.pdf", publisher: "ITU / LIRNEasia", era: "then", note: "Why the SMS explosion happened and what people used it for." },
+      { title: "Friendster", url: "https://en.wikipedia.org/wiki/Friendster", publisher: "Wikipedia", era: "then", note: "Founding, 2003 launch, and the shift to Southeast Asia." },
+      { title: "Social media use in the Philippines", url: "https://en.wikipedia.org/wiki/Social_media_use_in_the_Philippines", publisher: "Wikipedia", era: "both", note: "Friendster's Philippine traffic share and social media use over time." },
+      { title: "Filipinos spend more time than global average on social media", url: "https://campaignasia.com/article/filipinos-spend-more-time-than-global-average-on-social-media/500622", publisher: "Campaign Asia", year: "2025", era: "now", note: "Digital 2025 social media time." },
+      { title: "Filipinos spend nearly equal time on TikTok, Facebook, report shows", url: "https://www.gmanetwork.com/news/topstories/nation/991811/filipinos-time-tiktok-facebook-report/story/", publisher: "GMA News", era: "now", note: "Digital 2026 Philippines platform time." },
+      { title: "Pinoys remain among world's most internet-savvy users — 2025 report", url: "https://interaksyon.philstar.com/trends-spotlights/2025/02/26/292410/pinoys-among-worlds-internet-savvy-users-2025-report/", publisher: "Interaksyon", year: "2025", era: "now", note: "Mobile video calling and internet use." }
+    ]
   },
   {
     id: "cultural",
@@ -127,12 +142,12 @@ const exhibits = [
     then: "OPM rock explosion (Parokya ni Edgar, Kamikazee), Quiapo burned MP3 CDs, SexBomb dance hits, and primetime fantaseryes (Mulawin).",
     now: "P-Pop international wave (SB19, BINI), Spotify streaming royalties, TikTok dance challenges, and Netflix adaptations.",
     change: "From burned CDs and radio requests to streaming playlists and worldwide fan communities.",
-    impact: "Decentralized creator economy & global fandom",
+    impact: "Made band mania, burned CDs, and dance crazes part of everyday life",
     intro: "The 2000s were a golden age for Pinoy rock and a wild mix of dance crazes and fantasy TV. Music traveled on burned CDs and radio requests.",
     facts: [
-      "Bands like Parokya ni Edgar, Kamikazee, and Sponge Cola filled radio, music channels, and karaoke playlists.",
-      "The SexBomb Girls turned dance routines into a mainstream TV phenomenon.",
-      "Fantaseryes such as Mulawin (2004) brought effects-heavy fantasy into primetime."
+      "Bands like Parokya ni Edgar (nicknamed 'The National Band of the Philippines' by local media), Kamikazee, and Sponge Cola were part of the early-2000s Pinoy rock scene, and FM radio and TV helped make them popular.",
+      "The SexBomb Girls began as backup dancers on Eat Bulaga! (the group formed in 1999) and grew into multi-platinum recording stars.",
+      "Mulawin premiered on GMA Network on August 2, 2004, as a primetime fantasy series."
     ],
     artifacts: [
       { emoji: "💿", name: "Burned MP3 CD", note: "Dozens of songs on one disc, often bought in Quiapo." },
@@ -150,11 +165,11 @@ const exhibits = [
       image: "./images/ppop.png",
       alt: "P-Pop and music streaming",
       impact: "Fans and streams, not record stores, decide what becomes a hit.",
-      intro: "Burned CDs gave way to playlists you can stream anywhere. P-Pop groups, indie artists, and creators build audiences on social media, and fans organize streaming parties and fan projects online.",
+      intro: "Burned CDs gave way to playlists you can stream anywhere. P-Pop groups and their fandoms use social media to reach audiences at home and abroad.",
       facts: [
-        "P-Pop groups like SB19 (debuted 2018) and BINI (debuted 2021) have built international followings.",
-        "A short dance challenge can push a song to a brand-new audience within days.",
-        "Independent artists can release music on streaming platforms without a record label or CD pressing."
+        "SB19 debuted in October 2018 and entered Billboard's Social 50 chart in December 2019, helped by a growing international fanbase on social media.",
+        "BINI debuted in June 2021 and was listed by Teen Vogue among its '12 Girl Groups to Watch in 2024'.",
+        "BINI's fans call themselves 'Blooms', and the group's 2021 launch was held as a virtual event for fans and the press."
       ],
       artifacts: [
         { emoji: "🎧", name: "Streaming playlists", note: "Millions of songs, one tap away." },
@@ -162,7 +177,19 @@ const exhibits = [
         { emoji: "💬", name: "Fan communities", note: "Fans organize streams, projects, and meet-ups online." },
         { emoji: "📺", name: "Streaming series", note: "Shows on demand instead of waiting for primetime." }
       ]
-    }
+    },
+    sources: [
+      { title: "Pogi rock", url: "https://en.wikipedia.org/wiki/Pogi_rock", publisher: "Wikipedia", era: "then", note: "Early-2000s Pinoy rock bands on FM radio and TV." },
+      { title: "Parokya ni Edgar", url: "https://en.wikipedia.org/wiki/Parokya_ni_Edgar", publisher: "Wikipedia", era: "then", note: "The band and its 'National Band' nickname." },
+      { title: "Kamikazee", url: "https://en.wikipedia.org/wiki/Kamikazee", publisher: "Wikipedia", era: "then", note: "First album in 2002." },
+      { title: "SexBomb Girls", url: "https://en.wikipedia.org/wiki/SexBomb_Girls", publisher: "Wikipedia", era: "then", note: "From Eat Bulaga! backup dancers to recording stars." },
+      { title: "Mulawin", url: "https://en.wikipedia.org/wiki/Mulawin", publisher: "Wikipedia", era: "then", note: "2004 GMA fantasy series." },
+      { title: "Pirate hunters strike", url: "https://philstar.com/metro/2003/07/16/213833/pirate-hunters-strike", publisher: "The Philippine STAR", year: "2003", era: "then", note: "Quiapo and the pirated CD trade." },
+      { title: "SB19 (artist page)", url: "https://billboard.com/music/sb19", publisher: "Billboard", era: "now", note: "Debut single and Social 50 chart history." },
+      { title: "SB19 ranks as mainstay in Billboard's Social 50 chart", url: "https://gmanetwork.com/entertainment/showbiznews/news/59180/sb19-ranks-as-mainstay-in-billboards-social-50-chart/story", publisher: "GMA Network", era: "now", note: "International fanbase on social media." },
+      { title: "ABS-CBN officially launches P-pop girl group BINI", url: "https://abs-cbn.com/2021/6/12/fresh-scoops/abs-cbn-officially-launches-p-pop-girl-group-bini-193975", publisher: "ABS-CBN", year: "2021", era: "now", note: "BINI's 2021 launch and fandom." },
+      { title: "Meet Bini, a P-pop girl group introducing the 'modern Filipina' to the world", url: "https://ca.news.yahoo.com/meet-bini-p-pop-girl-004906214.html", publisher: "NextShark via Yahoo News", year: "2024", era: "now", note: "Teen Vogue's 2024 'Girl Groups to Watch' list." }
+    ]
   },
   {
     id: "sports",
@@ -178,14 +205,14 @@ const exhibits = [
     thenBlurb: "Streets that went quiet for Pacquiao fights, and computer shops packed for all-night DotA.",
     image: "./images/computer shop.png",
     alt: "Esports Gaming Room",
-    then: "Zero crime rate during Pacquiao boxing broadcasts, PBA arena finals, and bulky CRT computer shops playing DotA 1 and Counter-Strike.",
+    then: "Crime reportedly fell to almost zero during Pacquiao boxing broadcasts, plus PBA arena finals and bulky CRT computer shops playing DotA 1 and Counter-Strike.",
     now: "Olympic gold medals (Carlos Yulo, Hidilyn Diaz), professional Esports championships (MPL/MLBB), and mobile game streaming.",
     change: "From one fight night on one TV to Olympic podiums, esports arenas, and highlights on every phone.",
-    impact: "LAN culture built the foundation for PH Esports dominance",
+    impact: "Fight nights and LAN shops became shared neighborhood rituals",
     intro: "Sports and games brought neighborhoods together. In the 2000s that meant crowding around one TV for a Pacquiao fight or packing a computer shop for an all-night DotA match.",
     facts: [
-      "Pacquiao fight nights became famous for quiet streets, because so many families watched together.",
-      "DotA started as a Warcraft III mod and packed internet cafes across the country.",
+      "Pacquiao fight nights became famous for quiet streets, and police often reported close to zero crime while the fights were on.",
+      "DotA started as a Warcraft III mod and was a staple of internet cafes across the country.",
       "Internet cafes rented computers by the hour, so a few pesos could buy an afternoon of games."
     ],
     artifacts: [
@@ -206,9 +233,9 @@ const exhibits = [
       impact: "National pride is now shared live, from stadiums to phone screens.",
       intro: "Sports fandom has moved from one TV to every screen. Filipino athletes win on the world stage, and mobile esports fill arenas and live streams.",
       facts: [
-        "Hidilyn Diaz won the Philippines' first Olympic gold (weightlifting, Tokyo 2020), and Carlos Yulo took two gymnastics golds at Paris 2024.",
-        "Filipino teams have won Mobile Legends world championship titles.",
-        "Highlights, live matches, and athlete updates reach fans instantly through social media and streaming apps."
+        "Hidilyn Diaz won the Philippines' first Olympic gold (weightlifting, Tokyo 2020).",
+        "Carlos Yulo won the men's floor exercise on August 3, 2024 and the vault the next day, becoming the first Filipino to win two Olympic golds.",
+        "Bren Esports won the Mobile Legends world title in January 2021 (M2), and Blacklist International followed in December 2021 (M3) in an all-Filipino final."
       ],
       artifacts: [
         { emoji: "🏅", name: "Olympic gold", note: "A new era of national sports pride." },
@@ -219,7 +246,18 @@ const exhibits = [
       gallery: [
         { src: "./images/esports.png", caption: "Mobile esports on stage" }
       ]
-    }
+    },
+    sources: [
+      { title: "Hidilyn Diaz (athlete profile)", url: "https://olympics.com/en/athletes/hidilyn-diaz", publisher: "Olympics.com", era: "now", note: "Official Olympic results." },
+      { title: "Crime rate turns almost zilch on Pacquiao fight days - police", url: "https://gmanetwork.com/news/topstories/nation/63607/crime-rate-turns-almost-zilch-on-pacquiao-fight-days-police/story", publisher: "GMA News", era: "then", note: "Police reports on crime during Pacquiao fights." },
+      { title: "Police on alert Sunday despite almost no crime during Pacquiao fights", url: "https://newsinfo.inquirer.net/92331/police-on-alert-sunday-despite-almost-no-crime-during-pacquiao-fights/amp", publisher: "Philippine Daily Inquirer", era: "then", note: "Crime was usually close to zero on fight days." },
+      { title: "13 Top PC Games in Computer Cafes in the Philippines", url: "https://news.yahoo.com/13-top-pc-games-computer-200034195.html", publisher: "Tech in Asia via Yahoo News", era: "then", note: "DotA as a Warcraft III map; popular computer cafe games." },
+      { title: "In Response to IGN Asia Pacific's 'Overview: Gaming in the Philippines'", url: "https://www.gamedeveloper.com/game-platforms/in-response-to-ign-asia-pacific-s-overview-gaming-in-the-philippines-", publisher: "Game Developer", era: "then", note: "Computer shops and cheap hourly PC rental." },
+      { title: "Lakad matatag", url: "https://gameindustry.ph/article/lakad-matatag", publisher: "GameIndustry.ph", era: "then", note: "DotA culture in Philippine internet cafes." },
+      { title: "Carlos Yulo and Hidilyn Diaz in Paris", url: "https://gmanetwork.com/news/sports/content/916438/carlos-yulo-and-hidilyn-diaz-in-paris-olympics/story", publisher: "GMA News", year: "2024", era: "now", note: "The Philippines' two Olympic gold medalists." },
+      { title: "Meet Carlos Yulo, the Philippines' two-time Olympic gold medalist", url: "https://www.gmanetwork.com/entertainment/photos/meet-carlos-yulo-the-philippines-two-time-olympic-gold-medalist/11728/", publisher: "GMA Network", year: "2024", era: "now", note: "Floor exercise (Aug 3) and vault (Aug 4), 2024." },
+      { title: "Blacklist International capture M3 title in historic showdown with Onic PH", url: "https://news.codashop.com/bd/blacklist-international-capture-m3-title-in-historic-showdown-with-onic-ph/", publisher: "Codashop News", year: "2021", era: "now", note: "M3 all-Filipino final; Bren Esports won M2." }
+    ]
   },
   {
     id: "political",
@@ -238,42 +276,53 @@ const exhibits = [
     then: "\"Go 2 EDSA, wear black\" SMS chains that toppled Estrada, the Hello Garci scandal, and political satire shows (Wazzup Wazzup).",
     now: "TikTok viral campaigns, political podcasts, algorithmic influencer endorsements, and live-streamed hearings.",
     change: "From forwarded chain texts to viral videos, live-streamed hearings, and online fact-checking.",
-    impact: "SMS chains birthed viral citizen mobilization",
+    impact: "Showed that a forwarded text could help gather a crowd",
     intro: "Politics moved at the speed of forwarded texts. In January 2001, messages spread calls to gather at EDSA, and the 'text brigade' became part of the story of how crowds were mobilized.",
     facts: [
-      "EDSA II (January 2001) is often cited as an early example of text messaging being used to mobilize crowds.",
-      "The 'Hello Garci' scandal of 2005 centered on alleged wiretapped phone calls connected to the 2004 elections.",
-      "Chain texts like 'Go 2 EDSA, wear black' showed how fast a message could travel with no social media at all."
+      "Text volume reportedly jumped from about 30 million to about 70 million messages a day during the final days of Estrada's impeachment trial and EDSA 2.",
+      "The 'Hello Garci' scandal began in June 2005, when audio recordings allegedly of a phone call between President Arroyo and election official Virgilio Garcillano about the 2004 election were released.",
+      "Texting was also used for everyday services, like booking movie tickets and reaching government agencies."
     ],
     artifacts: [
       { emoji: "📩", name: "Chain text", note: "'Pls pass 2 all' spread news and rumors alike." },
-      { emoji: "🖤", name: "Black shirts", note: "A visual signal worn by protesters at EDSA." },
-      { emoji: "🎙️", name: "Leaked recordings", note: "Audio clips that shook public trust." },
-      { emoji: "📰", name: "Satire shows", note: "Comedy as a way to talk about power." }
+      { emoji: "💿", name: "'Hello Garci' CDs", note: "Copies of the alleged recordings were played for reporters on CDs." },
+      { emoji: "📺", name: "Satire shows", note: "Comedy as a way to talk about power." },
+      { emoji: "📣", name: "EDSA gatherings", note: "Crowds gathered at EDSA in January 2001 (EDSA II)." }
     ],
     curator: 2,
     today: {
       icon: "🗳️",
-      badge: "Social Media & Streams",
-      tag: "VIRAL & LIVE",
-      title: "Viral Politics & Live Hearings",
-      blurb: "Campaigns, debates, and public hearings now play out on video feeds and live streams.",
+      badge: "Social Media & Fact-Checks",
+      tag: "VIRAL & FACT-CHECKED",
+      title: "Viral Politics & Fact-Checks",
+      blurb: "Campaigns now play out on video feeds and influencer posts, and fact-checkers work to verify claims.",
       image: "",
       alt: "",
       impact: "Political conversation is faster, louder, and harder to verify.",
-      intro: "Political conversation today lives on video platforms, podcasts, and group chats. Campaigns work with creators, hearings are streamed live, and clips can spread nationwide within hours.",
+      intro: "Political conversation today lives on video platforms and group chats. In the 2022 elections, campaigns spread to TikTok, Instagram, and YouTube, and fact-checkers worked to verify claims before they spread.",
       facts: [
-        "Short clips and memes can spread a political message faster than a forwarded text ever could.",
-        "Live-streamed hearings and press conferences let anyone watch government proceedings in real time.",
-        "Fact-checking has become a big part of online political talk, because misleading posts can spread as quickly as accurate ones."
+        "In 2022, political campaigning spread to TikTok, Instagram, and YouTube, and social media influencers and celebrities helped amplify political messages.",
+        "Tsek.ph, an election fact-checking collaboration of media, academe, and civil society, grew from 14 partners in 2019 to 34.",
+        "Most of the election content that VERA Files fact-checked in 2022 came from Facebook."
       ],
       artifacts: [
         { emoji: "📹", name: "Campaign videos", note: "Short clips built for sharing." },
-        { emoji: "🎙️", name: "Political podcasts", note: "Long conversations on demand." },
+        { emoji: "🤳", name: "Influencer posts", note: "Creators and celebrities amplify messages." },
         { emoji: "🔍", name: "Fact-checks", note: "Checking claims before they spread." },
         { emoji: "💬", name: "Group-chat forwards", note: "The modern chain text." }
       ]
-    }
+    },
+    sources: [
+      { title: "The Cell Phone and the Crowd", url: "https://doi.org/10.1215/08992363-15-3-399", publisher: "Vicente L. Rafael, Public Culture", year: "2003", era: "then", note: "People Power II and mobile communication." },
+      { title: "The Philippine text messaging phenomenon", url: "https://www.philstar.com/lifestyle/business-life/2001/05/15/85823/philippine-text-messaging-phenomenon/amp/", publisher: "The Philippine STAR", year: "2001", era: "then", note: "SMS volume during EDSA 2." },
+      { title: "Applying the Digital Opportunity Index to the Philippines (presentation)", url: "https://itu.int/osg/spuold/digitalbridges/materials/salazar-ppt.pdf", publisher: "ITU / LIRNEasia", era: "then", note: "Everyday uses of SMS." },
+      { title: "Hello Garci scandal", url: "https://en.wikipedia.org/wiki/Hello_Garci_scandal", publisher: "Wikipedia", era: "then", note: "Timeline and background of the scandal." },
+      { title: "What Went Before: Saga of the 'Hello Garci' tapes", url: "https://newsinfo.inquirer.net/606445/what-went-before-saga-of-the-hello-garci-tapes", publisher: "Philippine Daily Inquirer", era: "then", note: "Timeline of the 2005 tapes." },
+      { title: "[B-SIDE Podcast] Trolls, TikTok, and the 2022 elections", url: "https://www.bworldonline.com/?p=450089", publisher: "BusinessWorld", year: "2022", era: "now", note: "Campaigning on TikTok, Instagram, and YouTube; influencers." },
+      { title: "From Likes to Lies: Disinformation in the Philippines and Thailand", url: "https://fulcrum.sg/from-likes-to-lies-disinformation-in-the-philippines-and-thailand/", publisher: "Fulcrum (ISEAS)", era: "now", note: "Influencers and Tsek.ph in the 2022 election." },
+      { title: "VERA Files Fact Check Yearender: Dahil hari ang video, misinformation ang nasa trono sa panahon ng TikTok", url: "https://verafiles.org/articles/vera-files-fact-check-yearender-dahil-hari-ang-video-misinformation-ang-nasa-trono-sa-panahon-ng-tiktok", publisher: "VERA Files", year: "2022", era: "now", note: "Election fact-checks and Tsek.ph growth." },
+      { title: "Digital News Report 2022: Philippines", url: "https://reutersinstitute.politics.ox.ac.uk/digital-news-report/2022/philippines", publisher: "Reuters Institute", year: "2022", era: "now", note: "News, social media, and fact-checking in the 2022 election." }
+    ]
   },
   {
     id: "economic",
@@ -292,12 +341,12 @@ const exhibits = [
     then: "Explosion of call centers creating the 24/7 night economy, Quiapo pirated DVD stalls, and TV rating wars.",
     now: "Cashless e-wallets (GCash, Maya), platform e-commerce (Shopee, TikTok Shop), and digital content monetization.",
     change: "From night-shift call centers and pirated DVDs to e-wallets, online shops, and gig work.",
-    impact: "BPO nightshifts established the 24/7 consumer society",
+    impact: "Created a night-shift workforce and a city that never slept",
     intro: "As call centers grew in the 2000s, whole districts stayed awake at night to serve customers overseas. Cities adapted with 24-hour food spots, shuttle services, and late-night shopping.",
     facts: [
-      "Call centers worked on overseas time zones, so many agents worked at night in Manila.",
-      "GCash began in 2004 as an SMS-based mobile wallet, long before smartphone apps.",
-      "Pirated DVDs and CDs from stalls like Quiapo's were a part of everyday entertainment."
+      "Call centers served overseas customers, so many agents worked at night in Manila.",
+      "GCash launched in October 2004 as an SMS-based money-transfer service, years before smartphone apps (the GCash app arrived in 2012).",
+      "Pirated CDs and DVDs sold in places like Quiapo were a part of everyday entertainment."
     ],
     artifacts: [
       { emoji: "🎧", name: "Agent headset", note: "The uniform of the night-shift workforce." },
@@ -317,9 +366,9 @@ const exhibits = [
       impact: "Money, shopping, and work now move through apps.",
       intro: "Many everyday purchases now happen through e-wallets and online marketplaces, and freelancing or gig work lets people earn from home or on the road.",
       facts: [
-        "GCash, which began in 2004 as an SMS-based service, is now a full smartphone wallet.",
-        "QR payments are accepted at everything from malls to small neighborhood stores.",
-        "Online marketplaces and live-selling let small sellers reach customers across the country."
+        "GCash launched its mobile app in 2012 and now offers QR payments, bills payment, and online checkout.",
+        "GCash introduced the Philippines' first mobile-money QR payment in 2017, according to a SunStar feature on its 20th anniversary.",
+        "The 2025 Digital Report from Meltwater and We Are Social points to growing use of fintech apps among Filipinos."
       ],
       artifacts: [
         { emoji: "📲", name: "E-wallet", note: "Pay, send, and cash in from your phone." },
@@ -327,7 +376,17 @@ const exhibits = [
         { emoji: "🛵", name: "Delivery riders", note: "Food and parcels at your door." },
         { emoji: "💻", name: "Freelance work", note: "Earn from home or from anywhere." }
       ]
-    }
+    },
+    sources: [
+      { title: "History of Business Process Outsourcing (BPO) in the Philippines", url: "https://www.codev.com/article/history-bpo-philippines", publisher: "Codev", era: "then", note: "1995 economic zone law, first call centers, 24/7 work culture." },
+      { title: "Philippines BPO", url: "https://www.outsourceaccelerator.com/glossary/philippines-bpo/", publisher: "Outsource Accelerator", era: "then", note: "Night-shift work for North American clients." },
+      { title: "The Philippines is further widening its portfolio of business process outsourcing", url: "https://oxfordbusinessgroup.com/reports/philippines/2018-report/economy/one-call-away-moves-undertaken-to-offer-a-wider-range-of-services-amid-strong-competition-and-reform-to-taxes-and-incentives", publisher: "Oxford Business Group", year: "2018", era: "then", note: "First contact centre (1992) and early-2000s growth." },
+      { title: "Pirate hunters strike", url: "https://philstar.com/metro/2003/07/16/213833/pirate-hunters-strike", publisher: "The Philippine STAR", year: "2003", era: "then", note: "Quiapo's role in the pirated disc trade." },
+      { title: "The Secret Lives of DVD Bootleggers", url: "https://nextcity.org/informalcity/entry/the-secret-lives-of-manilas-dvd-bootleggers", publisher: "Next City", era: "then", note: "Quiapo as the hub of Manila's pirated-film trade." },
+      { title: "GCash", url: "https://en.wikipedia.org/wiki/GCash", publisher: "Wikipedia", era: "both", note: "2004 SMS launch, 2012 app, QR payments." },
+      { title: "GCash: 20 years of transformative financial inclusion in the Philippines", url: "https://www.sunstar.com.ph/cebu/feature/gcash-20-years-of-transformative-financial-inclusion-in-the-philippines", publisher: "SunStar", era: "both", note: "From SMS transfers to the first mobile-money QR payment." },
+      { title: "More Pinoys use fintech apps, study says", url: "https://malaya.com.ph/info-tech/fintech/more-pinoys-use-fintech-apps-study-says", publisher: "Malaya Business Insight", year: "2025", era: "now", note: "Digital 2025 fintech findings." }
+    ]
   },
   {
     id: "environmental",
@@ -346,15 +405,15 @@ const exhibits = [
     then: "Broadcast TV and radio storm signals; Typhoon Ondoy (2009) prompted the first viral online rescue calls and donation drives.",
     now: "Real-time mobile weather apps, crowd-sourced flood rescue maps, and social media youth climate advocacy.",
     change: "From TV storm signals and the first online rescue calls to real-time apps and crowd-sourced relief.",
-    impact: "Sparked community-driven real-time disaster response",
-    intro: "On September 26, 2009, Typhoon Ondoy (Ketsana) flooded much of Metro Manila. As phone lines and roads failed, people turned to social media to share locations, request rescue, and organize donations. It was a turning point for how Filipinos respond to disasters online.",
+    impact: "Showed how quickly people could ask for help and organize relief online",
+    intro: "On September 26, 2009, Typhoon Ondoy (Ketsana) flooded much of Metro Manila. As phone lines and roads failed, people turned to texts and social media to share locations, request rescue, and organize donations. It showed how quickly people could ask for help and organize relief online.",
     facts: [
-      "Roughly a month's worth of rain fell in a matter of hours, causing widespread flooding.",
-      "People used Twitter, Facebook, and hashtags like #rescuePH to relay rescue requests.",
-      "Volunteers organized donation drives and relief packing online within days."
+      "More than a month's worth of rain fell on Metro Manila in just 12 hours.",
+      "People used Twitter, Facebook, online maps, and shared spreadsheets to pass along rescue requests.",
+      "Online groups collected donations for flood victims within days."
     ],
     artifacts: [
-      { emoji: "🆘", name: "#rescuePH", note: "A hashtag used to coordinate rescue requests." },
+      { emoji: "🆘", name: "Online rescue map", note: "Volunteers compiled flood victims' addresses and a situation map online." },
       { emoji: "📻", name: "Battery radio", note: "A lifeline when power went out." },
       { emoji: "🛶", name: "Rescue boats", note: "Neighbors and volunteers helping neighbors." },
       { emoji: "🥫", name: "Relief packs", note: "Community-packed goods organized online." }
@@ -363,27 +422,43 @@ const exhibits = [
     today: {
       icon: "🌦️",
       badge: "Real-Time Alerts",
-      tag: "APPS & CLIMATE ADVOCACY",
-      title: "Weather Apps & Crowd-Sourced Rescue",
-      blurb: "Forecasts, flood maps, and relief drives are now organized in real time.",
+      tag: "APPS & EARLY WARNINGS",
+      title: "Weather Apps & Early Warnings",
+      blurb: "Forecasts, flood maps, and early warnings now reach people in near real time.",
       image: "",
       alt: "",
-      impact: "Communities can warn, rescue, and rebuild together in real time.",
-      intro: "Today people check radar and rainfall forecasts on their phones, share flood updates in community groups, and organize relief drives within hours. Young people also use social media to push for climate action.",
+      impact: "Communities can prepare and respond with earlier, clearer warnings.",
+      intro: "Today people check weather and flood information on their phones, and agencies publish hazard maps and early warnings online. The government launched Project NOAH in 2012 in response to the lessons of Ondoy.",
       facts: [
-        "Weather and radar apps update far more often than a TV bulletin.",
-        "Community groups and volunteer networks share road and flood conditions in real time.",
-        "Government agencies and news groups now post weather advisories on social media alongside TV and radio."
+        "Project NOAH, launched in July 2012 in Marikina City, a city that Ondoy flooded, provides online flood hazard maps and near real-time weather information.",
+        "Marikina's city government receives real-time weather and flood information through mobile apps such as PAGASA, Project NOAH, and ARKO.",
+        "Marikina City recorded zero deaths when heavy monsoon rains flooded Metro Manila in August 2012, a month after Project NOAH launched, and the city credits improved preparedness and NOAH."
       ],
       artifacts: [
-        { emoji: "🌦️", name: "Weather apps", note: "Forecasts and radar in your pocket." },
-        { emoji: "🗺️", name: "Flood maps", note: "Crowd-sourced reports of flooded roads." },
-        { emoji: "📣", name: "Relief drives", note: "Donations organized online within hours." },
-        { emoji: "🌱", name: "Youth climate groups", note: "Young people campaigning for climate action." }
+        { emoji: "🌦️", name: "Weather apps", note: "Real-time weather and flood updates on your phone." },
+        { emoji: "🗺️", name: "Flood hazard maps", note: "Online maps show which areas are most at risk." },
+        { emoji: "📡", name: "Rain gauges & sensors", note: "Automated stations feed near real-time data." },
+        { emoji: "🔔", name: "Early warnings", note: "Project NOAH aimed for a six-hour lead time warning." }
       ]
-    }
+    },
+    sources: [
+      { title: "Final Report on Tropical Storm Ondoy and Typhoon Pepeng", url: "https://ndrrmc.gov.ph/index.php/2-uncategorised/1543-final-report-on-tropical-storm-ondoy-and-typhoon-pepeng", publisher: "NDRRMC", year: "2009", era: "then", note: "Official disaster report, 2009." },
+      { title: "'Ondoy' leaves 75 dead and missing", url: "https://www.philstar.com/headlines/2009/09/27/508736/ondoy-leaves-75-dead-and-missing", publisher: "The Philippine STAR", year: "2009", era: "then", note: "Rainfall in 12 hours and the early rescue effort." },
+      { title: "Philippines: Worst Flooding in 40 Years", url: "https://globalvoices.org/2009/09/27/philippines-worst-flooding-in-40-years/", publisher: "Global Voices", year: "2009", era: "then", note: "Social media, rescue maps, and donation drives during Ondoy." },
+      { title: "Ondoy's Onslaught: Philippines Battered By Typhoon", url: "https://asiafoundation.org/?p=2645", publisher: "The Asia Foundation", year: "2009", era: "then", note: "Texting and social networks during the storm." },
+      { title: "Weather forecasting in Philippines enters 21st century", url: "https://newsinfo.inquirer.net/252662/weather-forecasting-in-philippines-enters-21st-century", publisher: "Philippine Daily Inquirer", year: "2012", era: "now", note: "Project NOAH's monitoring tools built after Ondoy." },
+      { title: "'Noah' vs floods launched", url: "https://www.philstar.com/headlines/2012/07/07/825252/noah-vs-floods-launched", publisher: "The Philippine STAR", year: "2012", era: "now", note: "Project NOAH's launch in Marikina City." },
+      { title: "Project NOAH is our reliable partner: Marikina City", url: "https://dost.gov.ph/knowledge-resources/news/34-2014-news/572-project-noah-is-our-reliable-partner-marikina-city.html", publisher: "DOST", year: "2014", era: "now", note: "Mobile apps, flood maps, and Marikina's 2012 results." }
+    ]
   }
 ];
+
+// ============================================================
+// IMAGE & AUDIO CREDITS  (✏️ EDIT ME)
+// List where your own pictures came from. Shown in the Sources section.
+// Example: { item: "Nokia 3310 photo", credit: "Photo by Your Name", url: "" }
+// ============================================================
+const imageCredits = [];
 
 // ============================================================
 // FRIENDSTER PROFILES  (✏️ EDIT ME — make these yours!)
