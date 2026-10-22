@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Tatak 2000s: Philippine Pop Culture Virtual Museum</title>
-  <meta name="description" content="A virtual museum tracing Philippine pop culture from 2000–2010 to today: SMS clans, Friendster, OPM rock, LAN shops, EDSA II, BPO nights, and Typhoon Ondoy.">
-  <meta name="theme-color" content="#e9e6ff">
+  <title>Tatak 2000s: Philippine Pop Culture Virtual Museum (2000s • Today • 2030s+)</title>
+  <meta name="description" content="A virtual museum tracing Philippine pop culture from 2000–2010 to Today and the 2030s+ Future Horizon: SMS clans, Friendster, OPM rock, LAN shops, P-Pop, and holographic smart cities.">
+  <meta name="theme-color" content="#fff4fa">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8F%9B%EF%B8%8F%3C/text%3E%3C/svg%3E">
 
   <!-- Marks the page as JS-enabled so reveal animations only run when scripts work -->
@@ -13,7 +13,10 @@
     document.documentElement.classList.add('js');
     (function () {
       var era = 'then';
-      try { if (localStorage.getItem('ppc-era') === 'now') era = 'now'; } catch (e) {}
+      try {
+        var saved = localStorage.getItem('ppc-era');
+        if (saved === 'now' || saved === 'future') era = saved;
+      } catch (e) {}
       document.documentElement.classList.add('era-' + era);
     })();
   </script>
@@ -39,31 +42,36 @@
 </head>
 <body class="font-sans">
 
-  <!-- Bright animated background -->
+  <!-- Dynamic animated background -->
   <div class="bg-sky" aria-hidden="true"></div>
 
   <!-- Top navigation -->
   <header class="site-header">
     <div class="max-w-7xl mx-auto px-3.5 sm:px-6 h-14 sm:h-16 flex items-center justify-between gap-2">
       <a href="#top" class="flex items-center gap-2 sm:gap-3 min-w-0">
-        <span class="brand-badge"><span class="only-then">2000–2010</span><span class="only-now">TODAY</span></span>
-        <span class="font-extrabold tracking-tight truncate text-sm sm:text-base hidden min-[400px]:inline">Tatak 2000s <span class="hidden xl:inline text-[var(--muted)] font-semibold text-sm">| Philippine Pop Culture Virtual Museum</span></span>
+        <span class="brand-badge">
+          <span class="only-then">2000–2010</span>
+          <span class="only-now">TODAY</span>
+          <span class="only-future">2030s+</span>
+        </span>
+        <span class="font-extrabold tracking-tight truncate text-sm sm:text-base hidden min-[420px]:inline">Tatak 2000s <span class="hidden xl:inline text-[var(--muted)] font-semibold text-sm">| Philippine Pop Culture Virtual Museum</span></span>
       </a>
       <div class="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
         <nav class="hidden lg:flex items-center" aria-label="Museum sections">
           <a href="#exhibits" class="nav-link">Exhibits</a>
           <a href="#then-now" class="nav-link">Then vs. Now</a>
-          <a href="#sms" class="nav-link">SMS &amp; Games</a>
+          <a href="#sms" class="nav-link">Relic &amp; Games</a>
           <a href="#curators" class="nav-link">Curators</a>
           <a href="#sources" class="nav-link">Sources</a>
           <button type="button" onclick="openFriendsterModal(0)" class="nav-link">✨ Friendster</button>
         </nav>
-        <!-- Time Machine -->
+        <!-- Time Machine (3 phases: 2000s, Today, Future) -->
         <div class="tm" role="group" aria-label="Time machine: choose an era">
           <button type="button" class="tm-btn active" data-era="then" aria-label="View the 2000s wing, 2000 to 2010" aria-pressed="true" onclick="setEra('then')">⏪ 2000s<span>2000–2010</span></button>
-          <button type="button" class="tm-btn" data-era="now" aria-label="View the Today wing, the 2020s" aria-pressed="false" onclick="setEra('now')">Today ⏩<span>2020s</span></button>
+          <button type="button" class="tm-btn" data-era="now" aria-label="View the Today wing, the 2020s" aria-pressed="false" onclick="setEra('now')">Today ⏺<span>2020s</span></button>
+          <button type="button" class="tm-btn" data-era="future" aria-label="View the Future wing, 2030s onwards" aria-pressed="false" onclick="setEra('future')">Future ⏩<span>2030s+</span></button>
         </div>
-        <button type="button" class="icon-btn" onclick="openPassport()" aria-label="Open your museum passport" title="Museum passport">🛂<span class="icon-badge pp-count">0/12</span></button>
+        <button type="button" class="icon-btn" onclick="openPassport()" aria-label="Open your museum passport" title="Museum passport">🛂<span class="icon-badge pp-count">0/18</span></button>
         <button type="button" class="icon-btn" onclick="openMap()" aria-label="Open the museum floor map" title="Floor map">🗺️</button>
       </div>
     </div>
@@ -71,9 +79,9 @@
     <nav class="lg:hidden flex gap-1 overflow-x-auto no-scrollbar px-3.5 pb-2 border-t border-[rgba(43,29,69,0.06)] pt-1.5" aria-label="Museum sections">
       <a href="#exhibits" class="nav-link">Exhibits</a>
       <a href="#then-now" class="nav-link">Then vs. Now</a>
-      <a href="#sms" class="nav-link">SMS &amp; Games</a>
+      <a href="#sms" class="nav-link">Relic &amp; Games</a>
       <a href="#curators" class="nav-link">Curators</a>
-          <a href="#sources" class="nav-link">Sources</a>
+      <a href="#sources" class="nav-link">Sources</a>
       <button type="button" onclick="openFriendsterModal(0)" class="nav-link">✨ Friendster</button>
     </nav>
   </header>
@@ -81,13 +89,14 @@
   <!-- Hero / Grand Lobby -->
   <section id="top" class="px-4 pt-10 sm:pt-14 pb-8 text-center">
     <div class="max-w-5xl mx-auto hero-layout">
+      <!-- 2000s Wing Hero -->
       <div class="hero-copy only-then">
         <span class="hero-pill">📼 The 2000s Wing is open • 2000–2010</span>
         <h2 class="hero-title">
-          From <span class="grad-text">Unli-Text &amp; Friendster</span><br>to P-Pop &amp; 5G Streams
+          From <span class="grad-text">Unli-Text &amp; Friendster</span><br>to P-Pop &amp; Holo-Horizons
         </h2>
         <p class="max-w-2xl mx-auto text-xs sm:text-base leading-relaxed text-[var(--muted)] mb-6 sm:mb-7">
-          Trace how the analog-digital hybrid era of 2000–2010 shaped modern Philippine communication, entertainment, sports, and socio-political identity.
+          Trace how the analog-digital hybrid era of 2000–2010 shaped modern Philippine communication, entertainment, sports, and socio-political identity—and where it is heading next.
         </p>
         <div class="flex flex-wrap justify-center gap-2.5 sm:gap-3 mb-6 sm:mb-8">
           <button type="button" onclick="openRoom(0)" class="btn btn-pink">🚪 Start the tour</button>
@@ -96,19 +105,37 @@
         </div>
       </div>
 
+      <!-- Today Wing Hero -->
       <figure class="hero-spotlight only-now">
-        <img src="./images/today-wing-hero.png?v=2" alt="An iridescent Y2K museum display featuring a chrome flip phone, MP3 player, compact discs, and holographic interfaces" fetchpriority="high">
+        <img src="./images/today-wing-hero.png" alt="An iridescent Y2K museum display featuring a chrome flip phone, smartphone, compact discs, and holographic interfaces" fetchpriority="high">
         <div class="hero-image-shade" aria-hidden="true"></div>
         <figcaption>
           <span class="hero-overline">TODAY WING &nbsp; / &nbsp; PHILIPPINE POP CULTURE, REBOOTED</span>
-          <h2 class="hero-title">The future looks<br><em>a little familiar.</em></h2>
-          <p>From pocket-sized text threads to world-stage P-pop, explore the culture shaping what comes next.</p>
+          <h2 class="hero-title">The present looks<br><em>a little familiar.</em></h2>
+          <p>From pocket-sized text threads to world-stage P-pop, explore the 2020s culture bridging our past and what comes next.</p>
           <div class="hero-actions">
             <button type="button" onclick="openRoom(0)" class="btn btn-pink">Explore the collection <span aria-hidden="true">↗</span></button>
             <a href="#exhibits" class="btn">Browse exhibits <span aria-hidden="true">↓</span></a>
           </div>
         </figcaption>
         <span class="hero-index" aria-hidden="true">01 &nbsp;—&nbsp; 06</span>
+      </figure>
+
+      <!-- Future Wing Hero (2030s+ Holographic Dark Mode) -->
+      <figure class="hero-spotlight hero-spotlight-future only-future">
+        <img src="./images/future-wing-hero.jpg" alt="A futuristic 2030s obsidian museum hall with glowing cyan and magenta holographic projections of Manila, a flying jeepney, and an AR neural visor" fetchpriority="high">
+        <div class="hero-image-shade" aria-hidden="true"></div>
+        <figcaption>
+          <span class="hero-overline">FUTURE WING &nbsp; / &nbsp; 2030s+ HOLOGRAPHIC HORIZON</span>
+          <h2 class="hero-title">Where heritage meets<br><em>holographic light.</em></h2>
+          <p>Step into the 2030s onwards: spatial telepresence for OFW families, volumetric P-Pop domes, full-body cyber-athletics, and AI-resilient smart cities.</p>
+          <div class="hero-actions">
+            <button type="button" onclick="openRoom(0)" class="btn btn-pink">Enter neural archive <span aria-hidden="true">↗</span></button>
+            <a href="#exhibits" class="btn">Browse exhibits <span aria-hidden="true">↓</span></a>
+            <button type="button" onclick="openMap()" class="btn">🗺️ Floor map</button>
+          </div>
+        </figcaption>
+        <span class="hero-index" aria-hidden="true">2030s+ &nbsp;•&nbsp; HOLO-ARCHIVE 01—06</span>
       </figure>
 
       <!-- Horizontal mobile carousel / wrapped desktop tabs -->
@@ -135,6 +162,9 @@
         <button type="button" class="wing-btn wing-now" data-era="now" aria-pressed="false" onclick="setEra('now')">
           <span class="wing-emoji">📱</span><b>The Today Wing</b><small>2020s</small>
         </button>
+        <button type="button" class="wing-btn wing-future" data-era="future" aria-pressed="false" onclick="setEra('future')">
+          <span class="wing-emoji">🚀</span><b>The Future Wing</b><small>2030s Onwards</small>
+        </button>
       </div>
     </div>
 
@@ -142,7 +172,7 @@
     <div id="gallery-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6"></div>
     <noscript><p class="panel p-4 mt-4 text-sm">This museum needs JavaScript turned on to show its exhibits.</p></noscript>
 
-    <!-- THEN vs NOW slider -->
+    <!-- THEN vs NOW slider (preserved as 2-way comparison) -->
     <section id="then-now" class="scroll-mt-24 sm:scroll-mt-28 mt-14 sm:mt-16 max-w-4xl mx-auto">
       <div class="section-head">
         <span class="retro">INTERACTIVE COMPARISON</span>
@@ -164,14 +194,23 @@
       </div>
     </section>
 
-    <!-- Interactive messaging and mobile gaming relic -->
+    <!-- Interactive messaging and mobile gaming relic (3 devices: Nokia 3310 / 5G Smartphone / 2035 NeuroLink AR Visor) -->
     <section id="sms" class="scroll-mt-24 sm:scroll-mt-28 mt-14 sm:mt-16 max-w-xl mx-auto px-2">
       <div class="section-head">
         <span class="retro">INTERACTIVE VIRTUAL RELIC</span>
-        <h3><span class="only-then">Nokia 3310 Interactive Relic</span><span class="only-now">Your phone, your people, your game</span></h3>
-        <p><span class="only-then">Switch between composing an SMS or playing classic 1998 Snake with the keypad buttons!</span><span class="only-now">Step into a modern smartphone: send a message, then try a quick mobile-game high-score run.</span></p>
+        <h3>
+          <span class="only-then">Nokia 3310 Interactive Relic</span>
+          <span class="only-now">Your phone, your people, your game</span>
+          <span class="only-future">NeuroLink AR Visor • 2035 Relic</span>
+        </h3>
+        <p>
+          <span class="only-then">Switch between composing an SMS or playing classic 1998 Snake with the keypad buttons!</span>
+          <span class="only-now">Step into a modern smartphone: send a message, then try a quick mobile-game high-score run.</span>
+          <span class="only-future">Project a spatial message to your barkada's holo-node, or test your neural reflexes in Quantum Sync.</span>
+        </p>
       </div>
 
+      <!-- 2000s Mode Switcher -->
       <div class="flex justify-center mb-4 only-then">
         <div class="seg max-w-xs shadow-[3px_3px_0_var(--ink)]">
           <button type="button" id="nokia-mode-sms-btn" onclick="setNokiaMode('sms')" class="seg-btn active">SMS Text</button>
@@ -179,12 +218,19 @@
         </div>
       </div>
 
+      <!-- Today Mode Switcher -->
       <div class="modern-mode-switch only-now" role="group" aria-label="Choose smartphone app">
         <button type="button" id="modern-mode-chat-btn" class="modern-mode-btn active" aria-pressed="true" onclick="setModernMode('chat')">Messages</button>
         <button type="button" id="modern-mode-game-btn" class="modern-mode-btn" aria-pressed="false" onclick="setModernMode('game')">Quick game</button>
       </div>
 
-      <!-- Nokia 3310 Phone Hardware -->
+      <!-- Future Mode Switcher -->
+      <div class="future-mode-switch only-future" role="group" aria-label="Choose AR visor module">
+        <button type="button" id="future-mode-holo-btn" class="future-mode-btn active" aria-pressed="true" onclick="setFutureMode('holo')">🫧 Holo-Link</button>
+        <button type="button" id="future-mode-game-btn" class="future-mode-btn" aria-pressed="false" onclick="setFutureMode('game')">⚡ Quantum Sync</button>
+      </div>
+
+      <!-- DEVICE 1: Nokia 3310 Phone Hardware (2000s) -->
       <div class="nokia-phone-case only-then">
         <!-- Inner Faceplate -->
         <div class="nokia-faceplate">
@@ -310,6 +356,7 @@
         </div>
       </div>
 
+      <!-- DEVICE 2: Modern 5G Smartphone (Today / 2020s) -->
       <div class="smartphone-device only-now">
         <div class="smartphone-screen">
           <div class="smartphone-status"><span>9:41</span><span aria-label="Full signal, Wi-Fi, battery">5G &nbsp; ▰</span></div>
@@ -350,6 +397,91 @@
         </div>
       </div>
 
+      <!-- DEVICE 3: 2035 NeuroLink AR Visor (Future / 2030s+) -->
+      <div class="holovisor-device only-future">
+        <div class="holovisor-frame">
+          <div class="holovisor-bridge" aria-hidden="true"></div>
+          <div class="holovisor-hud">
+            <div class="holovisor-status">
+              <span>MNL-2035 · 21:40 PST</span>
+              <span class="holovisor-signal">6G QUANTUM · SYNC 99% ◈</span>
+            </div>
+
+            <!-- VIEW 1: HOLO-LINK SPATIAL CHAT -->
+            <div id="future-holo-view" class="holovisor-app-view is-active">
+              <div class="future-chat-header">
+                <span class="future-avatar" aria-hidden="true">🌌</span>
+                <div>
+                  <strong>Barkada Holo-Node 07</strong>
+                  <span>4 volumetric avatars linked · Auto-Dialect AI ON</span>
+                </div>
+                <span class="future-live-pill">LIVE 3D</span>
+              </div>
+              <div class="future-chat-feed" id="future-holo-feed" aria-live="polite" aria-label="Holographic transmissions">
+                <div class="future-chat-date">SPATIAL LOG · 2035.10.22</div>
+                <div class="future-msg future-msg-in">
+                  <span class="future-msg-meta">Bea · [AR Lens · Marikina SkyHub]</span>
+                  Uy! Kita-kits sa holographic P-Pop dome mamaya? Naka-sync na biometric lightstick ko!
+                </div>
+                <div class="future-msg future-msg-in">
+                  <span class="future-msg-meta">Benz · [VR Rig 04 · Manila Cyber-Arena]</span>
+                  G! Katatapos lang ng full-body VR scrimmage namin. Send ko 3D replay node sa table niyo.
+                </div>
+                <div class="future-msg future-msg-ai">
+                  <span class="future-msg-meta">TALA-9 · [Civic &amp; Weather AI Co-Pilot]</span>
+                  Watershed Digital Twin Advisory: Clear skies across Metro Manila (0% flood risk). Drone transit corridors optimal.
+                </div>
+                <div class="future-msg future-msg-out">
+                  Deploying my holo-avatar in 5 mins! Save a floating pod for me 🌌
+                </div>
+                <span class="future-typing" id="future-typing-indicator"><i></i><i></i><i></i> Neural link active · Ready to transmit</span>
+              </div>
+              <form class="future-composer" onsubmit="futureSendMessage(event)">
+                <label class="sr-only" for="future-message-input">Transmit holographic message</label>
+                <input id="future-message-input" type="text" maxlength="220" autocomplete="off" placeholder="Transmit thought or holo-message…">
+                <button type="submit" aria-label="Transmit message" title="Transmit message">⚡</button>
+              </form>
+            </div>
+
+            <!-- VIEW 2: QUANTUM SYNC NEURAL MINI-GAME -->
+            <div id="future-game-view" class="holovisor-app-view future-game-view" hidden>
+              <div class="future-game-header">
+                <span>NEURAL REFLEX LAB</span>
+                <span>QUANTUM SYNC v3.5</span>
+              </div>
+              <div class="future-game-scorebar">
+                <span>SCORE <strong id="future-game-score">000</strong></span>
+                <span>COMBO <strong id="future-game-combo">x1</strong></span>
+                <span>TIME <strong id="future-game-time">20</strong>s</span>
+              </div>
+              <div class="future-game-arena" id="future-game-arena">
+                <div class="future-grid-lines" aria-hidden="true"></div>
+                <button type="button" id="future-game-target" class="future-game-target" aria-label="Stabilize quantum node" onclick="futureGameTap('normal')" hidden>
+                  <span class="node-ring"></span>
+                  <span class="node-core">◈</span>
+                </button>
+                <button type="button" id="future-game-bonus" class="future-game-bonus" aria-label="Capture golden overclock node" onclick="futureGameTap('bonus')" hidden>
+                  <span class="node-core">★</span>
+                </button>
+                <div id="future-game-overlay" class="future-game-overlay">
+                  <span class="future-game-emblem" aria-hidden="true">◈</span>
+                  <strong id="future-game-message">Quantum Sync</strong>
+                  <p id="future-game-instructions">Stabilize glowing quantum nodes before phase decay. Chain rapid hits to multiply your neural sync score!</p>
+                  <button type="button" id="future-game-start" onclick="startFutureGame()">Initialize 20s Run ⚡</button>
+                </div>
+              </div>
+              <div class="future-game-foot">
+                <span>Tap cyan nodes (+10×combo) &amp; gold cores (+35)</span>
+                <span>BEST <strong id="future-game-best">0</strong></span>
+              </div>
+            </div>
+
+            <div class="holovisor-home-bar" aria-hidden="true"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2000s Nokia Shortcuts -->
       <div class="phone-shortcuts mt-5 max-w-md mx-auto only-then">
         <div class="grid grid-cols-2 gap-2 sm:gap-2.5 mb-3">
           <button type="button" onclick="changeSms('txt_clan')" class="btn btn-sm text-center leading-tight">📱 Text Clan Invite</button>
@@ -376,12 +508,24 @@
         </details>
       </div>
 
+      <!-- Today Smartphone Shortcuts -->
       <div class="modern-shortcuts mt-5 max-w-md mx-auto only-now">
         <span class="modern-shortcuts-label">Try a quick message</span>
         <div class="modern-preset-list">
           <button type="button" onclick="modernUsePreset('Nasa museum na kami — ikaw, where you at?')">Where you at?</button>
           <button type="button" onclick="modernUsePreset('One quick round after this? Game!')">Game tayo?</button>
           <button type="button" onclick="modernUsePreset('Sent you the pics sa GC!')">Photo check-in</button>
+        </div>
+      </div>
+
+      <!-- Future AR Visor Shortcuts -->
+      <div class="future-shortcuts mt-5 max-w-md mx-auto only-future">
+        <span class="future-shortcuts-label">Transmit a quick neural preset</span>
+        <div class="future-preset-list">
+          <button type="button" onclick="futureUsePreset('Beam your 3D holo-avatar to our Sunday family table! 🫧')">🫧 OFW Holo-Dinner</button>
+          <button type="button" onclick="futureUsePreset('Syncing my biometric lightstick to the P-Pop dome! 🪄')">🪄 Sync Lightstick</button>
+          <button type="button" onclick="futureUsePreset('Hop into the full-body VR arena for one round! 🥽')">🥽 VR Arena Scrim</button>
+          <button type="button" onclick="futureUsePreset('TALA-9, run Marikina River digital twin forecast 🛰️')">🛰️ Check Weather Twin</button>
         </div>
       </div>
     </section>
@@ -423,7 +567,7 @@
       <div class="sm:hidden modal-drag-bar" aria-hidden="true"></div>
       <button type="button" class="modal-close" onclick="closePassport()" aria-label="Close passport">✕</button>
       <div class="sheet-scroll">
-        <div class="sheet-head"><span class="retro">TATAK 2000s</span><h3>🛂 Museum Passport</h3></div>
+        <div class="sheet-head"><span class="retro">TATAK 2000s • TODAY • 2030s+</span><h3>🛂 Museum Passport</h3></div>
         <div id="passport-body"></div>
       </div>
     </div>
@@ -486,13 +630,13 @@
 
   <!-- FLOATING MINI PLAYER -->
   <div class="player-dock">
-    <button type="button" id="player-pill" class="player-pill" onclick="togglePlayerPopup()" aria-label="Open the 2000s soundtrack player">
+    <button type="button" id="player-pill" class="player-pill" onclick="togglePlayerPopup()" aria-label="Open the museum soundtrack player">
       <span class="eq" aria-hidden="true"><i class="eq-bar-1"></i><i class="eq-bar-2"></i><i class="eq-bar-3"></i></span>
       <span>📻 Soundtrack</span>
       <span class="winamp-tag">WINAMP</span>
     </button>
 
-    <aside id="player-popup" class="player-popup hidden" aria-label="2000s soundtrack player">
+    <aside id="player-popup" class="player-popup hidden" aria-label="Museum soundtrack player">
       <div class="flex items-center justify-between pb-2 mb-2 border-b-2 border-dashed border-[var(--line)]">
         <div class="flex items-center gap-1.5">
           <span class="w-2.5 h-2.5 rounded-full bg-[var(--pink)] inline-block"></span>
@@ -517,7 +661,7 @@
         <a id="yt-open-link" class="player-link" href="#" target="_blank" rel="noopener noreferrer">Not playing? Open on YouTube ↗</a>
       </div>
 
-      <!-- Tab 2: YouTube Music opens in a new tab -->
+      <!-- Tab 2+: YouTube Music opens in a new tab -->
       <div id="yt-music-wrap" class="hidden">
         <div class="music-card">
           <div class="text-4xl mb-2">🎵</div>
@@ -536,7 +680,7 @@
       <div class="section-head">
         <span class="retro">REFERENCES</span>
         <h3>📚 Sources</h3>
-        <p>The facts in each room come from the references below. Tap a link to read the original.</p>
+        <p>The facts and future projections in each room come from the references below. Tap a link to read the original.</p>
       </div>
       <div id="sources-list" class="sources-grid"></div>
       <div id="credits-wrap" class="credits hidden">
@@ -549,7 +693,7 @@
 
   <footer class="site-footer">
     <div class="footer-card">
-      <p class="footer-title">Evolution of Philippine Pop Culture: 2000–2010 vs. Present</p>
+      <p class="footer-title">Evolution of Philippine Pop Culture: 2000–2010 • Present • 2030s+ Future Horizon</p>
       <p class="footer-subject">📚 Subject: <strong>Philippine Pop Culture A1101</strong></p>
       <p class="footer-line">Group 3 Curators: Ysha Rose Beatrice Hubilla, Benz Buluran, Ingrid Mary Sacramento</p>
       <p class="footer-line">MMDC Digital Museum</p>
