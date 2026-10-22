@@ -20,22 +20,47 @@ function profInitials(p) {
 }
 
 // ------------------------------------------------------------
-// TIME MACHINE (2000s <-> Today) + EXHIBIT WINGS
+// TIME MACHINE (2000s <-> Today <-> Future 2030s+) + EXHIBIT WINGS
 // ------------------------------------------------------------
 const ERA_STORAGE_KEY = 'ppc-era';
-let currentEra = document.documentElement.classList.contains('era-now') ? 'now' : 'then';
+const VALID_ERAS = ['then', 'now', 'future'];
+let currentEra = document.documentElement.classList.contains('era-future')
+  ? 'future'
+  : (document.documentElement.classList.contains('era-now') ? 'now' : 'then');
 let currentTopic = 'all';
 let warpTimers = [];
 
 const ERA_INFO = {
-  then: { name: 'The 2000s Wing', theme: '#fff4fa',
-          desc: '2000–2010: texting clans, Friendster, burned CDs, LAN shops, and the first online rescue calls.' },
-  now:  { name: 'The Today Wing', theme: '#e9e6ff',
-          desc: 'The 2020s: short videos, e-wallets, P-Pop, mobile esports, and real-time weather alerts.' }
+  then: {
+    name: 'The 2000s Wing',
+    theme: '#fff4fa',
+    desc: '2000–2010: texting clans, Friendster, burned CDs, LAN shops, and the first online rescue calls.'
+  },
+  now: {
+    name: 'The Today Wing',
+    theme: '#e9e6ff',
+    desc: 'The 2020s: short videos, e-wallets, P-Pop, mobile esports, and real-time weather alerts.'
+  },
+  future: {
+    name: 'The Future Wing',
+    theme: '#070b19',
+    desc: '2030s Onwards: AR holo-calls, volumetric P-Pop stages, haptic cyber-athletics, AI co-pilots, and digital twin cities.'
+  }
 };
 
 // One exhibit, seen through one era. Missing fields fall back to safe blanks.
 function eraData(ex, era) {
+  if (era === 'future') {
+    const f = ex.future || {};
+    return {
+      era: 'future', label: '2030s+',
+      title: f.title || ex.title || '', blurb: f.blurb || ex.blurb || '',
+      badge: f.badge || ex.badge || '', tag: f.tag || ex.tag || '',
+      icon: f.icon || ex.icon || '🚀', image: f.image || '', alt: f.alt || f.badge || ex.badge || '',
+      summary: f.summary || ex.futureSummary || '', intro: f.intro || '', facts: f.facts || [], artifacts: f.artifacts || [],
+      gallery: f.gallery || [], impact: f.impact || ex.impact || ''
+    };
+  }
   if (era === 'now') {
     const t = ex.today || {};
     return {
@@ -58,14 +83,15 @@ function eraData(ex, era) {
 }
 
 function setEra(era) {
-  if (era !== 'then' && era !== 'now') return;
+  if (!VALID_ERAS.includes(era)) return;
   if (era === currentEra) return;
-  warpTimers.forEach(clearTimeout); warpTimers = [];
+  warpTimers.forEach(clearTimeout);
+  warpTimers = [];
   const reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
   const warp = $('warp');
   if (warp && !reduce) {
     warp.className = 'warp warping to-' + era;
-    warpTimers.push(setTimeout(() => applyEra(era), 260));   // swap while the screen is covered
+    warpTimers.push(setTimeout(() => applyEra(era), 260));
     warpTimers.push(setTimeout(() => { warp.className = 'warp'; }, 760));
   } else {
     applyEra(era);
@@ -73,27 +99,29 @@ function setEra(era) {
 }
 
 function applyEra(era) {
-  currentEra = era;
+  currentEra = VALID_ERAS.includes(era) ? era : 'then';
   const root = document.documentElement;
-  root.classList.remove('era-then', 'era-now');
-  root.classList.add('era-' + era);
-  try { localStorage.setItem(ERA_STORAGE_KEY, era); } catch (e) { /* ignore */ }
+  root.classList.remove('era-then', 'era-now', 'era-future');
+  root.classList.add('era-' + currentEra);
+  try { localStorage.setItem(ERA_STORAGE_KEY, currentEra); } catch (e) { /* ignore */ }
 
   document.querySelectorAll('[data-era]').forEach(b => {
-    const on = b.dataset.era === era;
+    const on = b.dataset.era === currentEra;
     b.classList.toggle('active', on);
     b.setAttribute('aria-pressed', on ? 'true' : 'false');
   });
   const desc = $('wing-desc');
-  if (desc) desc.textContent = ERA_INFO[era].desc;
+  if (desc) desc.textContent = ERA_INFO[currentEra].desc;
   const currentWing = $('wing-current');
-  if (currentWing) currentWing.textContent = `Now viewing: ${ERA_INFO[era].name}`;
+  if (currentWing) currentWing.textContent = `Now viewing: ${ERA_INFO[currentEra].name}`;
   const meta = document.querySelector('meta[name="theme-color"]');
-  if (meta) meta.setAttribute('content', ERA_INFO[era].theme);
+  if (meta) meta.setAttribute('content', ERA_INFO[currentEra].theme);
 
   renderGallery();
   switchWing(currentTopic);
-  if (era === 'then') stopModernGame();
+  if (currentEra !== 'now') stopModernGame();
+  if (currentEra !== 'future') stopFutureGame();
+  if (currentEra !== 'then') stopSnake();
 }
 
 function renderWingTabs() {
@@ -113,6 +141,7 @@ function renderGallery() {
     const d = eraData(ex, currentEra);
     const then = eraData(ex, 'then');
     const now = eraData(ex, 'now');
+    const future = eraData(ex, 'future');
     const visited = hasStamp(ex.id, currentEra);
     const eraCopy = (content, era, label, icon) => `
       <section class="card-era-copy card-era-copy-${era} ${currentEra === era ? 'is-current' : ''}" aria-label="${label} description">
@@ -121,6 +150,7 @@ function renderGallery() {
         <p class="card-era-subtitle">${esc(content.blurb)}</p>
         <p class="card-era-summary">${esc(content.summary)}</p>
       </section>`;
+    const footLabel = currentEra === 'then' ? 'Impact' : currentEra === 'now' ? 'Why it matters' : '2030s+ Horizon';
     return `
     <article class="exhibit-card reveal" tabindex="0" role="button" data-category="${esc(ex.id)}" data-index="${i}"
              style="--c:${esc(ex.color)}" aria-label="Enter the ${esc(ex.wing)} room (${esc(d.label)}): ${esc(d.title)}">
@@ -139,11 +169,12 @@ function renderGallery() {
           <div class="card-era-comparison" aria-label="Compare this exhibit across eras">
             ${eraCopy(then, 'then', '2000–2010', '🕹️')}
             ${eraCopy(now, 'now', 'Today · 2020s', '📱')}
+            ${eraCopy(future, 'future', 'Future · 2030s+', '🚀')}
           </div>
         </div>
       </div>
       <div class="card-foot">
-        <span>${currentEra === 'then' ? 'Impact' : 'Why it matters'}: <em>${esc(d.impact)}</em></span>
+        <span>${footLabel}: <em>${esc(d.impact)}</em></span>
         <span class="enter">${visited ? '✓ ' : ''}Enter room →</span>
       </div>
     </article>`;
@@ -291,13 +322,14 @@ function showLightbox(i) {
   img.alt = g.caption || '';
   img.src = g.src;
   $('lb-caption').textContent = (g.caption || '') + (g.year ? ` (${g.year})` : '');
-  $('lb-credit').textContent = g.credit || '';$('lb-count').textContent = `${lbIndex + 1} / ${items.length}`;
+  $('lb-credit').textContent = g.credit || '';
+  $('lb-count').textContent = `${lbIndex + 1} / ${items.length}`;
   $('lb-full').href = g.src;
   document.querySelectorAll('.lb-nav').forEach(b => b.classList.toggle('hidden', items.length < 2));
 }
 
 function openLightbox(i, era) {
-  lbEra = era === 'now' ? 'now' : 'then';
+  lbEra = (era === 'now' || era === 'future') ? era : 'then';
   lastFocus.lb = document.activeElement;
   enterLevel(2);
   showLightbox(i);
@@ -306,7 +338,8 @@ function openLightbox(i, era) {
   focusPanel('lightbox');
 }
 function hideLightbox() {
-  $('lightbox').classList.add('hidden');$('lb-img').removeAttribute('src');
+  $('lightbox').classList.add('hidden');
+  $('lb-img').removeAttribute('src');
   unlockScrollIfIdle();
   restoreFocus('lb');
 }
@@ -322,10 +355,10 @@ function galleryImgFailed(img) {
 }
 
 // ------------------------------------------------------------
-// DETAIL ROOMS (every room has 2000s / Today / Compare tabs)
+// DETAIL ROOMS (every room has 2000s / Today / 2030s+ / Compare tabs)
 // ------------------------------------------------------------
 let currentRoom = 0;
-let roomEra = 'then'; // 'then' | 'now' | 'compare'
+let roomEra = 'then'; // 'then' | 'now' | 'future' | 'compare'
 
 function roomHash(id, era) { return '#room-' + id + (era && era !== 'then' ? '/' + era : ''); }
 
@@ -379,7 +412,7 @@ function roomArtifactsHtml(items) {
 
 function roomHeroHtml(ex, era) {
   if (era === 'compare') {
-    const half = (d, cls) => `
+    const third = (d, cls) => `
       <div class="hero-half ${cls}">
         <span class="hero-half-emoji" aria-hidden="true">${esc(d.icon)}</span>
         ${d.image ? `<img src="${esc(d.image)}" alt="${esc(d.alt)}" onerror="this.remove()">` : ''}
@@ -387,10 +420,10 @@ function roomHeroHtml(ex, era) {
       </div>`;
     return `
       <div class="room-hero compare">
-        ${half(eraData(ex, 'then'), 'then')}${half(eraData(ex, 'now'), 'now')}
+        ${third(eraData(ex, 'then'), 'then')}${third(eraData(ex, 'now'), 'now')}${third(eraData(ex, 'future'), 'future')}
         <div class="room-hero-shade"></div>
         <div class="room-hero-text">
-          <span class="room-domain">${esc(ex.domain)} • Compare</span>
+          <span class="room-domain">${esc(ex.domain)} • All 3 Phases</span>
           <h2>${esc(ex.title)}</h2>
           <p>${esc(ex.blurb)}</p>
         </div>
@@ -411,7 +444,12 @@ function roomHeroHtml(ex, era) {
 }
 
 function roomTabsHtml(ex) {
-  const tabs = [['then', '🕹️', '2000s'], ['now', '📱', 'Today'], ['compare', '⚖️', 'Compare']];
+  const tabs = [
+    ['then', '🕹️', '2000s'],
+    ['now', '📱', 'Today'],
+    ['future', '🚀', '2030s+'],
+    ['compare', '⚖️', 'Compare']
+  ];
   return `<div class="room-tabs" role="tablist" aria-label="Choose an era">` +
     tabs.map(([k, ic, label]) => {
       const stamped = k !== 'compare' && hasStamp(ex.id, k);
@@ -421,62 +459,76 @@ function roomTabsHtml(ex) {
 
 function roomActionsHtml(ex, era) {
   const curator = (typeof ex.curator === 'number' && friendsterProfiles[ex.curator]) ? friendsterProfiles[ex.curator] : null;
-  const other = era === 'then' ? 'now' : 'then';
+  const otherBtns = VALID_ERAS.filter(e => e !== era).map(e => {
+    const label = e === 'then' ? '⏪ 2000s Room' : e === 'now' ? '📱 Today Room' : '🚀 2030s+ Future Room';
+    return `<button type="button" class="btn ${e === 'future' ? 'btn-pink' : ''}" onclick="setRoomEra('${e}')">${label}</button>`;
+  }).join('');
   return `
     <div class="room-actions">
-      <button type="button" class="btn btn-pink" onclick="setRoomEra('${other}')">${other === 'now' ? 'See the Today version ⏩' : '⏪ Back to the 2000s'}</button>
-      <button type="button" class="btn" onclick="setRoomEra('compare')">⚖️ Compare both</button>
+      ${otherBtns}
+      <button type="button" class="btn" onclick="setRoomEra('compare')">⚖️ Compare all 3</button>
       ${curator ? `<button type="button" class="btn btn-yellow" onclick="visitCurator(${ex.curator})">✨ Meet the curator: ${esc(profShort(curator))}</button>` : ''}
     </div>`;
 }
 
 function roomEraBodyHtml(ex, era) {
   const d = eraData(ex, era);
+  const blockCls = era === 'then' ? 'era-then' : era === 'now' ? 'era-present' : 'era-future';
+  const blockLabel = era === 'then' ? '2000–2010 Decade' : era === 'now' ? 'Present Time (2020s)' : 'Future Horizon (2030s+)';
+  const impactLabel = era === 'then' ? 'Impact' : era === 'now' ? 'Why it matters' : '2030s+ Horizon';
   return `
     ${d.intro ? `<p class="room-intro">${esc(d.intro)}</p>` : ''}
-    <div class="era-block ${era === 'then' ? 'era-then' : 'era-present'}" style="margin:0">
-      <span class="era-label">${era === 'then' ? '2000–2010 Decade' : 'Present Time'}</span>${esc(d.summary)}
+    <div class="era-block ${blockCls}" style="margin:0">
+      <span class="era-label">${blockLabel}</span>${esc(d.summary)}
     </div>
     ${roomGalleryHtml(d.gallery, era)}
     ${roomFactsHtml(d.facts)}
     ${roomArtifactsHtml(d.artifacts)}
-    ${d.impact ? `<div class="impact-box">⭐ ${era === 'then' ? 'Impact' : 'Why it matters'}: ${esc(d.impact)}</div>` : ''}
+    ${d.impact ? `<div class="impact-box">⭐ ${impactLabel}: ${esc(d.impact)}</div>` : ''}
     ${roomSourcesHtml(ex, era)}
     ${roomActionsHtml(ex, era)}`;
 }
 
 function roomCompareBodyHtml(ex) {
-  const col = (d, cls) => `
+  const col = (d, cls, heading, blockCls) => `
     <div class="cmp-col ${cls}">
-      <h4 class="cmp-head">${cls === 'then' ? '🕹️ 2000–2010' : '📱 Today'}</h4>
-      <div class="era-block ${cls === 'then' ? 'era-then' : 'era-present'}" style="margin:0 0 .6rem">
+      <h4 class="cmp-head">${heading}</h4>
+      <div class="era-block ${blockCls}" style="margin:0 0 .6rem">
         <span class="era-label">${esc(d.title)}</span>${esc(d.summary)}
       </div>
       ${d.facts.length ? `<ul class="cmp-facts">${d.facts.slice(0, 3).map(f => `<li>${esc(f)}</li>`).join('')}</ul>` : ''}
       <div class="cmp-chips">${d.artifacts.map(a => `<span class="cmp-chip" title="${esc(a.note)}">${esc(a.emoji)} ${esc(a.name)}</span>`).join('')}</div>
     </div>`;
-  const a = eraData(ex, 'then'), b = eraData(ex, 'now');
+  const a = eraData(ex, 'then');
+  const b = eraData(ex, 'now');
+  const c = eraData(ex, 'future');
   return `
-    <div class="change-box">🔄 <b>The big shift:</b> ${esc(ex.change || ex.impact || '')}</div>
-    <div class="cmp-grid">${col(a, 'then')}${col(b, 'now')}</div>
+    <div class="change-box">🔄 <b>Across three eras:</b> ${esc(ex.change || ex.impact || '')}</div>
+    <div class="cmp-grid">
+      ${col(a, 'then', '🕹️ 2000–2010', 'era-then')}
+      ${col(b, 'now', '📱 Today (2020s)', 'era-present')}
+      ${col(c, 'future', '🚀 Future (2030s+)', 'era-future')}
+    </div>
     ${roomGalleryHtml(a.gallery, 'then', '📸 2000s photos')}
     ${roomGalleryHtml(b.gallery, 'now', '📸 Today photos')}
+    ${roomGalleryHtml(c.gallery, 'future', '📸 2030s+ Future visualizations')}
     ${roomSourcesHtml(ex, 'compare')}
     <div class="room-actions">
-      <button type="button" class="btn" onclick="setRoomEra('then')">🕹️ Enter the 2000s room</button>
-      <button type="button" class="btn btn-pink" onclick="setRoomEra('now')">📱 Enter the Today room</button>
+      <button type="button" class="btn" onclick="setRoomEra('then')">🕹️ Enter 2000s room</button>
+      <button type="button" class="btn" onclick="setRoomEra('now')">📱 Enter Today room</button>
+      <button type="button" class="btn btn-pink" onclick="setRoomEra('future')">🚀 Enter 2030s+ room</button>
     </div>`;
 }
 
 function renderRoom(index, era) {
   const total = exhibits.length;
   currentRoom = ((index % total) + total) % total;
-  if (era === 'then' || era === 'now' || era === 'compare') roomEra = era;
+  if (era === 'then' || era === 'now' || era === 'future' || era === 'compare') roomEra = era;
   const ex = exhibits[currentRoom];
 
   $('room-panel').style.setProperty('--c', ex.color);
   $('room-panel').dataset.era = roomEra;
-  stampVisit(ex.id, roomEra);   // collect a passport stamp (before tabs are drawn so the ✓ shows)
+  stampVisit(ex.id, roomEra);
 
   const content = $('room-content');
   content.innerHTML = `
@@ -493,7 +545,7 @@ function renderRoom(index, era) {
   ).join('');
   if ($('room-prev-label')) $('room-prev-label').textContent = exhibits[(currentRoom - 1 + total) % total].wing;
   if ($('room-next-label')) $('room-next-label').textContent = exhibits[(currentRoom + 1) % total].wing;
-  const eraName = roomEra === 'then' ? '2000s' : roomEra === 'now' ? 'Today' : 'Compare';
+  const eraName = roomEra === 'then' ? '2000s' : roomEra === 'now' ? 'Today' : roomEra === 'future' ? '2030s+' : 'Compare';
   $('room-count').textContent = `Room ${currentRoom + 1} of ${total} • ${ex.wing} • ${eraName}`;
 
   try { history.replaceState(history.state, '', roomHash(ex.id, roomEra)); } catch (e) { /* ignore */ }
@@ -504,7 +556,7 @@ function setRoomEra(era) { renderRoom(currentRoom, era); }
 function openRoom(index, era) {
   const n = exhibits.length;
   const i = (((typeof index === 'number' ? index : 0) % n) + n) % n;
-  roomEra = (era === 'then' || era === 'now' || era === 'compare') ? era : currentEra;
+  roomEra = (era === 'then' || era === 'now' || era === 'future' || era === 'compare') ? era : currentEra;
   lastFocus.room = document.activeElement;
   enterLevel(1, roomHash(exhibits[i].id, roomEra));
   renderRoom(i);
@@ -532,14 +584,14 @@ function visitCurator(profileIndex) {
 }
 
 function openRoomFromHash() {
-  const m = location.hash.match(/^#room-([\w-]+?)(?:\/(then|now|compare))?$/);
+  const m = location.hash.match(/^#room-([\w-]+?)(?:\/(then|now|future|compare))?$/);
   if (!m) return;
   const i = exhibits.findIndex(e => e.id === m[1]);
   if (i >= 0) openRoom(i, m[2] || 'then');
 }
 
 // ------------------------------------------------------------
-// NOKIA 3310: AUDIO TONES & SIMULATOR ENGINE
+// NOKIA 3310: AUDIO TONES & SIMULATOR ENGINE (2000s)
 // ------------------------------------------------------------
 let nokiaMode = 'sms'; // 'sms' | 'snake'
 let currentSmsText = typeof smsDefault !== 'undefined' ? smsDefault : '"D2 na me, wer na u? txt bck asap! <3"';
@@ -786,7 +838,8 @@ function pauseSnake() {
   snakeRunning = false;
   if (snakeLoop) clearInterval(snakeLoop);
   $('snake-status-text').textContent = 'Paused';
-  const overlay = $('snake-overlay');$('snake-msg').textContent = 'PAUSED';
+  const overlay = $('snake-overlay');
+  $('snake-msg').textContent = 'PAUSED';
   if (overlay) overlay.classList.remove('hidden');
 }
 
@@ -806,7 +859,8 @@ function snakeDie() {
     $('snake-hi-display').textContent = `HI: ${snakeHighScore}`;
   }
 
-  $('snake-status-text').textContent = 'Game Over';$('snake-msg').textContent = `GAME OVER! (${snakeScore})`;
+  $('snake-status-text').textContent = 'Game Over';
+  $('snake-msg').textContent = `GAME OVER! (${snakeScore})`;
   $('snake-overlay').classList.remove('hidden');
   resetSnakeGame();
 }
@@ -815,13 +869,11 @@ function updateSnakeStep() {
   snakeDir = snakeNextDir;
   const head = { x: snake[0].x + snakeDir.x, y: snake[0].y + snakeDir.y };
 
-  // Wall collision (classic solid borders)
   if (head.x < 0 || head.x >= SNAKE_COLS || head.y < 0 || head.y >= SNAKE_ROWS) {
     snakeDie();
     return;
   }
 
-  // Self collision
   if (snake.some(segment => segment.x === head.x && segment.y === head.y)) {
     snakeDie();
     return;
@@ -829,7 +881,6 @@ function updateSnakeStep() {
 
   snake.unshift(head);
 
-  // Check food
   if (head.x === snakeFood.x && head.y === snakeFood.y) {
     snakeScore += 10;
     $('snake-score-display').textContent = `SCR: ${snakeScore}`;
@@ -844,23 +895,18 @@ function updateSnakeStep() {
 
 function drawSnake() {
   if (!snakeCtx) return;
-  // LCD background
   snakeCtx.fillStyle = '#9cad57';
   snakeCtx.fillRect(0, 0, 160, 96);
 
-  // Pixel Matrix Snake
   snakeCtx.fillStyle = '#172207';
-  snake.forEach((pt, idx) => {
-    // 1px inner gap for authentic dot-matrix look
+  snake.forEach(pt => {
     snakeCtx.fillRect(pt.x * CELL_SIZE + 0.5, pt.y * CELL_SIZE + 0.5, CELL_SIZE - 1, CELL_SIZE - 1);
   });
 
-  // Food (small centered block)
   snakeCtx.fillRect(snakeFood.x * CELL_SIZE + 1.5, snakeFood.y * CELL_SIZE + 1.5, CELL_SIZE - 3, CELL_SIZE - 3);
 }
 
 function snakeChangeDir(dx, dy) {
-  // Prevent reverse direction
   if (snakeDir.x === -dx && snakeDir.y === -dy) return;
   snakeNextDir = { x: dx, y: dy };
   playNokiaTone(750, 0.02);
@@ -870,13 +916,16 @@ function handleSnakeKey(key) {
   if (!snakeRunning && key !== '5') {
     startSnake();
   }
-  if (key === '2') snakeChangeDir(0, -1); // Up
-  else if (key === '8') snakeChangeDir(0, 1); // Down
-  else if (key === '4') snakeChangeDir(-1, 0); // Left
-  else if (key === '6') snakeChangeDir(1, 0); // Right
-  else if (key === '5') toggleSnakePlay(); // Pause / Play
+  if (key === '2') snakeChangeDir(0, -1);
+  else if (key === '8') snakeChangeDir(0, 1);
+  else if (key === '4') snakeChangeDir(-1, 0);
+  else if (key === '6') snakeChangeDir(1, 0);
+  else if (key === '5') toggleSnakePlay();
 }
 
+// ------------------------------------------------------------
+// TODAY 5G SMARTPHONE: MESSAGES & GLOW RUSH MINI-GAME (2020s)
+// ------------------------------------------------------------
 let modernGameInterval = null;
 let modernGameScore = 0;
 let modernGameBest = 0;
@@ -989,9 +1038,203 @@ function stopModernGame() {
   if (overlay) overlay.hidden = false;
 }
 
+// ------------------------------------------------------------
+// FUTURE 2035 NEUROLINK AR VISOR: HOLO-LINK & QUANTUM SYNC
+// ------------------------------------------------------------
+let futureGameInterval = null;
+let futureBonusTimeout = null;
+let futureReplyIndex = 0;
+let futureGameScore = 0;
+let futureGameCombo = 1;
+let futureLastTapTime = 0;
+let futureGameBest = 0;
+
+try {
+  futureGameBest = Number(localStorage.getItem('ppc-future-game-best') || 0);
+} catch (e) {
+  futureGameBest = 0;
+}
+
+function setFutureMode(mode) {
+  if (mode !== 'holo' && mode !== 'game') return;
+  const isGame = mode === 'game';
+  const holoView = $('future-holo-view');
+  const gameView = $('future-game-view');
+  const holoBtn = $('future-mode-holo-btn');
+  const gameBtn = $('future-mode-game-btn');
+  if (!holoView || !gameView) return;
+
+  holoView.hidden = isGame;
+  gameView.hidden = !isGame;
+  holoView.classList.toggle('is-active', !isGame);
+  gameView.classList.toggle('is-active', isGame);
+  holoBtn?.classList.toggle('active', !isGame);
+  gameBtn?.classList.toggle('active', isGame);
+  holoBtn?.setAttribute('aria-pressed', String(!isGame));
+  gameBtn?.setAttribute('aria-pressed', String(isGame));
+  if ($('future-game-best')) $('future-game-best').textContent = String(futureGameBest);
+  if (!isGame) {
+    stopFutureGame();
+    $('future-game-score').textContent = '000';
+    $('future-game-combo').textContent = 'x1';
+    $('future-game-time').textContent = '20';
+    $('future-game-message').textContent = 'Quantum Sync';
+    $('future-game-instructions').textContent = 'Stabilize glowing quantum nodes before phase decay. Chain rapid hits to multiply your neural sync score!';
+    $('future-game-start').textContent = 'Initialize 20s Run ⚡';
+  }
+  playNokiaTone(isGame ? 1120 : 880, 0.06, 'sine');
+}
+
+function appendFutureMessage(text, isIncoming = false, sender = '') {
+  const feed = $('future-holo-feed');
+  if (!feed) return;
+  const msg = document.createElement('div');
+  msg.className = isIncoming ? 'future-msg future-msg-in' : 'future-msg future-msg-out';
+  if (isIncoming && sender) {
+    const meta = document.createElement('span');
+    meta.className = 'future-msg-meta';
+    meta.textContent = sender;
+    msg.appendChild(meta);
+    msg.appendChild(document.createTextNode(text));
+  } else {
+    msg.textContent = text;
+  }
+  const typing = $('future-typing-indicator');
+  feed.insertBefore(msg, typing || null);
+  feed.scrollTop = feed.scrollHeight;
+}
+
+function triggerFutureAutoReply() {
+  if (typeof futureAutoReplies === 'undefined' || !futureAutoReplies.length) return;
+  const typing = $('future-typing-indicator');
+  if (typing) typing.innerHTML = '<i></i><i></i><i></i> Incoming holographic projection…';
+  setTimeout(() => {
+    const reply = futureAutoReplies[futureReplyIndex % futureAutoReplies.length];
+    futureReplyIndex += 1;
+    appendFutureMessage(reply.text, true, reply.sender);
+    playNokiaTone(1040, 0.05, 'sine');
+    if (typing) typing.innerHTML = '<i></i><i></i><i></i> Neural link active · Ready to transmit';
+  }, 650);
+}
+
+function futureSendMessage(event) {
+  event.preventDefault();
+  const input = $('future-message-input');
+  const text = input?.value.trim();
+  if (!text) return;
+  playNokiaTone(1320, 0.05, 'sine');
+  appendFutureMessage(text, false);
+  input.value = '';
+  input.focus();
+  triggerFutureAutoReply();
+}
+
+function futureUsePreset(text) {
+  setFutureMode('holo');
+  playNokiaTone(1320, 0.05, 'sine');
+  appendFutureMessage(text, false);
+  triggerFutureAutoReply();
+}
+
+function moveFutureGameNode(el) {
+  if (!el) return;
+  el.style.left = `${16 + Math.random() * 68}%`;
+  el.style.top = `${18 + Math.random() * 64}%`;
+}
+
+function spawnFutureBonusNode() {
+  const bonus = $('future-game-bonus');
+  if (!bonus || !futureGameInterval) return;
+  moveFutureGameNode(bonus);
+  bonus.hidden = false;
+  clearTimeout(futureBonusTimeout);
+  futureBonusTimeout = setTimeout(() => {
+    if (bonus) bonus.hidden = true;
+  }, 2400);
+}
+
+function startFutureGame() {
+  stopFutureGame();
+  futureGameScore = 0;
+  futureGameCombo = 1;
+  futureLastTapTime = performance.now();
+  $('future-game-score').textContent = '000';
+  $('future-game-combo').textContent = 'x1';
+  $('future-game-time').textContent = '20';
+  $('future-game-overlay').hidden = true;
+
+  const target = $('future-game-target');
+  if (target) {
+    target.hidden = false;
+    moveFutureGameNode(target);
+  }
+  playNokiaTone(980, 0.07, 'sine');
+
+  let secondsLeft = 20;
+  futureGameInterval = setInterval(() => {
+    secondsLeft -= 1;
+    $('future-game-time').textContent = String(secondsLeft).padStart(2, '0');
+    if (secondsLeft % 4 === 0 && secondsLeft > 0) spawnFutureBonusNode();
+    if (secondsLeft <= 0) finishFutureGame();
+  }, 1000);
+}
+
+function futureGameTap(kind) {
+  if (!futureGameInterval) return;
+  const now = performance.now();
+  if (now - futureLastTapTime < 1100) {
+    futureGameCombo = Math.min(5, futureGameCombo + 1);
+  } else {
+    futureGameCombo = 1;
+  }
+  futureLastTapTime = now;
+
+  if (kind === 'bonus') {
+    futureGameScore += 35;
+    playNokiaTone(1560, 0.08, 'triangle');
+    const bonus = $('future-game-bonus');
+    if (bonus) bonus.hidden = true;
+  } else {
+    futureGameScore += 10 * futureGameCombo;
+    playNokiaTone(880 + futureGameCombo * 110, 0.05, 'sine');
+    moveFutureGameNode($('future-game-target'));
+  }
+
+  $('future-game-score').textContent = String(futureGameScore).padStart(3, '0');
+  $('future-game-combo').textContent = 'x' + futureGameCombo;
+
+  if (futureGameScore > futureGameBest) {
+    futureGameBest = futureGameScore;
+    try { localStorage.setItem('ppc-future-game-best', String(futureGameBest)); } catch (e) {}
+    if ($('future-game-best')) $('future-game-best').textContent = String(futureGameBest);
+  }
+}
+
+function finishFutureGame() {
+  stopFutureGame();
+  playNokiaTone(660, 0.12, 'sine');
+  $('future-game-message').textContent = 'Neural Sync Complete!';
+  $('future-game-instructions').textContent = `Final Quantum Score: ${futureGameScore} pts (Best: ${futureGameBest}). Recalibrate for another run?`;
+  $('future-game-start').textContent = 'Re-initialize Run ⚡';
+  $('future-game-overlay').hidden = false;
+}
+
+function stopFutureGame() {
+  if (futureGameInterval) clearInterval(futureGameInterval);
+  if (futureBonusTimeout) clearTimeout(futureBonusTimeout);
+  futureGameInterval = null;
+  futureBonusTimeout = null;
+  const target = $('future-game-target');
+  const bonus = $('future-game-bonus');
+  const overlay = $('future-game-overlay');
+  if (target) target.hidden = true;
+  if (bonus) bonus.hidden = true;
+  if (overlay) overlay.hidden = false;
+}
+
 // Keyboard controls
 document.addEventListener('keydown', e => {
-  if (nokiaMode === 'snake') {
+  if (nokiaMode === 'snake' && currentEra === 'then') {
     if (['ArrowUp', 'KeyW'].includes(e.code)) { snakeChangeDir(0, -1); e.preventDefault(); }
     else if (['ArrowDown', 'KeyS'].includes(e.code)) { snakeChangeDir(0, 1); e.preventDefault(); }
     else if (['ArrowLeft', 'KeyA'].includes(e.code)) { snakeChangeDir(-1, 0); e.preventDefault(); }
@@ -1158,7 +1401,8 @@ function showBeforeAfter(index) {
   const pair = beforeAfterPairs[index];
   if (!pair) return;
   $('ba-before').innerHTML = baLayerHtml(pair.before);
-  $('ba-after').innerHTML = baLayerHtml(pair.after);$('ba-title').textContent = pair.title;
+  $('ba-after').innerHTML = baLayerHtml(pair.after);
+  $('ba-title').textContent = pair.title;
   $('ba-caption').textContent = pair.caption;
   document.querySelectorAll('#ba-tabs button').forEach((btn, i) => {
     const isActive = i === index;
@@ -1190,9 +1434,9 @@ function initBeforeAfter() {
   slider.addEventListener('keydown', e => {
     const now = Number(slider.getAttribute('aria-valuenow')) || 50;
     if (e.key === 'ArrowLeft') { setBaPosition(now - 5); e.preventDefault(); }
-    if (e.key === 'ArrowRight') { setBaPosition(now + 5); e.preventDefault(); }
-    if (e.key === 'Home') { setBaPosition(0); e.preventDefault(); }
-    if (e.key === 'End') { setBaPosition(100); e.preventDefault(); }
+    else if (e.key === 'ArrowRight') { setBaPosition(now + 5); e.preventDefault(); }
+    else if (e.key === 'Home') { setBaPosition(0); e.preventDefault(); }
+    else if (e.key === 'End') { setBaPosition(100); e.preventDefault(); }
   });
 
   showBeforeAfter(0);
@@ -1243,9 +1487,9 @@ function switchStation(stationNum) {
     const iframe = $('yt-inpage-player');
     if (iframe) iframe.src = 'about:blank';
 
-    $('ytm-open-link').href = hasId ? st.url : playlistSearch.music;
-    $('ytm-note').textContent = hasId
-      ? "YouTube Music opens in a new tab."
+    $('ytm-open-link').href = st.url || playlistSearch.music;
+    $('ytm-note').textContent = st.url
+      ? "Opens curated playlist in YouTube Music."
       : 'No playlist link set yet. Paste yours into js/data.js (playlistStations).';
     return;
   }
@@ -1288,8 +1532,12 @@ function togglePlayerPopup() {
 function renderSources() {
   const wrap = $('sources-list');
   if (!wrap) return;
-  const tag = era => era === 'both' ? '<span class="src-tag both">2000s + Today</span>'
-    : `<span class="src-tag ${era === 'now' ? 'now' : 'then'}">${era === 'now' ? 'Today' : '2000s'}</span>`;
+  const tag = era => {
+    if (era === 'both') return '<span class="src-tag both">2000s + Today</span>';
+    if (era === 'future') return '<span class="src-tag future">2030s+</span>';
+    if (era === 'now') return '<span class="src-tag now">Today</span>';
+    return '<span class="src-tag then">2000s</span>';
+  };
   wrap.innerHTML = exhibits.map(ex => `
     <article class="src-card" style="--c:${esc(ex.color)}">
       <div class="src-body">
@@ -1310,9 +1558,10 @@ function renderSources() {
 }
 
 // ------------------------------------------------------------
-// MUSEUM PASSPORT (a stamp for every room, in both eras)
+// MUSEUM PASSPORT (a stamp for every room across all 3 eras = 18 stamps)
 // ------------------------------------------------------------
 const PASSPORT_KEY = 'ppc-passport-v1';
+let passportResetArmed = false;
 
 function loadPassport() {
   try {
@@ -1327,10 +1576,10 @@ function savePassport() {
   try { localStorage.setItem(PASSPORT_KEY, JSON.stringify({ stamps: passportStamps })); } catch (e) { /* ignore */ }
 }
 function hasStamp(id, era) { return !!passportStamps[id + ':' + era]; }
-function passportTotal() { return exhibits.length * 2; }
+function passportTotal() { return exhibits.length * VALID_ERAS.length; }
 function passportCount() {
   let n = 0;
-  exhibits.forEach(ex => { ['then', 'now'].forEach(era => { if (hasStamp(ex.id, era)) n++; }); });
+  exhibits.forEach(ex => { VALID_ERAS.forEach(era => { if (hasStamp(ex.id, era)) n++; }); });
   return n;
 }
 function updatePassportBadge() {
@@ -1338,8 +1587,8 @@ function updatePassportBadge() {
 }
 
 function stampVisit(id, era) {
-  const eras = era === 'compare' ? ['then', 'now'] : [era];
-  const fresh = eras.filter(e => !hasStamp(id, e));
+  const eras = era === 'compare' ? VALID_ERAS : [era];
+  const fresh = eras.filter(e => VALID_ERAS.includes(e) && !hasStamp(id, e));
   if (!fresh.length) return;
   const stamp = Date.now();
   fresh.forEach(e => { passportStamps[id + ':' + e] = stamp; });
@@ -1347,11 +1596,11 @@ function stampVisit(id, era) {
   updatePassportBadge();
 
   const ex = exhibits.find(x => x.id === id);
-  const label = fresh.map(e => e === 'then' ? '2000s' : 'Today').join(' + ');
+  const label = fresh.map(e => e === 'then' ? '2000s' : e === 'now' ? 'Today' : '2030s+').join(' + ');
   const n = passportCount(), total = passportTotal();
   showToast(`🛂 New stamp: ${ex ? ex.wing : id} • ${label} (${n}/${total})`);
   if (n === total) {
-    setTimeout(() => { showToast('🏅 Museum complete! You collected every stamp.', 4500); burstConfetti(); }, 2000);
+    setTimeout(() => { showToast('🏅 Museum complete! You collected all 18 stamps across every era.', 4500); burstConfetti(); }, 2000);
   }
   if (passportIsOpen()) renderPassport();
 }
@@ -1362,11 +1611,12 @@ function renderPassport() {
   const slot = (ex, i, era) => {
     const got = passportStamps[ex.id + ':' + era];
     const when = got ? new Date(got).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : '';
+    const eraTitle = era === 'then' ? '2000s' : era === 'now' ? 'Today' : '2030s+';
     return `
       <button type="button" class="pp-stamp era-${era} ${got ? 'got' : ''}" onclick="passportGo(${i}, '${era}')"
-              aria-label="${esc(ex.wing)}, ${era === 'then' ? '2000s' : 'Today'}: ${got ? 'stamp collected' : 'not visited yet'}">
+              aria-label="${esc(ex.wing)}, ${eraTitle}: ${got ? 'stamp collected' : 'not visited yet'}">
         <span class="pp-ring">${got ? '✓' : '?'}</span>
-        <small>${era === 'then' ? '2000s' : 'Today'}</small>
+        <small>${eraTitle}</small>
         ${got ? `<em>${esc(when)}</em>` : ''}
       </button>`;
   };
@@ -1376,22 +1626,23 @@ function renderPassport() {
       <b>${n} / ${total} stamps</b>
     </div>
     ${n === total
-      ? `<div class="pp-complete">🏅 Museum complete! You explored every room in both eras.</div>`
-      : `<p class="pp-hint">Open each room in the <b>2000s</b> and <b>Today</b> tabs to collect stamps. The <b>Compare</b> tab gives you both at once. Tap a stamp to go there.</p>`}
+      ? `<div class="pp-complete">🏅 Museum complete! You explored every room across all three eras (2000s, Today, and 2030s+).</div>`
+      : `<p class="pp-hint">Open each room in the <b>2000s</b>, <b>Today</b>, and <b>2030s+</b> tabs to collect all 18 stamps. The <b>Compare</b> tab awards all three at once. Tap a stamp to jump there.</p>`}
     <div class="pp-grid">
       ${exhibits.map((ex, i) => `
         <div class="pp-room" style="--c:${esc(ex.color)}">
           <div class="pp-room-head"><span>${esc(ex.icon)}</span><b>${esc(ex.wing)}</b></div>
-          <div class="pp-stamps">${slot(ex, i, 'then')}${slot(ex, i, 'now')}</div>
+          <div class="pp-stamps">${slot(ex, i, 'then')}${slot(ex, i, 'now')}${slot(ex, i, 'future')}</div>
         </div>`).join('')}
     </div>
     <div class="pp-foot">
-      <button type="button" class="btn btn-sm" onclick="resetPassport()">Reset passport</button>
+      <button type="button" id="pp-reset-btn" class="btn btn-sm" onclick="resetPassport()">${passportResetArmed ? 'Tap again to confirm reset' : 'Reset passport'}</button>
       <span>Saved on this device only.</span>
     </div>`;
 }
 
 function openPassport() {
+  passportResetArmed = false;
   lastFocus.pp = document.activeElement;
   enterLevel(1);
   renderPassport();
@@ -1400,6 +1651,7 @@ function openPassport() {
   focusPanel('passport-panel');
 }
 function hidePassport() {
+  passportResetArmed = false;
   $('passport-modal').classList.add('hidden');
   unlockScrollIfIdle();
   restoreFocus('pp');
@@ -1409,13 +1661,21 @@ function closePassport() { leaveLevel(1, hidePassport); }
 function passportGo(i, era) { hidePassport(); openRoom(i, era); }
 
 function resetPassport() {
-  if (window.confirm && !window.confirm('Reset your passport? All stamps will be removed.')) return;
+  if (!passportResetArmed) {
+    passportResetArmed = true;
+    const btn = $('pp-reset-btn');
+    if (btn) btn.textContent = 'Tap again to confirm reset';
+    showToast('⚠️ Tap "Reset passport" again to clear all stamps.');
+    return;
+  }
+  passportResetArmed = false;
   passportStamps = {};
   savePassport();
   updatePassportBadge();
   renderPassport();
   renderGallery();
   switchWing(currentTopic);
+  showToast('🛂 Passport stamps cleared.');
 }
 
 // ---------- Toast + confetti ----------
@@ -1431,7 +1691,7 @@ function showToast(message, ms) {
 
 function burstConfetti() {
   if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  const bits = ['🎉', '✨', '🏅', '⭐', '🎊', '💖'];
+  const bits = ['🎉', '✨', '🏅', '⭐', '🎊', '💖', '🚀'];
   for (let i = 0; i < 28; i++) {
     const s = document.createElement('span');
     s.className = 'confetti';
@@ -1445,7 +1705,7 @@ function burstConfetti() {
 }
 
 // ------------------------------------------------------------
-// MUSEUM FLOOR MAP (2000s Wing | Grand Lobby | Today Wing)
+// MUSEUM FLOOR MAP (2000s Wing | Today Wing | Future Wing + Grand Lobby)
 // ------------------------------------------------------------
 let mapHere = null; // {id, era} when the map was opened from inside a room
 
@@ -1453,10 +1713,11 @@ function renderMap() {
   const doors = era => exhibits.map((ex, i) => {
     const got = hasStamp(ex.id, era);
     const here = mapHere && mapHere.id === ex.id && (mapHere.era === era || mapHere.era === 'compare');
+    const wingLabel = era === 'then' ? '2000s' : era === 'now' ? 'Today' : '2030s+';
     return `
       <button type="button" class="door door-${era} ${got ? 'visited' : ''} ${here ? 'here' : ''}" style="--c:${esc(ex.color)}"
               onclick="mapEnter(${i}, '${era}')"
-              aria-label="Enter the ${esc(ex.wing)} room, ${era === 'then' ? '2000s' : 'Today'} wing${got ? ' (visited)' : ''}${here ? ' (you are here)' : ''}">
+              aria-label="Enter the ${esc(ex.wing)} room, ${wingLabel} wing${got ? ' (visited)' : ''}${here ? ' (you are here)' : ''}">
         ${here ? '<span class="you-are-here">📍 You are here</span>' : ''}
         <span class="door-icon">${esc(ex.icon)}</span>
         <span class="door-name">${esc(ex.wing)}</span>
@@ -1465,29 +1726,34 @@ function renderMap() {
   }).join('');
 
   $('map-body').innerHTML = `
-    <div class="floor">
+    <div class="floor floor-three">
       <section class="floor-wing fw-then" aria-label="The 2000s Wing">
         <h4>🕹️ The 2000s Wing <small>2000–2010</small></h4>
         <div class="floor-rooms">${doors('then')}</div>
-      </section>
-
-      <section class="floor-lobby ${mapHere ? '' : 'here'}" aria-label="Grand Lobby">
-        ${mapHere ? '' : '<span class="you-are-here">📍 You are here</span>'}
-        <div class="lobby-title">🏛️ Grand Lobby</div>
-        <div class="lobby-links">
-          <button type="button" class="btn btn-sm" onclick="mapOpenPassport()">🛂 Passport</button>
-          <button type="button" class="btn btn-sm" onclick="mapGo('then-now')">↔ Then vs. Now</button>
-          <button type="button" class="btn btn-sm" onclick="mapGo('sms')">📱 Nokia relic</button>
-          <button type="button" class="btn btn-sm" onclick="mapGo('curators')">✨ Curators</button>
-        </div>
       </section>
 
       <section class="floor-wing fw-now" aria-label="The Today Wing">
         <h4>📱 The Today Wing <small>2020s</small></h4>
         <div class="floor-rooms">${doors('now')}</div>
       </section>
+
+      <section class="floor-wing fw-future" aria-label="The Future Wing">
+        <h4>🚀 The Future Wing <small>2030s Onwards</small></h4>
+        <div class="floor-rooms">${doors('future')}</div>
+      </section>
+
+      <section class="floor-lobby ${mapHere ? '' : 'here'}" aria-label="Grand Lobby">
+        ${mapHere ? '' : '<span class="you-are-here">📍 You are here</span>'}
+        <div class="lobby-title">🏛️ Grand Lobby &amp; Interactive Relics</div>
+        <div class="lobby-links">
+          <button type="button" class="btn btn-sm" onclick="mapOpenPassport()">🛂 Passport (18 Stamps)</button>
+          <button type="button" class="btn btn-sm" onclick="mapGo('then-now')">↔ Then vs. Now</button>
+          <button type="button" class="btn btn-sm" onclick="mapGo('sms')">🕶️ Interactive Relics</button>
+          <button type="button" class="btn btn-sm" onclick="mapGo('curators')">✨ Curators</button>
+        </div>
+      </section>
     </div>
-    <p class="map-legend">✓ visited &nbsp;•&nbsp; 📍 you are here &nbsp;•&nbsp; tap any door to walk in</p>`;
+    <p class="map-legend">✓ visited &nbsp;•&nbsp; 📍 you are here &nbsp;•&nbsp; tap any door across the 3 wings to walk in</p>`;
 }
 
 function openMap(here) {
@@ -1526,6 +1792,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initGalleryEvents();
   applyEra(currentEra);
   setModernMode('chat');
+  setFutureMode('holo');
   updatePassportBadge();
   renderCurators();
   renderSources();
